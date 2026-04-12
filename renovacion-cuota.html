@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IAI · Renovación y Gestión de Cuota</title>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{min-height:100%;background:#f8fafc;font-family:'DM Sans',system-ui,sans-serif}
+    #root{min-height:100%}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+    .step-card{cursor:pointer;transition:box-shadow .15s,transform .15s}
+    .step-card:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
+    .btn{cursor:pointer;transition:all .15s;border:none;font-family:'DM Sans',sans-serif}
+    .btn:hover{opacity:.85}
+    ::-webkit-scrollbar{width:4px}
+    ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:2px}
+    .back-link{text-decoration:none;color:#64748b;font-size:13px;display:inline-flex;align-items:center;gap:5px}
+    .back-link:hover{color:#334155}
+  </style>
+
+<style>
+.iai-nav{position:sticky;top:0;z-index:999;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.iai-nav-inner{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:24px;height:44px;overflow-x:auto}
+.iai-nav-logo{display:flex;align-items:center;gap:7px;text-decoration:none;font-size:12px;font-weight:600;color:#0f172a;white-space:nowrap;flex-shrink:0;font-family:'DM Mono',monospace}
+.iai-nav-dot{width:8px;height:8px;border-radius:99px;background:#f97316;flex-shrink:0}
+.iai-nav-links{display:flex;gap:2px;align-items:center}
+.iai-nav-links a{text-decoration:none;font-size:12px;color:#64748b;padding:4px 10px;border-radius:6px;white-space:nowrap;transition:background .15s,color .15s}
+.iai-nav-links a:hover{background:#f1f5f9;color:#0f172a}
+.iai-nav-links a.active{background:#fff7ed;color:#f97316;font-weight:500}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  var cur=window.location.pathname.split('/').pop()||'index.html';
+  document.querySelectorAll('.iai-nav-links a').forEach(function(a){
+    if(a.getAttribute('href')===cur)a.classList.add('active');
+  });
+});
+</script>
+
+</head>
+<body>
+<nav class="iai-nav">
+  <div class="iai-nav-inner">
+    <a class="iai-nav-logo" href="index.html">
+      <span class="iai-nav-dot"></span>
+      <span>IAI · Documentación</span>
+    </a>
+    <div class="iai-nav-links">
+      <a href="index.html">Inicio</a>
+      <a href="alta-socios.html">Alta socios</a>
+      <a href="acceso-portal.html">Acceso portal</a>
+      <a href="gestion-socios.html">Gestión socios</a>
+      <a href="ciclo-producto.html">Productos</a>
+      <a href="inscripciones-aforo-diplomas.html">Inscripciones</a>
+      <a href="administracion-pagos.html">Pagos</a>
+      <a href="consultas-reportes-notificaciones.html">Consultas</a>
+      <a href="privacidad-etica.html">Privacidad</a>
+      <a href="renovacion-cuota.html">Renovación</a>
+      <a href="estado-proyecto.html">Estado</a>
+      <a href="inventario.html">Inventario</a>
+    </div>
+  </div>
+</nav>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const SYS_COLOR = {
+  usuario:"#64748b", weweb:"#8b5cf6", supabase:"#10b981",
+  n8n:"#ef4444", hubspot:"#f97316", bc:"#6366f1", iai_admin:"#f43f5e",
+};
+const SYS_LABEL = {
+  usuario:"Usuario / Representante", weweb:"Portal del socio",
+  supabase:"Base de datos", n8n:"Automatización",
+  hubspot:"HubSpot CRM", bc:"Facturación (BC)", iai_admin:"IAI (gestión interna)",
+};
+
+const FASE_STYLES = {
+  aviso:       {bg:"#fffbeb",text:"#92400e",border:"#fde68a",label:"Aviso de renovación"},
+  renovacion:  {bg:"#ecfdf5",text:"#065f46",border:"#a7f3d0",label:"Renovación"},
+  pago:        {bg:"#eff6ff",text:"#1d4ed8",border:"#bfdbfe",label:"Pago"},
+  facturacion: {bg:"#eef2ff",text:"#3730a3",border:"#c7d2fe",label:"Facturación"},
+  cambio:      {bg:"#f5f3ff",text:"#5b21b6",border:"#ddd6fe",label:"Cambio de tramo"},
+  prorratio:   {bg:"#ecfeff",text:"#155e75",border:"#a5f3fc",label:"Cálculo prorrateo"},
+  baja:        {bg:"#fff1f2",text:"#9f1239",border:"#fecdd3",label:"Baja / No renovación"},
+  cascada:     {bg:"#fef2f2",text:"#991b1b",border:"#fecaca",label:"Baja en cascada"},
+  sync:        {bg:"#fff7ed",text:"#9a3412",border:"#fed7aa",label:"Sincronización HubSpot"},
+  construccion:{bg:"#f8fafc",text:"#475569",border:"#cbd5e1",label:"En construcción"},
+};
+
+const SCENARIOS = {
+  renovacion_auto: {
+    icon:"🔄", label:"Renovación automática",
+    color:"#10b981", ac:"AC-22",
+    desc:"La membresía se renueva automáticamente antes del 31 de diciembre",
+    end:"Membresía renovada hasta el 31 de diciembre del año siguiente. Factura emitida.",
+    wip:true,
+  },
+  impago: {
+    icon:"⛔", label:"No renovación / impago",
+    color:"#ef4444", ac:"AC-22",
+    desc:"La empresa no renueva o no paga antes del vencimiento",
+    end:"Membresía expirada. Empresa y todos sus miembros dados de baja automáticamente.",
+    wip:true,
+  },
+  ampliacion: {
+    icon:"⬆️", label:"Ampliación de tramo",
+    color:"#8b5cf6", ac:"AC-22",
+    desc:"Admin amplía el tramo corporativo a mitad de año con prorrateo por días",
+    end:"Nuevo tramo activo. Factura parcial emitida con el prorrateo calculado al día.",
+    wip:true,
+  },
+  reduccion: {
+    icon:"⬇️", label:"Reducción / terminación anticipada",
+    color:"#f43f5e", ac:"AC-22",
+    desc:"Admin termina la membresía o reduce el tramo antes del 31 de diciembre",
+    end:"Membresía terminada o tramo reducido. Representante gestiona los miembros excedentes.",
+    wip:true,
+  },
+  sync_hubspot: {
+    icon:"🔗", label:"Cambios desde HubSpot",
+    color:"#f97316", ac:"AC-22",
+    desc:"El equipo de IAI modifica la Company en HubSpot y los cambios se propagan al portal",
+    end:"Cambios propagados a Supabase. Accesos actualizados para todos los miembros afectados.",
+    wip:true,
+  },
+};
+
+const ALL_STEPS = [
+
+  // ── RENOVACIÓN AUTO ──
+  {scenario:"renovacion_auto", sys:"supabase", fase:"aviso", wip:true,
+    who:"El sistema",
+    what:"Detecta membresías próximas a vencer y avisa con antelación",
+    why:"El sistema avisa al representante de la empresa y a IAI con tiempo suficiente para gestionar la renovación antes del 31 de diciembre.",
+    tech:"🚧 EN CONSTRUCCIÓN — Cron job en Supabase (pg_cron): cada día revisa companies WHERE membership_end_date BETWEEN now() AND now() + interval '30 days'. Notifica vía n8n al representante y a IAI."},
+
+  {scenario:"renovacion_auto", sys:"n8n", fase:"aviso", wip:true,
+    who:"El sistema",
+    what:"Envía email de aviso al representante de la empresa",
+    why:"El representante recibe un email con el resumen de su membresía actual — tramo, número de miembros, precio de la cuota — y las instrucciones para renovar desde el portal.",
+    tech:"🚧 EN CONSTRUCCIÓN — n8n webhook desde Supabase cron → email al representante con detalle del tramo actual, importe de renovación y enlace directo al portal."},
+
+  {scenario:"renovacion_auto", sys:"weweb", fase:"renovacion", wip:true,
+    who:"El representante",
+    what:"Confirma la renovación con el mismo tramo desde el portal",
+    why:"El representante accede al portal, revisa los datos de la renovación y confirma. Puede mantener el mismo tramo o iniciar una ampliación.",
+    tech:"🚧 EN CONSTRUCCIÓN — Panel corporativo WeWeb: sección renovación. Muestra tramo actual, miembros activos, precio y fecha hasta 31 dic. Botón de confirmar renovación."},
+
+  {scenario:"renovacion_auto", sys:"supabase", fase:"pago", wip:true,
+    who:"El sistema",
+    what:"Genera el pedido de renovación y envía el número de pedido",
+    why:"Igual que en el alta, la renovación se paga por transferencia. El sistema genera el pedido con el importe de la cuota anual del tramo y envía los datos bancarios.",
+    tech:"🚧 EN CONSTRUCCIÓN — Crea deal + deal_items en Supabase. Consulta iai_reglas_iva para IVA correcto. BC genera pedido. Email al representante con número de pedido e importe."},
+
+  {scenario:"renovacion_auto", sys:"iai_admin", fase:"pago", wip:true,
+    who:"IAI",
+    what:"Confirma el ingreso bancario y activa la renovación",
+    why:"Igual que en el alta, IAI verifica la transferencia y marca el pago como recibido. La membresía se renueva automáticamente hasta el 31 de diciembre.",
+    tech:"🚧 EN CONSTRUCCIÓN — Admin portal confirma el pago → companies.membership_end_date = 31 dic del año en curso → n8n actualiza HubSpot Company."},
+
+  {scenario:"renovacion_auto", sys:"bc", fase:"facturacion", wip:true,
+    who:"El sistema",
+    what:"Emite la factura definitiva de la renovación",
+    why:"Una vez confirmado el pago, BC emite la factura anual de la cuota y n8n la envía al representante por email.",
+    tech:"🚧 EN CONSTRUCCIÓN — Mismo flujo que alta: n8n cron vigila prefactura_queue → BC genera factura → email al representante con PDF adjunto."},
+
+  // ── IMPAGO ──
+  {scenario:"impago", sys:"supabase", fase:"aviso", wip:true,
+    who:"El sistema",
+    what:"Detecta que la membresía ha vencido sin renovarse",
+    why:"Si el 1 de enero llega sin que la empresa haya renovado ni pagado, el sistema identifica automáticamente todas las empresas con membresía vencida.",
+    tech:"🚧 EN CONSTRUCCIÓN — Cron job diario: companies WHERE membership_end_date < CURRENT_DATE AND membership_status = 'active'. Lista de empresas a desactivar."},
+
+  {scenario:"impago", sys:"n8n", fase:"aviso", wip:true,
+    who:"El sistema",
+    what:"Envía aviso final antes de proceder a la baja",
+    why:"Antes de desactivar la membresía, el sistema envía un último aviso al representante con un plazo de gracia para regularizar la situación.",
+    tech:"🚧 EN CONSTRUCCIÓN — n8n notifica al representante con plazo de gracia configurable (ej: 15 días). Si pasado el plazo no hay pago → procede a la baja."},
+
+  {scenario:"impago", sys:"supabase", fase:"baja", wip:true,
+    who:"El sistema",
+    what:"Desactiva la membresía de la empresa",
+    why:"Pasado el plazo de gracia sin pago, el sistema desactiva la empresa automáticamente.",
+    tech:"🚧 EN CONSTRUCCIÓN — UPDATE companies SET membership_status = 'baja', membership_end_date = CURRENT_DATE. Trigger pendiente (ver AC-05) para baja en cascada de company_members."},
+
+  {scenario:"impago", sys:"supabase", fase:"cascada", wip:true,
+    who:"El sistema",
+    what:"Da de baja automáticamente a todos los miembros de la empresa",
+    why:"Todos los empleados que eran socios bajo el paraguas de la empresa pierden su acceso de socio y quedan como usuarios registrados.",
+    tech:"🚧 EN CONSTRUCCIÓN — Mismo trigger de baja en cascada (AC-05): company_members status=inactive, user_profiles membership_status limpio. n8n actualiza cada Contacto en HubSpot."},
+
+  {scenario:"impago", sys:"hubspot", fase:"cascada", wip:true,
+    who:"El sistema",
+    what:"Actualiza la Company y todos sus contactos en HubSpot",
+    why:"HubSpot refleja la baja de la empresa y de cada miembro para que el equipo de marketing pueda hacer seguimiento y campañas de reactivación.",
+    tech:"🚧 EN CONSTRUCCIÓN — n8n PATCH Company HubSpot: membership_status=baja. Para cada miembro: PATCH Contacto: member_type vacío, membership_end_date."},
+
+  // ── AMPLIACIÓN ──
+  {scenario:"ampliacion", sys:"weweb", fase:"cambio", wip:true,
+    who:"IAI admin",
+    what:"Accede al panel de gestión de la empresa y elige ampliar el tramo",
+    why:"El admin puede ampliar el tramo de una empresa en cualquier momento del año. El portal calcula automáticamente el importe a pagar por los días restantes.",
+    tech:"🚧 EN CONSTRUCCIÓN — Panel admin WeWeb: seleccionar empresa → acción 'Cambiar tramo' → selector de nuevo tramo → cálculo en tiempo real del prorrateo."},
+
+  {scenario:"ampliacion", sys:"weweb", fase:"prorratio", wip:true,
+    who:"El sistema",
+    what:"Calcula el importe a facturar por prorrateo de días",
+    why:"La empresa ya ha pagado la cuota del año. Solo debe pagar la diferencia entre el tramo actual y el nuevo, proporcional a los días que quedan hasta el 31 de diciembre.",
+    tech:"🚧 EN CONSTRUCCIÓN — Fórmula: (cuota_nuevo_tramo - cuota_tramo_actual) × días_restantes / 365. Días restantes = 31 dic - fecha_hoy. El portal muestra el importe antes de confirmar."},
+
+  {scenario:"ampliacion", sys:"weweb", fase:"prorratio", wip:true,
+    who:"IAI admin",
+    what:"Revisa el importe calculado y confirma la operación",
+    why:"El admin ve exactamente cuánto se va a facturar antes de confirmar. Puede ajustar la fecha de efectividad si es necesario.",
+    tech:"🚧 EN CONSTRUCCIÓN — Panel muestra: tramo actual, tramo nuevo, cuotas anuales, días restantes, importe prorrateo con IVA. Botón confirmar activa el flujo."},
+
+  {scenario:"ampliacion", sys:"supabase", fase:"cambio", wip:true,
+    who:"El sistema",
+    what:"Actualiza el tramo de la empresa y genera la factura parcial",
+    why:"El tramo queda actualizado inmediatamente. El sistema genera el pedido por el importe del prorrateo y lo envía al representante para que haga la transferencia.",
+    tech:"🚧 EN CONSTRUCCIÓN — UPDATE companies SET membership_tier_id = nuevo_tier, max_members = nuevo_max. Crea deal + deal_items con importe prorrateo. BC genera pedido parcial. Email al representante."},
+
+  {scenario:"ampliacion", sys:"n8n", fase:"cambio", wip:true,
+    who:"El sistema",
+    what:"Sincroniza el nuevo tramo en HubSpot",
+    why:"HubSpot refleja el cambio de tramo para que el equipo de IAI tenga visibilidad actualizada en el CRM.",
+    tech:"🚧 EN CONSTRUCCIÓN — n8n PATCH Company HubSpot: membership_tier, max_members. Si el representante invita nuevos miembros hasta el nuevo máximo, flujo estándar de company_invitations."},
+
+  // ── REDUCCIÓN ──
+  {scenario:"reduccion", sys:"weweb", fase:"cambio", wip:true,
+    who:"IAI admin",
+    what:"Elige terminar la membresía o reducir el tramo desde el panel de admin",
+    why:"El admin puede terminar una membresía anticipadamente o reducir el tramo si la empresa lo solicita. No hay devolución de cuota pagada.",
+    tech:"🚧 EN CONSTRUCCIÓN — Panel admin WeWeb: opciones 'Reducir tramo' o 'Terminar membresía'. Para reducción: selector de nuevo tramo menor. Para terminación: selector de fecha efectiva."},
+
+  {scenario:"reduccion", sys:"supabase", fase:"baja", wip:true,
+    who:"El sistema",
+    what:"Aplica el cambio y calcula si hay miembros que exceden el nuevo tramo",
+    why:"Si la empresa pasa de 11-20 a 1-10 pero tiene 15 miembros activos, los 5 excedentes deben ser gestionados. El sistema alerta pero no da de baja automáticamente — lo decide el representante.",
+    tech:"🚧 EN CONSTRUCCIÓN — UPDATE companies SET membership_tier_id = nuevo_tier, max_members = nuevo_max. Si COUNT(company_members WHERE status=active) > max_members → notificación al representante para gestionar excedentes."},
+
+  {scenario:"reduccion", sys:"weweb", fase:"baja", wip:true,
+    who:"El representante",
+    what:"Gestiona qué miembros excedentes se dan de baja",
+    why:"El representante decide qué empleados se quedan dentro del nuevo tramo y cuáles causan baja. Tiene un plazo para regularizar antes de que el sistema actúe automáticamente.",
+    tech:"🚧 EN CONSTRUCCIÓN — Panel corporativo muestra miembros activos marcando los excedentes. Representante selecciona cuáles dar de baja → flujo estándar remove-corporate-member."},
+
+  {scenario:"reduccion", sys:"n8n", fase:"baja", wip:true,
+    who:"El sistema",
+    what:"Sincroniza la reducción o terminación en HubSpot",
+    why:"HubSpot refleja el nuevo tramo o la baja de la empresa para el seguimiento del equipo de IAI y posibles acciones de marketing.",
+    tech:"🚧 EN CONSTRUCCIÓN — n8n PATCH Company HubSpot: membership_tier o membership_status=baja. Para miembros dados de baja: PATCH Contactos HubSpot con member_type vacío."},
+
+  // ── SYNC HUBSPOT ──
+  {scenario:"sync_hubspot", sys:"hubspot", fase:"sync", wip:true,
+    who:"IAI admin",
+    what:"Modifica la Company en HubSpot — estado, tramo o fecha de baja",
+    why:"El equipo de IAI trabaja habitualmente en HubSpot. Cambios críticos en la ficha de la empresa deben propagarse automáticamente al portal sin tener que entrar al panel de admin.",
+    tech:"🚧 EN CONSTRUCCIÓN — Ampliar SYNC-HS-COMPANY-01 para detectar cambios en: membership_status, membership_tier, membership_end_date en HubSpot Company."},
+
+  {scenario:"sync_hubspot", sys:"n8n", fase:"sync", wip:true,
+    who:"El sistema",
+    what:"Propaga el cambio a Supabase vía SYNC-HS-COMPANY-01",
+    why:"El workflow detecta el cambio en HubSpot y actualiza la empresa en Supabase. Según el tipo de cambio, puede desencadenar acciones adicionales.",
+    tech:"🚧 EN CONSTRUCCIÓN — SYNC-HS-COMPANY-01 ampliado: si membership_status=baja → desactiva empresa + baja en cascada de miembros. Si membership_tier cambia → UPDATE companies.membership_tier_id + max_members."},
+
+  {scenario:"sync_hubspot", sys:"supabase", fase:"sync", wip:true,
+    who:"El sistema",
+    what:"Actualiza el estado de la empresa y desencadena la lógica de miembros si aplica",
+    why:"Supabase queda actualizado y, si la empresa ha causado baja, todos sus miembros pierden el acceso de socio automáticamente.",
+    tech:"🚧 EN CONSTRUCCIÓN — UPDATE companies desde n8n. Si status=baja: trigger baja en cascada (AC-05) sobre company_members → user_profiles membership_status limpio → accesos revocados."},
+
+  {scenario:"sync_hubspot", sys:"weweb", fase:"sync", wip:true,
+    who:"El portal",
+    what:"Refleja el nuevo estado para el representante y los miembros",
+    why:"El representante y los miembros ven inmediatamente el cambio en el portal — si la empresa ha causado baja, sus cuentas vuelven a modo usuario registrado sin acceso de socio.",
+    tech:"🚧 EN CONSTRUCCIÓN — WeWeb lee de Supabase en tiempo real. companies.membership_status actualizado. user_profiles.membership_status de cada miembro refleja el nuevo estado."},
+];
+
+function SystemTag({sys}) {
+  var c=SYS_COLOR[sys]||"#94a3b8"; var l=SYS_LABEL[sys]||sys;
+  return <span style={{display:"inline-flex",alignItems:"center",gap:3,background:c+"18",border:"1px solid "+c+"44",borderRadius:99,padding:"1px 8px",fontSize:10,color:c,fontWeight:500,fontFamily:"DM Mono,monospace",whiteSpace:"nowrap"}}>{l}</span>;
+}
+
+function FaseBadge({fase}) {
+  var c=FASE_STYLES[fase]||FASE_STYLES.aviso;
+  return <span style={{display:"inline-block",padding:"2px 8px",borderRadius:99,fontSize:10,fontWeight:500,whiteSpace:"nowrap",background:c.bg,color:c.text,border:"1px solid "+c.border}}>{c.label}</span>;
+}
+
+function PhaseHeader({fase,isFirst}) {
+  var c=FASE_STYLES[fase]||FASE_STYLES.aviso;
+  return (
+    <div style={{display:"flex",alignItems:"center",gap:10,margin:isFirst?"0 0 12px":"22px 0 12px"}}>
+      <div style={{width:8,height:8,borderRadius:99,background:c.text,flexShrink:0}}/>
+      <span style={{fontSize:11,fontWeight:600,color:c.text,fontFamily:"DM Mono,monospace",textTransform:"uppercase",letterSpacing:"0.07em"}}>{c.label}</span>
+      <div style={{flex:1,height:1,background:"#e2e8f0"}}/>
+    </div>
+  );
+}
+
+function Step({step,idx,techMode,isActive,onToggle}) {
+  var sc=SYS_COLOR[step.sys]||"#94a3b8";
+  return (
+    <div style={{position:"relative"}}>
+      {idx>0&&<div style={{height:18,marginLeft:20}}><div style={{width:2,height:"100%",background:"#e2e8f0",borderRadius:1}}/></div>}
+      <div className="step-card" onClick={function(){onToggle(idx);}}
+        style={{background:"#fffbeb",
+          border:"1px solid #fbbf2460",
+          borderLeft:"3px solid #fbbf24",
+          borderRadius:12,padding:"14px 16px",
+          display:"flex",gap:12,alignItems:"flex-start",
+          boxShadow:isActive?"0 2px 12px rgba(0,0,0,.08)":"0 1px 3px rgba(0,0,0,.04)"}}>
+        <div style={{width:32,height:32,borderRadius:99,flexShrink:0,
+          background:isActive?sc:"#fef3c7",
+          border:"2px solid "+(isActive?sc:"#fbbf24"),
+          display:"flex",alignItems:"center",justifyContent:"center",
+          fontSize:isActive?12:14,fontWeight:600,
+          color:isActive?"white":"#92400e",
+          transition:"all .2s",marginTop:1}}>
+          {isActive?idx+1:"🚧"}
+        </div>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{display:"flex",alignItems:"flex-start",gap:8,flexWrap:"wrap",marginBottom:5}}>
+            <span style={{fontSize:13,fontWeight:600,color:"#1e293b",lineHeight:1.35,flex:1,minWidth:100}}>
+              <span style={{color:"#94a3b8",fontWeight:400,marginRight:4}}>{step.who} —</span>
+              {step.what}
+            </span>
+            <FaseBadge fase={step.fase}/>
+            <span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"2px 8px",borderRadius:99,fontSize:10,fontWeight:500,background:"#fef3c7",color:"#92400e",border:"1px solid #fde68a",whiteSpace:"nowrap"}}>🚧 En construcción</span>
+          </div>
+          <p style={{fontSize:13,color:"#475569",lineHeight:1.6,marginBottom:6}}>{step.why}</p>
+          <SystemTag sys={step.sys}/>
+          {(techMode||isActive)&&(
+            <div style={{marginTop:10,padding:"8px 12px",background:"#fef9c3",borderRadius:8,border:"1px solid #fde68a",animation:"fadeIn .2s ease"}}>
+              <div style={{fontSize:10,fontWeight:600,color:"#92400e",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:3,fontFamily:"DM Mono,monospace"}}>Estado técnico</div>
+              <p style={{fontSize:12,color:"#78350f",lineHeight:1.55,fontFamily:"DM Mono,monospace"}}>{step.tech}</p>
+            </div>
+          )}
+        </div>
+        <div style={{color:"#fbbf24",fontSize:14,flexShrink:0,marginTop:6,transform:isActive?"rotate(180deg)":"none",transition:"transform .2s"}}>▾</div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  var sa=useState("renovacion_auto"); var scenario=sa[0]; var setScenario=sa[1];
+  var ta=useState(false); var techMode=ta[0]; var setTechMode=ta[1];
+  var aa=useState(null); var activeStep=aa[0]; var setActiveStep=aa[1];
+
+  function toggle(idx){setActiveStep(activeStep===idx?null:idx);}
+
+  var steps=ALL_STEPS.filter(function(s){return s.scenario===scenario;});
+  var sc=SCENARIOS[scenario];
+  var lastFase=null;
+
+  var groups=[
+    {label:"Renovación anual",keys:["renovacion_auto","impago"]},
+    {label:"Cambios a demanda",keys:["ampliacion","reduccion"]},
+    {label:"Desde HubSpot",keys:["sync_hubspot"]},
+  ];
+
+  return (
+    <div style={{background:"#f8fafc",minHeight:"100vh",color:"#1e293b"}}>
+
+      <div style={{background:"white",borderBottom:"1px solid #e2e8f0",padding:"16px 20px",position:"sticky",top:0,zIndex:10}}>
+        <div style={{maxWidth:720,margin:"0 auto"}}>
+          <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}>
+            <div>
+              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4,flexWrap:"wrap"}}>
+                <a href="index.html" className="back-link">← Todos los procesos</a>
+                <span style={{color:"#e2e8f0"}}>·</span>
+                <span style={{fontSize:11,color:"#94a3b8",fontFamily:"DM Mono,monospace"}}>AC-22</span>
+              </div>
+              <h1 style={{fontSize:20,fontWeight:600,color:"#0f172a",letterSpacing:"-0.02em"}}>🔄 Renovación y Gestión de Cuota</h1>
+              <p style={{fontSize:13,color:"#64748b",marginTop:2}}>Renovación anual, cambios de tramo con prorrateo, impago y sincronización desde HubSpot</p>
+            </div>
+            <button className="btn" onClick={function(){setTechMode(!techMode);}}
+              style={{padding:"7px 14px",borderRadius:8,fontSize:12,fontWeight:500,
+                background:techMode?"#1e293b":"#f1f5f9",color:techMode?"white":"#64748b",
+                border:"1px solid "+(techMode?"#1e293b":"#e2e8f0"),flexShrink:0,marginTop:2}}>
+              {techMode?"⚙️ Técnico":"👁 Funcional"}
+            </button>
+          </div>
+
+          {/* Wip banner */}
+          <div style={{marginTop:10,padding:"8px 12px",background:"#fffbeb",border:"1px solid #fde68a",borderRadius:8,display:"flex",alignItems:"center",gap:8}}>
+            <span style={{fontSize:14}}>🚧</span>
+            <span style={{fontSize:12,color:"#92400e",fontWeight:500}}>Proceso completo en construcción</span>
+            <span style={{fontSize:12,color:"#b45309"}}>— diseñado y documentado, pendiente de implementación</span>
+          </div>
+
+          <div style={{marginTop:12,display:"flex",flexDirection:"column",gap:8}}>
+            {groups.map(function(g){
+              return (
+                <div key={g.label}>
+                  <div style={{fontSize:10,color:"#94a3b8",fontFamily:"DM Mono,monospace",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:5}}>{g.label}</div>
+                  <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                    {g.keys.map(function(key){
+                      var s=SCENARIOS[key]; var active=scenario===key;
+                      return (
+                        <button key={key} className="btn"
+                          onClick={function(){setScenario(key);setActiveStep(null);}}
+                          style={{padding:"6px 13px",borderRadius:8,fontSize:12,fontWeight:active?600:400,
+                            background:active?s.color:"white",color:active?"white":"#64748b",
+                            border:"1px solid "+(active?s.color:"#e2e8f0")}}>
+                          {s.icon} {s.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div style={{marginTop:10,padding:"7px 12px",background:sc.color+"0f",
+            border:"1px solid "+sc.color+"30",borderRadius:8,
+            display:"flex",alignItems:"center",gap:8}}>
+            <div style={{width:5,height:5,borderRadius:99,background:sc.color,flexShrink:0}}/>
+            <span style={{fontSize:12,color:sc.color}}>{sc.desc}</span>
+            <span style={{fontSize:12,color:"#94a3b8"}}>· {steps.length} pasos</span>
+          </div>
+        </div>
+      </div>
+
+      <div style={{maxWidth:720,margin:"0 auto",padding:"24px 16px"}}>
+
+        {steps.map(function(step,idx){
+          var showHeader=step.fase!==lastFase;
+          lastFase=step.fase;
+          return (
+            <div key={idx}>
+              {showHeader&&<PhaseHeader fase={step.fase} isFirst={idx===0}/>}
+              <Step step={step} idx={idx} techMode={techMode} isActive={activeStep===idx} onToggle={toggle}/>
+            </div>
+          );
+        })}
+
+        <div style={{height:18,marginLeft:20}}><div style={{width:2,height:"100%",background:"#e2e8f0"}}/></div>
+        <div style={{display:"flex",gap:12,alignItems:"center",background:"#fffbeb",
+          border:"1px solid #fde68a",borderLeft:"3px solid #f59e0b",
+          borderRadius:12,padding:"14px 16px",boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
+          <div style={{width:32,height:32,borderRadius:99,background:"#f59e0b",color:"white",
+            display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>🚧</div>
+          <div>
+            <div style={{fontSize:13,fontWeight:600,color:"#92400e"}}>Proceso en construcción</div>
+            <div style={{fontSize:12,color:"#78350f",marginTop:1}}>{sc.end}</div>
+          </div>
+        </div>
+
+        {/* Fórmula prorrateo */}
+        {scenario==="ampliacion"&&(
+          <div style={{marginTop:20,padding:"14px 16px",background:"#ecfeff",borderRadius:10,border:"1px solid #a5f3fc"}}>
+            <div style={{fontSize:11,fontWeight:600,color:"#155e75",fontFamily:"DM Mono,monospace",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:8}}>Fórmula de prorrateo</div>
+            <div style={{fontFamily:"DM Mono,monospace",fontSize:13,color:"#0e7490",background:"white",padding:"10px 14px",borderRadius:8,border:"1px solid #a5f3fc",lineHeight:2}}>
+              importe = (cuota_nuevo_tramo - cuota_tramo_actual) × días_restantes / 365<br/>
+              días_restantes = 31 dic - fecha_hoy<br/>
+              + IVA según iai_reglas_iva
+            </div>
+            <div style={{fontSize:12,color:"#0e7490",marginTop:8,lineHeight:1.6}}>
+              Ejemplo: tramo 1-10 (1.000€) → 11-20 (1.800€) el 1 de julio → 184 días restantes → (800 × 184/365) = <strong>403,29€</strong> + IVA
+            </div>
+          </div>
+        )}
+
+        {scenario==="sync_hubspot"&&(
+          <div style={{marginTop:20,padding:"12px 14px",background:"#fff7ed",borderRadius:10,border:"1px solid #fed7aa"}}>
+            <div style={{fontSize:12,color:"#9a3412",lineHeight:1.6}}>
+              <strong>Campos de Company en HubSpot que desencadenan acciones:</strong> membership_status (→ baja en cascada si = baja), membership_tier (→ actualiza tramo y max_members), membership_end_date (→ actualiza fecha de vencimiento). Pendiente de ampliar SYNC-HS-COMPANY-01.
+            </div>
+          </div>
+        )}
+
+        <div style={{marginTop:24,padding:"16px",background:"white",borderRadius:12,border:"1px solid #e2e8f0"}}>
+          <div style={{fontSize:11,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:10,fontFamily:"DM Mono,monospace"}}>Sistemas involucrados</div>
+          <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+            {Object.keys(SYS_COLOR).map(function(s){return <SystemTag key={s} sys={s}/>;})}
+          </div>
+          <div style={{marginTop:10,fontSize:12,color:"#94a3b8",lineHeight:1.6}}>
+            Haz clic en cualquier paso para ver el detalle técnico. Activa <strong style={{color:"#1e293b"}}>modo técnico</strong> para ver los sistemas y automatizaciones implicadas.
+          </div>
+        </div>
+        <div style={{height:40}}/>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+</script>
+</body>
+</html>

@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IAI · Proceso de Matrícula</title>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{min-height:100%;background:#f8fafc;font-family:'DM Sans',system-ui,sans-serif}
+    #root{min-height:100%}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+    .step-card{cursor:pointer;transition:box-shadow .15s,transform .15s}
+    .step-card:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
+    .toggle-btn{cursor:pointer;transition:all .15s;border:none;font-family:'DM Sans',sans-serif}
+    .toggle-btn:hover{opacity:.85}
+    ::-webkit-scrollbar{width:4px}
+    ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:2px}
+    .back-link{text-decoration:none;color:#64748b;font-size:13px;display:inline-flex;align-items:center;gap:5px}
+    .back-link:hover{color:#334155}
+    @media(max-width:767px){.desktop-only{display:none!important}}
+    @media(min-width:768px){.mobile-only{display:none!important}}
+  </style>
+
+<style>
+.iai-nav{position:sticky;top:0;z-index:999;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.iai-nav-inner{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:24px;height:44px;overflow-x:auto}
+.iai-nav-logo{display:flex;align-items:center;gap:7px;text-decoration:none;font-size:12px;font-weight:600;color:#0f172a;white-space:nowrap;flex-shrink:0;font-family:'DM Mono',monospace}
+.iai-nav-dot{width:8px;height:8px;border-radius:99px;background:#f97316;flex-shrink:0}
+.iai-nav-links{display:flex;gap:2px;align-items:center}
+.iai-nav-links a{text-decoration:none;font-size:12px;color:#64748b;padding:4px 10px;border-radius:6px;white-space:nowrap;transition:background .15s,color .15s}
+.iai-nav-links a:hover{background:#f1f5f9;color:#0f172a}
+.iai-nav-links a.active{background:#fff7ed;color:#f97316;font-weight:500}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  var cur=window.location.pathname.split('/').pop()||'index.html';
+  document.querySelectorAll('.iai-nav-links a').forEach(function(a){
+    if(a.getAttribute('href')===cur)a.classList.add('active');
+  });
+});
+</script>
+
+</head>
+<body>
+<nav class="iai-nav">
+  <div class="iai-nav-inner">
+    <a class="iai-nav-logo" href="index.html">
+      <span class="iai-nav-dot"></span>
+      <span>IAI · Documentación</span>
+    </a>
+    <div class="iai-nav-links">
+      <a href="index.html">Inicio</a>
+      <a href="alta-socios.html">Alta socios</a>
+      <a href="acceso-portal.html">Acceso portal</a>
+      <a href="gestion-socios.html">Gestión socios</a>
+      <a href="ciclo-producto.html">Productos</a>
+      <a href="inscripciones-aforo-diplomas.html">Inscripciones</a>
+      <a href="administracion-pagos.html">Pagos</a>
+      <a href="consultas-reportes-notificaciones.html">Consultas</a>
+      <a href="privacidad-etica.html">Privacidad</a>
+      <a href="renovacion-cuota.html">Renovación</a>
+      <a href="estado-proyecto.html">Estado</a>
+      <a href="inventario.html">Inventario</a>
+    </div>
+  </div>
+</nav>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+// ─── COLOUR PALETTE ───────────────────────────────────────────────────────────
+const SYSTEM_COLORS = {
+  usuario:   "#64748b",
+  wordpress: "#3b82f6",
+  weweb:     "#8b5cf6",
+  supabase:  "#10b981",
+  redsys:    "#f59e0b",
+  n8n:       "#ef4444",
+  hubspot:   "#f97316",
+  moodle:    "#06b6d4",
+  bc:        "#6366f1",
+};
+
+const SYSTEM_LABELS = {
+  usuario:   "Usuario",
+  wordpress: "Web pública",
+  weweb:     "Portal del socio",
+  supabase:  "Base de datos",
+  redsys:    "Pasarela de pago",
+  n8n:       "Automatización",
+  hubspot:   "CRM",
+  moodle:    "Campus virtual",
+  bc:        "Facturación",
+};
+
+const FASE_COLORS = {
+  descubrimiento: { bg:"#f1f5f9", text:"#475569", border:"#e2e8f0" },
+  inicio:         { bg:"#eff6ff", text:"#1d4ed8", border:"#bfdbfe" },
+  pago:           { bg:"#fffbeb", text:"#92400e", border:"#fde68a" },
+  confirmacion:   { bg:"#ecfdf5", text:"#065f46", border:"#a7f3d0" },
+  sincronizacion: { bg:"#fef2f2", text:"#991b1b", border:"#fecaca" },
+  entrega:        { bg:"#f5f3ff", text:"#5b21b6", border:"#ddd6fe" },
+  facturacion:    { bg:"#eef2ff", text:"#3730a3", border:"#c7d2fe" },
+};
+
+const FASE_LABELS = {
+  descubrimiento: "Descubrimiento",
+  inicio:         "Inicio",
+  pago:           "Pago",
+  confirmacion:   "Confirmación",
+  sincronizacion: "Registro en CRM",
+  entrega:        "Acceso al curso",
+  facturacion:    "Facturación",
+};
+
+// ─── STEPS ────────────────────────────────────────────────────────────────────
+// Each step: { sys, fase, who, what, why, tech, paths }
+// who  = actor visible para el funcional
+// what = qué ocurre (lenguaje funcional)
+// why  = para qué sirve este paso
+// tech = detalle técnico (oculto por defecto)
+// paths = ["tarjeta","transferencia","credito"] o subset
+
+const STEPS = [
+  { sys:"usuario", fase:"descubrimiento",
+    who:"El usuario",
+    what:"Navega por el catálogo de formación en la web",
+    why:"Descubre los cursos disponibles con toda la información: fechas, precios, plazas y modalidad.",
+    tech:"WordPress muestra los productos publicados sincronizados desde HubSpot vía SYNC-WP-01.",
+    paths:["tarjeta","transferencia","credito"] },
+
+  { sys:"weweb", fase:"descubrimiento",
+    who:"El portal",
+    what:"Muestra el botón de inscripción con el precio según tipo de socio",
+    why:"El precio que ve cada usuario se adapta automáticamente: socio individual, corporativo o no socio.",
+    tech:"WeWeb consulta Supabase para determinar membership_type del usuario y mostrar el precio correcto.",
+    paths:["tarjeta","transferencia","credito"] },
+
+  { sys:"usuario", fase:"inicio",
+    who:"El usuario",
+    what:"Hace clic en 'Inscribirse' e inicia sesión en el portal",
+    why:"Para completar la compra es necesario tener una cuenta. Si no la tiene, puede crearla en este momento.",
+    tech:"Redireccionamiento a portal.auditoresinternos.es. Autenticación vía Supabase Auth.",
+    paths:["tarjeta","transferencia","credito"] },
+
+  { sys:"weweb", fase:"inicio",
+    who:"El usuario",
+    what:"Revisa el carrito y elige cómo pagar",
+    why:"Puede pagar con tarjeta de forma inmediata, por transferencia bancaria o con crédito formativo si dispone de saldo.",
+    tech:"El carrito se crea en shopping_carts + shopping_cart_items. Se consulta credits_granted del user_profile.",
+    paths:["tarjeta","transferencia","credito"] },
+
+  // TARJETA
+  { sys:"redsys", fase:"pago",
+    who:"El usuario",
+    what:"Introduce sus datos de tarjeta en la pasarela de pago segura",
+    why:"El pago se procesa a través de Redsys (TPV virtual de IAI). Es instantáneo y seguro.",
+    tech:"Edge Function redsys-initiate-payment genera la firma. Redsys notifica el resultado vía POST al webhook.",
+    paths:["tarjeta"] },
+
+  { sys:"supabase", fase:"confirmacion",
+    who:"El sistema",
+    what:"Confirma el pago y registra la compra automáticamente",
+    why:"En cuanto Redsys confirma el cobro, el sistema registra la inscripción sin intervención manual.",
+    tech:"Edge Function redsys-webhook verifica firma, actualiza cart a 'pagado', crea deals + deal_items.",
+    paths:["tarjeta"] },
+
+  // TRANSFERENCIA
+  { sys:"supabase", fase:"pago",
+    who:"El sistema",
+    what:"Genera el pedido y envía los datos bancarios al usuario por email",
+    why:"El usuario recibe un email con el número de pedido y la cuenta bancaria a la que hacer la transferencia.",
+    tech:"Edge Function transfer-initiate-payment. Cart en estado pendiente_transferencia en shopping_carts.",
+    paths:["transferencia"] },
+
+  { sys:"weweb", fase:"pago",
+    who:"El usuario",
+    what:"Realiza la transferencia bancaria con el número de pedido como referencia",
+    why:"El número de pedido permite a IAI identificar el pago cuando llegue al banco.",
+    tech:"Estado del cart queda en pendiente_transferencia hasta confirmación manual.",
+    paths:["transferencia"] },
+
+  { sys:"supabase", fase:"confirmacion",
+    who:"IAI (administración)",
+    what:"Confirma el ingreso bancario y activa la inscripción",
+    why:"Una persona de IAI verifica el extracto bancario y marca el pago como recibido en el portal.",
+    tech:"Edge Function confirm-transfer actualiza cart a 'pagado', crea deals + deal_items en Supabase.",
+    paths:["transferencia"] },
+
+  // CRÉDITO
+  { sys:"supabase", fase:"pago",
+    who:"El sistema",
+    what:"Descuenta el crédito formativo del saldo del usuario",
+    why:"Si el usuario tiene saldo de crédito formativo suficiente, la inscripción se completa al instante sin pago externo.",
+    tech:"Se verifica credits_granted en user_profiles. Se descuenta y se crea el cart en estado pagado directamente.",
+    paths:["credito"] },
+
+  { sys:"supabase", fase:"confirmacion",
+    who:"El sistema",
+    what:"Registra la inscripción como completada",
+    why:"El saldo ha sido descontado y la inscripción queda confirmada automáticamente.",
+    tech:"deals + deal_items creados con credits_used reflejando las horas consumidas.",
+    paths:["credito"] },
+
+  // COMÚN post-pago
+  { sys:"hubspot", fase:"sincronizacion",
+    who:"El sistema",
+    what:"Registra la venta en el CRM de IAI",
+    why:"Cada inscripción queda registrada en HubSpot para el seguimiento comercial, reporting y facturación.",
+    tech:"n8n workflow Post-Pago crea Deal en HubSpot: etapa qualifiedtobuy → line items → closedwon.",
+    paths:["tarjeta","transferencia","credito"] },
+
+  { sys:"moodle", fase:"entrega",
+    who:"El sistema",
+    what:"Da acceso al usuario al curso en el campus virtual",
+    why:"El alumno queda matriculado automáticamente y puede acceder al curso desde campus.auditoresinternos.es.",
+    tech:"n8n workflow Moodle Enrollment: crea usuario si no existe, enrol_users con el moodle_course_id del producto.",
+    paths:["tarjeta","transferencia","credito"] },
+
+  { sys:"bc", fase:"facturacion",
+    who:"El sistema",
+    what:"Genera la prefactura con el IVA correcto",
+    why:"Business Central crea el documento fiscal aplicando el IVA que corresponde según la ubicación y tipo del comprador.",
+    tech:"n8n consulta iai_reglas_iva en Supabase por línea de producto. PATCH a BC para crear la prefactura.",
+    paths:["tarjeta","transferencia","credito"] },
+
+  { sys:"weweb", fase:"facturacion",
+    who:"El usuario",
+    what:"Ve su nueva inscripción en 'Mis cursos' y puede descargar la factura",
+    why:"El portal refleja el estado actualizado: matrícula activa, pago confirmado y factura disponible.",
+    tech:"Portal WeWeb lee de Supabase: product_registrations, deals, deal_items. Factura desde BC.",
+    paths:["tarjeta","transferencia","credito"] },
+];
+
+const PATH_INFO = {
+  tarjeta:       { icon:"💳", label:"Tarjeta",       color:"#f59e0b", desc:"Pago inmediato — confirmación automática" },
+  transferencia: { icon:"🏦", label:"Transferencia", color:"#3b82f6", desc:"Pago diferido — IAI confirma el ingreso" },
+  credito:       { icon:"🎟️", label:"Crédito formativo", color:"#10b981", desc:"Descuento de saldo — sin pasarela de pago" },
+};
+
+// ─── COMPONENTS ───────────────────────────────────────────────────────────────
+function SystemTag({ sys }) {
+  var color = SYSTEM_COLORS[sys] || "#94a3b8";
+  var label = SYSTEM_LABELS[sys] || sys;
+  return (
+    <span style={{display:"inline-flex",alignItems:"center",gap:3,
+      background:color+"18",border:"1px solid "+color+"44",
+      borderRadius:99,padding:"1px 8px",fontSize:10,color:color,fontWeight:500,
+      fontFamily:"DM Mono, monospace",letterSpacing:"0.02em",whiteSpace:"nowrap"}}>
+      {label}
+    </span>
+  );
+}
+
+function FaseBadge({ fase }) {
+  var c = FASE_COLORS[fase] || FASE_COLORS.descubrimiento;
+  var label = FASE_LABELS[fase] || fase;
+  return (
+    <span style={{display:"inline-block",padding:"2px 8px",borderRadius:99,
+      fontSize:10,fontWeight:500,letterSpacing:"0.03em",whiteSpace:"nowrap",
+      background:c.bg,color:c.text,border:"1px solid "+c.border}}>
+      {label}
+    </span>
+  );
+}
+
+function Step({ step, idx, total, techMode, isActive, onToggle }) {
+  var fc = FASE_COLORS[step.fase] || FASE_COLORS.descubrimiento;
+  var sc = SYSTEM_COLORS[step.sys] || "#94a3b8";
+  var isPathOnly = step.paths.length === 1;
+  var pathColor = isPathOnly ? PATH_INFO[step.paths[0]].color : null;
+
+  return (
+    <div style={{position:"relative"}}>
+      {/* connector */}
+      {idx > 0 && (
+        <div style={{height:20,marginLeft:20,display:"flex",alignItems:"center"}}>
+          <div style={{width:2,height:"100%",background:"#e2e8f0",borderRadius:1}}/>
+        </div>
+      )}
+
+      <div className="step-card"
+        onClick={function(){onToggle(idx);}}
+        style={{
+          background:"white",
+          border:"1px solid "+(isActive?sc+"60":"#e2e8f0"),
+          borderLeft:"3px solid "+(pathColor||sc),
+          borderRadius:12,padding:"14px 16px",
+          display:"flex",gap:12,alignItems:"flex-start",
+          boxShadow:isActive?"0 2px 12px rgba(0,0,0,.08)":"0 1px 3px rgba(0,0,0,.04)",
+        }}>
+
+        {/* Step number */}
+        <div style={{
+          width:32,height:32,borderRadius:99,flexShrink:0,
+          background:isActive?sc:"#f1f5f9",
+          border:"2px solid "+(isActive?sc:"#e2e8f0"),
+          display:"flex",alignItems:"center",justifyContent:"center",
+          fontSize:12,fontWeight:600,
+          color:isActive?"white":"#94a3b8",
+          transition:"all .2s",
+          marginTop:1,
+        }}>
+          {idx+1}
+        </div>
+
+        <div style={{flex:1,minWidth:0}}>
+          {/* Header */}
+          <div style={{display:"flex",alignItems:"flex-start",gap:8,flexWrap:"wrap",marginBottom:5}}>
+            <span style={{fontSize:13,fontWeight:600,color:"#1e293b",lineHeight:1.35,flex:1,minWidth:100}}>
+              <span style={{color:"#94a3b8",fontWeight:400,marginRight:4}}>{step.who} —</span>
+              {step.what}
+            </span>
+            <FaseBadge fase={step.fase}/>
+            {isPathOnly && (
+              <span style={{display:"inline-block",padding:"2px 8px",borderRadius:99,
+                fontSize:10,fontWeight:500,whiteSpace:"nowrap",
+                background:pathColor+"18",color:pathColor,border:"1px solid "+pathColor+"44"}}>
+                {PATH_INFO[step.paths[0]].icon} solo {PATH_INFO[step.paths[0]].label}
+              </span>
+            )}
+          </div>
+
+          {/* Functional description */}
+          <p style={{fontSize:13,color:"#475569",lineHeight:1.6,marginBottom:6}}>
+            {step.why}
+          </p>
+
+          {/* System tag */}
+          <SystemTag sys={step.sys}/>
+
+          {/* Tech detail — only when techMode or expanded */}
+          {(techMode || isActive) && step.tech && (
+            <div style={{marginTop:10,padding:"8px 12px",background:"#f8fafc",
+              borderRadius:8,border:"1px solid #e2e8f0",animation:"fadeIn .2s ease"}}>
+              <div style={{fontSize:10,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",
+                letterSpacing:"0.06em",marginBottom:3,fontFamily:"DM Mono, monospace"}}>
+                Detalle técnico
+              </div>
+              <p style={{fontSize:12,color:"#64748b",lineHeight:1.55,fontFamily:"DM Mono, monospace"}}>
+                {step.tech}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Expand arrow */}
+        <div style={{color:"#cbd5e1",fontSize:14,flexShrink:0,marginTop:6,
+          transform:isActive?"rotate(180deg)":"none",transition:"transform .2s"}}>▾</div>
+      </div>
+    </div>
+  );
+}
+
+function PhaseHeader({ fase, isFirst }) {
+  var c = FASE_COLORS[fase] || FASE_COLORS.descubrimiento;
+  var label = FASE_LABELS[fase] || fase;
+  return (
+    <div style={{display:"flex",alignItems:"center",gap:10,
+      margin:isFirst?"0 0 12px":"24px 0 12px"}}>
+      <div style={{width:8,height:8,borderRadius:99,background:c.text,flexShrink:0}}/>
+      <span style={{fontSize:11,fontWeight:600,color:c.text,
+        fontFamily:"DM Mono, monospace",textTransform:"uppercase",letterSpacing:"0.07em"}}>
+        {label}
+      </span>
+      <div style={{flex:1,height:1,background:"#e2e8f0"}}/>
+    </div>
+  );
+}
+
+// ─── APP ──────────────────────────────────────────────────────────────────────
+function App() {
+  var pa = useState("tarjeta"); var path = pa[0]; var setPath = pa[1];
+  var ta = useState(false); var techMode = ta[0]; var setTechMode = ta[1];
+  var aa = useState(null); var activeStep = aa[0]; var setActiveStep = aa[1];
+
+  function toggleStep(idx) { setActiveStep(activeStep === idx ? null : idx); }
+
+  var steps = STEPS.filter(function(s){
+    return s.paths.indexOf(path) >= 0;
+  });
+
+  var lastFase = null;
+
+  return (
+    <div style={{background:"#f8fafc",minHeight:"100vh",color:"#1e293b"}}>
+
+      {/* ── HEADER ── */}
+      <div style={{background:"white",borderBottom:"1px solid #e2e8f0",padding:"16px 20px",position:"sticky",top:0,zIndex:10}}>
+        <div style={{maxWidth:720,margin:"0 auto"}}>
+          <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}>
+            <div>
+              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4,flexWrap:"wrap"}}>
+                <a href="index.html" className="back-link">← Todos los procesos</a>
+                <span style={{color:"#e2e8f0"}}>·</span>
+                <span style={{fontSize:11,color:"#94a3b8",fontFamily:"DM Mono, monospace"}}>AC-12</span>
+              </div>
+              <h1 style={{fontSize:20,fontWeight:600,color:"#0f172a",letterSpacing:"-0.02em"}}>
+                🎓 Proceso de Matrícula
+              </h1>
+              <p style={{fontSize:13,color:"#64748b",marginTop:2}}>
+                Desde que el usuario encuentra un curso hasta que accede al campus y recibe la factura
+              </p>
+            </div>
+
+            {/* Tech toggle */}
+            <button className="toggle-btn"
+              onClick={function(){setTechMode(!techMode);}}
+              style={{
+                padding:"7px 14px",borderRadius:8,fontSize:12,fontWeight:500,
+                background:techMode?"#1e293b":"#f1f5f9",
+                color:techMode?"white":"#64748b",
+                border:"1px solid "+(techMode?"#1e293b":"#e2e8f0"),
+                flexShrink:0,marginTop:2,
+              }}>
+              {techMode ? "⚙️ Técnico" : "👁 Funcional"}
+            </button>
+          </div>
+
+          {/* Payment path */}
+          <div style={{display:"flex",alignItems:"center",gap:8,marginTop:12,flexWrap:"wrap"}}>
+            <span style={{fontSize:12,color:"#94a3b8",flexShrink:0}}>Vía de pago:</span>
+            <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+              {Object.entries(PATH_INFO).map(function(e){
+                var key=e[0]; var p=e[1];
+                var active=path===key;
+                return (
+                  <button key={key} className="toggle-btn"
+                    onClick={function(){setPath(key);setActiveStep(null);}}
+                    style={{padding:"5px 12px",borderRadius:8,fontSize:12,fontWeight:active?600:400,
+                      background:active?p.color:"white",color:active?"white":"#64748b",
+                      border:"1px solid "+(active?p.color:"#e2e8f0")}}>
+                    {p.icon} {p.label}
+                  </button>
+                );
+              })}
+            </div>
+            {path !== "tarjeta" && (
+              <span style={{fontSize:12,color:PATH_INFO[path].color,marginLeft:4}}>
+                — {PATH_INFO[path].desc}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ── FLOW ── */}
+      <div style={{maxWidth:720,margin:"0 auto",padding:"24px 16px"}}>
+
+        {steps.map(function(step, idx){
+          var showHeader = step.fase !== lastFase;
+          lastFase = step.fase;
+          return (
+            <div key={idx}>
+              {showHeader && <PhaseHeader fase={step.fase} isFirst={idx===0}/>}
+              <Step step={step} idx={idx} total={steps.length}
+                techMode={techMode} isActive={activeStep===idx} onToggle={toggleStep}/>
+            </div>
+          );
+        })}
+
+        {/* End */}
+        <div style={{height:20,marginLeft:20}}>
+          <div style={{width:2,height:"100%",background:"#e2e8f0"}}/>
+        </div>
+        <div style={{display:"flex",gap:12,alignItems:"center",
+          background:"white",border:"1px solid #a7f3d0",borderLeft:"3px solid #10b981",
+          borderRadius:12,padding:"14px 16px",
+          boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
+          <div style={{width:32,height:32,borderRadius:99,background:"#10b981",
+            display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>
+            ✓
+          </div>
+          <div>
+            <div style={{fontSize:13,fontWeight:600,color:"#065f46"}}>Proceso completado</div>
+            <div style={{fontSize:12,color:"#6b7280",marginTop:1}}>
+              El usuario tiene acceso al curso · La compra está registrada · La factura está disponible
+            </div>
+          </div>
+        </div>
+
+        {/* Legend */}
+        <div style={{marginTop:32,padding:"16px",background:"white",borderRadius:12,border:"1px solid #e2e8f0"}}>
+          <div style={{fontSize:11,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",
+            letterSpacing:"0.06em",marginBottom:12,fontFamily:"DM Mono, monospace"}}>
+            Sistemas involucrados
+          </div>
+          <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+            {["usuario","weweb","redsys","supabase","hubspot","moodle","bc"].map(function(s){
+              return <SystemTag key={s} sys={s}/>;
+            })}
+          </div>
+          <div style={{marginTop:12,fontSize:12,color:"#94a3b8",lineHeight:1.6}}>
+            Haz clic en cualquier paso para ver más detalle.
+            Activa <strong style={{color:"#1e293b"}}>modo técnico</strong> para ver los sistemas y procesos de automatización involucrados en cada paso.
+          </div>
+        </div>
+
+        <div style={{height:40}}/>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+</script>
+</body>
+</html>

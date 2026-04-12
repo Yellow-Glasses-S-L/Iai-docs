@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IAI · Alta de Socios</title>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{min-height:100%;background:#f8fafc;font-family:'DM Sans',system-ui,sans-serif}
+    #root{min-height:100%}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+    .step-card{cursor:pointer;transition:box-shadow .15s,transform .15s}
+    .step-card:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
+    .toggle-btn{cursor:pointer;transition:all .15s;border:none;font-family:'DM Sans',sans-serif}
+    .toggle-btn:hover{opacity:.85}
+    ::-webkit-scrollbar{width:4px}
+    ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:2px}
+    .back-link{text-decoration:none;color:#64748b;font-size:13px;display:inline-flex;align-items:center;gap:5px}
+    .back-link:hover{color:#334155}
+    @media(max-width:767px){.desktop-only{display:none!important}}
+    @media(min-width:768px){.mobile-only{display:none!important}}
+  </style>
+
+<style>
+.iai-nav{position:sticky;top:0;z-index:999;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.iai-nav-inner{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:24px;height:44px;overflow-x:auto}
+.iai-nav-logo{display:flex;align-items:center;gap:7px;text-decoration:none;font-size:12px;font-weight:600;color:#0f172a;white-space:nowrap;flex-shrink:0;font-family:'DM Mono',monospace}
+.iai-nav-dot{width:8px;height:8px;border-radius:99px;background:#f97316;flex-shrink:0}
+.iai-nav-links{display:flex;gap:2px;align-items:center}
+.iai-nav-links a{text-decoration:none;font-size:12px;color:#64748b;padding:4px 10px;border-radius:6px;white-space:nowrap;transition:background .15s,color .15s}
+.iai-nav-links a:hover{background:#f1f5f9;color:#0f172a}
+.iai-nav-links a.active{background:#fff7ed;color:#f97316;font-weight:500}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  var cur=window.location.pathname.split('/').pop()||'index.html';
+  document.querySelectorAll('.iai-nav-links a').forEach(function(a){
+    if(a.getAttribute('href')===cur)a.classList.add('active');
+  });
+});
+</script>
+
+</head>
+<body>
+<nav class="iai-nav">
+  <div class="iai-nav-inner">
+    <a class="iai-nav-logo" href="index.html">
+      <span class="iai-nav-dot"></span>
+      <span>IAI · Documentación</span>
+    </a>
+    <div class="iai-nav-links">
+      <a href="index.html">Inicio</a>
+      <a href="alta-socios.html">Alta socios</a>
+      <a href="acceso-portal.html">Acceso portal</a>
+      <a href="gestion-socios.html">Gestión socios</a>
+      <a href="ciclo-producto.html">Productos</a>
+      <a href="inscripciones-aforo-diplomas.html">Inscripciones</a>
+      <a href="administracion-pagos.html">Pagos</a>
+      <a href="consultas-reportes-notificaciones.html">Consultas</a>
+      <a href="privacidad-etica.html">Privacidad</a>
+      <a href="renovacion-cuota.html">Renovación</a>
+      <a href="estado-proyecto.html">Estado</a>
+      <a href="inventario.html">Inventario</a>
+    </div>
+  </div>
+</nav>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const SYS_COLOR = {
+  usuario:"#64748b", wordpress:"#3b82f6", weweb:"#8b5cf6",
+  supabase:"#10b981", n8n:"#ef4444", hubspot:"#f97316",
+  bc:"#6366f1", iai_admin:"#f43f5e",
+};
+const SYS_LABEL = {
+  usuario:"Usuario", wordpress:"Web pública", weweb:"Portal del socio",
+  supabase:"Base de datos", n8n:"Automatización", hubspot:"CRM",
+  bc:"Facturación", iai_admin:"IAI (gestión interna)",
+};
+
+const FASE_STYLES = {
+  registro:    {bg:"#f1f5f9",text:"#475569",border:"#e2e8f0",label:"Registro web"},
+  solicitud:   {bg:"#eff6ff",text:"#1d4ed8",border:"#bfdbfe",label:"Solicitud de membresía"},
+  aprobacion:  {bg:"#fff1f2",text:"#9f1239",border:"#fecdd3",label:"Aprobación por IAI"},
+  activacion:  {bg:"#ecfdf5",text:"#065f46",border:"#a7f3d0",label:"Activación de membresía"},
+  prefactura:  {bg:"#fffbeb",text:"#92400e",border:"#fde68a",label:"Número de pedido"},
+  pago:        {bg:"#f5f3ff",text:"#5b21b6",border:"#ddd6fe",label:"Pago por transferencia"},
+  facturacion: {bg:"#eef2ff",text:"#3730a3",border:"#c7d2fe",label:"Factura definitiva"},
+  gestion:     {bg:"#ecfeff",text:"#155e75",border:"#a5f3fc",label:"Gestión de miembros"},
+};
+
+const STEPS = [
+  // REGISTRO
+  { sys:"wordpress", fase:"registro",
+    who:"El futuro socio",
+    what:"Accede a la web de IAI y hace clic en 'Iniciar sesión'",
+    why:"La web pública de IAI dirige a los usuarios interesados en hacerse socios hacia el portal.",
+    tech:"auditoresinternos.es redirige a portal.auditoresinternos.es (WeWeb + Supabase Auth).",
+    paths:["individual","corporativo"] },
+
+  { sys:"weweb", fase:"registro",
+    who:"El futuro socio",
+    what:"Crea su cuenta de usuario en el portal",
+    why:"Cualquier persona puede registrarse gratuitamente. Tener cuenta no implica ser socio todavía.",
+    tech:"Supabase Auth crea el usuario. Edge Fn signup-or-notify crea user_profiles con membership_status vacío.",
+    paths:["individual","corporativo"] },
+
+  { sys:"hubspot", fase:"registro",
+    who:"El sistema",
+    what:"Registra al nuevo usuario en el CRM de IAI",
+    why:"IAI tiene constancia del nuevo usuario desde el primer momento, aunque aún no sea socio.",
+    tech:"n8n workflow detecta nuevo user_profile y crea Contacto en HubSpot.",
+    paths:["individual","corporativo"] },
+
+  // SOLICITUD
+  { sys:"weweb", fase:"solicitud",
+    who:"El futuro socio",
+    what:"Rellena el formulario de solicitud de membresía",
+    why:"Indica sus datos personales y el tipo de membresía que solicita. Si es empresa, también los datos corporativos y el tramo de socios que necesita.",
+    tech:"membership_applications: member_type, membership_tier, product_id, datos personales y de empresa.",
+    paths:["individual","corporativo"] },
+
+  { sys:"weweb", fase:"solicitud",
+    who:"El futuro socio corporativo",
+    what:"Selecciona el tramo de socios de su empresa",
+    why:"El tramo determina cuántos empleados pueden ser socios y el precio anual de la membresía (1-10, 11-20, 21-50...).",
+    tech:"catalog_membership_tiers: min_members, max_members, annual_fee, product_id vinculado a HubSpot.",
+    paths:["corporativo"] },
+
+  { sys:"supabase", fase:"solicitud",
+    who:"El sistema",
+    what:"Guarda la solicitud y notifica a IAI",
+    why:"IAI recibe un aviso de que hay una nueva solicitud pendiente de revisar.",
+    tech:"membership_applications con status=pending. Edge Fn send-ticket-notification al equipo IAI.",
+    paths:["individual","corporativo"] },
+
+  // APROBACIÓN
+  { sys:"iai_admin", fase:"aprobacion",
+    who:"El equipo de IAI",
+    what:"Revisa la solicitud en el panel de administración",
+    why:"IAI verifica los datos del solicitante antes de aprobar la membresía.",
+    tech:"Panel admin en WeWeb. Lectura de membership_applications con todos los campos del solicitante.",
+    paths:["individual","corporativo"] },
+
+  { sys:"iai_admin", fase:"aprobacion",
+    who:"El equipo de IAI",
+    what:"Aprueba la membresía y asigna el número de socio",
+    why:"Con la aprobación, IAI da luz verde al alta. Se genera automáticamente el número de socio.",
+    tech:"membership_applications: status=approved, resulting_member_number, reviewed_at, reviewed_by.",
+    paths:["individual","corporativo"] },
+
+  { sys:"supabase", fase:"aprobacion",
+    who:"El sistema",
+    what:"Crea el registro de empresa y nombra al representante",
+    why:"Para socios corporativos, se crea la empresa en el sistema y el solicitante queda asignado como representante con todos los permisos de gestión.",
+    tech:"Edge Fn create-company. company_representatives con can_manage_members, can_approve_training, can_view_invoices, can_make_purchases.",
+    paths:["corporativo"] },
+
+  // ACTIVACIÓN
+  { sys:"weweb", fase:"activacion",
+    who:"El nuevo socio",
+    what:"Ya tiene acceso completo al portal como socio activo",
+    why:"La membresía se activa en el momento de la aprobación, antes del pago. IAI confía en el socio.",
+    tech:"user_profiles: member_number, join_date, membership_start_date, membership_end_date.",
+    paths:["individual","corporativo"] },
+
+  { sys:"weweb", fase:"activacion",
+    who:"El nuevo socio",
+    what:"Acepta el código de ética de IAI al entrar al portal por primera vez",
+    why:"Todos los socios deben aceptar el código de ética de IAI. Aparece como un popup obligatorio la primera vez que acceden al portal con membresía activa — no pueden navegar sin aceptarlo.",
+    tech:"🚧 EN CONSTRUCCIÓN — Modal bloqueante en WeWeb: verifica ethics_accepted_at IS NULL → popup con texto completo y scroll obligatorio → UPDATE user_profiles: ethics_accepted_at, ethics_version.",
+    paths:["individual","corporativo"],
+    wip:true },
+
+  { sys:"hubspot", fase:"activacion",
+    who:"El sistema",
+    what:"Actualiza el perfil del socio en el CRM",
+    why:"El registro en HubSpot queda actualizado con el tipo de membresía, número de socio y fechas. Para empresas, se crea también el registro de la compañía.",
+    tech:"n8n actualiza Contacto en HubSpot. Si corporativo, crea/actualiza Company y asocia el contacto.",
+    paths:["individual","corporativo"] },
+
+  // PREFACTURA
+  { sys:"bc", fase:"prefactura",
+    who:"El sistema",
+    what:"Genera el número de pedido y lo envía al socio por email",
+    why:"El socio recibe un documento con el importe de la cuota anual, el número de pedido y los datos bancarios para hacer la transferencia.",
+    tech:"n8n crea shopping_cart + deal + deal_items. Consulta iai_reglas_iva. BC genera pedido pendiente. Email con número de pedido.",
+    paths:["individual","corporativo"] },
+
+  // PAGO
+  { sys:"usuario", fase:"pago",
+    who:"El socio",
+    what:"Realiza la transferencia bancaria con el número de pedido como referencia",
+    why:"Las cuotas de socio solo se pueden pagar por transferencia. El número de pedido es imprescindible para que IAI identifique el pago.",
+    tech:"No hay pasarela de pago. El cart permanece en estado pendiente_transferencia hasta confirmación.",
+    paths:["individual","corporativo"] },
+
+  { sys:"iai_admin", fase:"pago",
+    who:"El equipo de IAI",
+    what:"Confirma el ingreso y cierra el pedido",
+    why:"Una vez verificado el pago en el banco, IAI lo marca como recibido en el sistema.",
+    tech:"Admin actualiza el deal en Supabase y HubSpot a closedwon. BC registra la operación como pagada.",
+    paths:["individual","corporativo"] },
+
+  // FACTURACIÓN
+  { sys:"bc", fase:"facturacion",
+    who:"El sistema",
+    what:"Emite la factura definitiva automáticamente",
+    why:"Cuando Business Central procesa el pago, genera la factura con todos los datos fiscales correctos.",
+    tech:"n8n workflow cron vigila BC periódicamente. Cuando detecta la factura generada, la envía al socio por email.",
+    paths:["individual","corporativo"] },
+
+  { sys:"usuario", fase:"facturacion",
+    who:"El socio",
+    what:"Recibe la factura por email y puede descargarla desde el portal",
+    why:"La factura queda disponible en el área de facturación del portal para futuras descargas.",
+    tech:"Portal WeWeb lee desde Supabase deals + BC invoice reference.",
+    paths:["individual","corporativo"] },
+
+  // GESTIÓN CORPORATIVA
+  { sys:"weweb", fase:"gestion",
+    who:"El representante de empresa",
+    what:"Accede al panel de gestión de su empresa",
+    why:"Puede ver cuántos socios tiene activos, las horas formativas disponibles y el límite de su tramo contratado.",
+    tech:"Panel corporativo WeWeb. Lectura de company_members, catalog_membership_tiers.max_members.",
+    paths:["corporativo"] },
+
+  { sys:"weweb", fase:"gestion",
+    who:"El representante de empresa",
+    what:"Invita a empleados para que sean socios de la empresa",
+    why:"Cada empleado invitado recibirá un email para completar su registro. El sistema controla que no se supere el número de socios del tramo.",
+    tech:"Edge Fn bulk-invite crea company_invitations + send-invitation-email por cada invitado.",
+    paths:["corporativo"] },
+
+  { sys:"usuario", fase:"gestion",
+    who:"El empleado invitado",
+    what:"Acepta la invitación y queda vinculado como socio de la empresa",
+    why:"Al aceptar, el empleado obtiene sus credenciales de socio bajo el paraguas de la empresa.",
+    tech:"Edge Fn accept-invitation valida token, crea company_members.",
+    paths:["corporativo"] },
+
+  { sys:"weweb", fase:"gestion",
+    who:"El representante de empresa",
+    what:"Puede dar de baja a socios de la empresa cuando sea necesario",
+    why:"Si un empleado deja la empresa, el representante puede retirarle la membresía corporativa desde el portal.",
+    tech:"Edge Fn remove-corporate-member. company_member_removal_requests + user_company_history.",
+    paths:["corporativo"] },
+];
+
+function SystemTag({ sys }) {
+  var color = SYS_COLOR[sys]||"#94a3b8"; var label = SYS_LABEL[sys]||sys;
+  return <span style={{display:"inline-flex",alignItems:"center",gap:3,background:color+"18",border:"1px solid "+color+"44",borderRadius:99,padding:"1px 8px",fontSize:10,color:color,fontWeight:500,fontFamily:"DM Mono,monospace",letterSpacing:"0.02em",whiteSpace:"nowrap"}}>{label}</span>;
+}
+
+function FaseBadge({ fase }) {
+  var c = FASE_STYLES[fase]||FASE_STYLES.registro;
+  return <span style={{display:"inline-block",padding:"2px 8px",borderRadius:99,fontSize:10,fontWeight:500,letterSpacing:"0.03em",whiteSpace:"nowrap",background:c.bg,color:c.text,border:"1px solid "+c.border}}>{c.label}</span>;
+}
+
+function PhaseHeader({ fase, isFirst }) {
+  var c = FASE_STYLES[fase]||FASE_STYLES.registro;
+  return (
+    <div style={{display:"flex",alignItems:"center",gap:10,margin:isFirst?"0 0 12px":"24px 0 12px"}}>
+      <div style={{width:8,height:8,borderRadius:99,background:c.text,flexShrink:0}}/>
+      <span style={{fontSize:11,fontWeight:600,color:c.text,fontFamily:"DM Mono,monospace",textTransform:"uppercase",letterSpacing:"0.07em"}}>{c.label}</span>
+      <div style={{flex:1,height:1,background:"#e2e8f0"}}/>
+    </div>
+  );
+}
+
+function Step({ step, idx, techMode, isActive, onToggle, memberType }) {
+  var sc = SYS_COLOR[step.sys]||"#94a3b8";
+  var isTypeOnly = step.paths.length===1;
+  var typeColor = isTypeOnly ? (step.paths[0]==="corporativo"?"#06b6d4":"#8b5cf6") : null;
+  var typeLabel = isTypeOnly ? (step.paths[0]==="corporativo"?"🏢 solo empresas":"👤 solo individual") : null;
+  var wipBorder = step.wip ? "#fbbf24" : null;
+
+  return (
+    <div style={{position:"relative"}}>
+      {idx>0 && (
+        <div style={{height:20,marginLeft:20}}>
+          <div style={{width:2,height:"100%",background:"#e2e8f0",borderRadius:1}}/>
+        </div>
+      )}
+      <div className="step-card" onClick={function(){onToggle(idx);}}
+        style={{background:step.wip?"#fffbeb":"white",
+          border:"1px solid "+(isActive?sc+"60":(wipBorder||"#e2e8f0")),
+          borderLeft:"3px solid "+(wipBorder||typeColor||sc),borderRadius:12,padding:"14px 16px",
+          display:"flex",gap:12,alignItems:"flex-start",
+          boxShadow:isActive?"0 2px 12px rgba(0,0,0,.08)":"0 1px 3px rgba(0,0,0,.04)"}}>
+
+        <div style={{width:32,height:32,borderRadius:99,flexShrink:0,
+          background:isActive?sc:(step.wip?"#fef3c7":"#f1f5f9"),
+          border:"2px solid "+(isActive?sc:(step.wip?"#fbbf24":"#e2e8f0")),
+          display:"flex",alignItems:"center",justifyContent:"center",
+          fontSize:step.wip?14:12,fontWeight:600,
+          color:isActive?"white":(step.wip?"#92400e":"#94a3b8"),
+          transition:"all .2s",marginTop:1}}>
+          {step.wip?"🚧":idx+1}
+        </div>
+
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{display:"flex",alignItems:"flex-start",gap:8,flexWrap:"wrap",marginBottom:5}}>
+            <span style={{fontSize:13,fontWeight:600,color:"#1e293b",lineHeight:1.35,flex:1,minWidth:100}}>
+              <span style={{color:"#94a3b8",fontWeight:400,marginRight:4}}>{step.who} —</span>
+              {step.what}
+            </span>
+            <FaseBadge fase={step.fase}/>
+            {isTypeOnly && (
+              <span style={{display:"inline-block",padding:"2px 8px",borderRadius:99,fontSize:10,fontWeight:500,whiteSpace:"nowrap",background:typeColor+"18",color:typeColor,border:"1px solid "+typeColor+"44"}}>{typeLabel}</span>
+            )}
+            {step.wip&&<span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"2px 8px",borderRadius:99,fontSize:10,fontWeight:500,background:"#fef3c7",color:"#92400e",border:"1px solid #fde68a",whiteSpace:"nowrap"}}>🚧 En construcción</span>}
+          </div>
+          <p style={{fontSize:13,color:"#475569",lineHeight:1.6,marginBottom:6}}>{step.why}</p>
+          <SystemTag sys={step.sys}/>
+          {(techMode||isActive) && step.tech && (
+            <div style={{marginTop:10,padding:"8px 12px",
+              background:step.wip?"#fef9c3":"#f8fafc",
+              borderRadius:8,border:"1px solid "+(step.wip?"#fde68a":"#e2e8f0"),
+              animation:"fadeIn .2s ease"}}>
+              <div style={{fontSize:10,fontWeight:600,color:step.wip?"#92400e":"#94a3b8",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:3,fontFamily:"DM Mono,monospace"}}>
+                {step.wip?"Estado técnico":"Detalle técnico"}
+              </div>
+              <p style={{fontSize:12,color:step.wip?"#78350f":"#64748b",lineHeight:1.55,fontFamily:"DM Mono,monospace"}}>{step.tech}</p>
+            </div>
+          )}
+        </div>
+        <div style={{color:"#cbd5e1",fontSize:14,flexShrink:0,marginTop:6,transform:isActive?"rotate(180deg)":"none",transition:"transform .2s"}}>▾</div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  var ma = useState("ambos"); var memberType = ma[0]; var setMemberType = ma[1];
+  var ta = useState(false); var techMode = ta[0]; var setTechMode = ta[1];
+  var aa = useState(null); var activeStep = aa[0]; var setActiveStep = aa[1];
+
+  function toggle(idx){ setActiveStep(activeStep===idx?null:idx); }
+
+  var steps = STEPS.filter(function(s){
+    if(memberType==="ambos") return true;
+    return s.paths.indexOf(memberType)>=0;
+  });
+
+  var lastFase = null;
+
+  var memberOptions = [
+    {key:"ambos",      icon:"👥", label:"Ambos",       color:"#64748b"},
+    {key:"individual", icon:"👤", label:"Individual",  color:"#8b5cf6"},
+    {key:"corporativo",icon:"🏢", label:"Empresa",     color:"#06b6d4"},
+  ];
+
+  return (
+    <div style={{background:"#f8fafc",minHeight:"100vh",color:"#1e293b"}}>
+
+      <div style={{background:"white",borderBottom:"1px solid #e2e8f0",padding:"16px 20px",position:"sticky",top:0,zIndex:10}}>
+        <div style={{maxWidth:720,margin:"0 auto"}}>
+          <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}>
+            <div>
+              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4,flexWrap:"wrap"}}>
+                <a href="index.html" className="back-link">← Todos los procesos</a>
+                <span style={{color:"#e2e8f0"}}>·</span>
+                <span style={{fontSize:11,color:"#94a3b8",fontFamily:"DM Mono,monospace"}}>AC-01 · AC-02 · AC-03</span>
+              </div>
+              <h1 style={{fontSize:20,fontWeight:600,color:"#0f172a",letterSpacing:"-0.02em"}}>🏛️ Alta de Socios</h1>
+              <p style={{fontSize:13,color:"#64748b",marginTop:2}}>Desde el registro como usuario hasta la activación de membresía y gestión de miembros</p>
+            </div>
+            <button className="toggle-btn" onClick={function(){setTechMode(!techMode);}}
+              style={{padding:"7px 14px",borderRadius:8,fontSize:12,fontWeight:500,
+                background:techMode?"#1e293b":"#f1f5f9",color:techMode?"white":"#64748b",
+                border:"1px solid "+(techMode?"#1e293b":"#e2e8f0"),flexShrink:0,marginTop:2}}>
+              {techMode?"⚙️ Técnico":"👁 Funcional"}
+            </button>
+          </div>
+
+          <div style={{display:"flex",alignItems:"center",gap:8,marginTop:12,flexWrap:"wrap"}}>
+            <span style={{fontSize:12,color:"#94a3b8",flexShrink:0}}>Tipo de socio:</span>
+            <div style={{display:"flex",gap:6}}>
+              {memberOptions.map(function(o){
+                var active=memberType===o.key;
+                return (
+                  <button key={o.key} className="toggle-btn"
+                    onClick={function(){setMemberType(o.key);setActiveStep(null);}}
+                    style={{padding:"5px 12px",borderRadius:8,fontSize:12,fontWeight:active?600:400,
+                      background:active?o.color:"white",color:active?"white":"#64748b",
+                      border:"1px solid "+(active?o.color:"#e2e8f0")}}>
+                    {o.icon} {o.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{maxWidth:720,margin:"0 auto",padding:"24px 16px"}}>
+        {steps.map(function(step, idx){
+          var showHeader = step.fase!==lastFase;
+          lastFase = step.fase;
+          return (
+            <div key={idx}>
+              {showHeader && <PhaseHeader fase={step.fase} isFirst={idx===0}/>}
+              <Step step={step} idx={idx} techMode={techMode} isActive={activeStep===idx} onToggle={toggle}/>
+            </div>
+          );
+        })}
+
+        <div style={{height:20,marginLeft:20}}>
+          <div style={{width:2,height:"100%",background:"#e2e8f0"}}/>
+        </div>
+        <div style={{display:"flex",gap:12,alignItems:"center",background:"white",
+          border:"1px solid #a7f3d0",borderLeft:"3px solid #10b981",borderRadius:12,padding:"14px 16px",
+          boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
+          <div style={{width:32,height:32,borderRadius:99,background:"#10b981",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0,color:"white"}}>✓</div>
+          <div>
+            <div style={{fontSize:13,fontWeight:600,color:"#065f46"}}>Alta completada</div>
+            <div style={{fontSize:12,color:"#6b7280",marginTop:1}}>
+              {memberType==="corporativo"
+                ?"Socio activo · Factura emitida · Empresa registrada · Miembros gestionables desde el portal"
+                :memberType==="individual"
+                ?"Socio activo · Número de socio asignado · Factura emitida"
+                :"Socio activo · Número de socio asignado · Factura emitida · (Empresa: miembros activos y gestionables)"}
+            </div>
+          </div>
+        </div>
+
+        <div style={{marginTop:32,padding:"16px",background:"white",borderRadius:12,border:"1px solid #e2e8f0"}}>
+          <div style={{fontSize:11,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:12,fontFamily:"DM Mono,monospace"}}>Sistemas involucrados</div>
+          <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+            {Object.keys(SYS_COLOR).map(function(s){ return <SystemTag key={s} sys={s}/>; })}
+          </div>
+          <div style={{marginTop:12,fontSize:12,color:"#94a3b8",lineHeight:1.6}}>
+            Haz clic en cualquier paso para ver más detalle. Activa <strong style={{color:"#1e293b"}}>modo técnico</strong> para ver los sistemas y automatizaciones implicadas.
+          </div>
+        </div>
+        <div style={{height:40}}/>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+</script>
+</body>
+</html>

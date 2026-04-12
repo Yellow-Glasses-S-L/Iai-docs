@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IAI · Inscripciones, Aforo y Diplomas</title>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{min-height:100%;background:#f8fafc;font-family:'DM Sans',system-ui,sans-serif}
+    #root{min-height:100%}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+    .step-card{cursor:pointer;transition:box-shadow .15s,transform .15s}
+    .step-card:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
+    .btn{cursor:pointer;transition:all .15s;border:none;font-family:'DM Sans',sans-serif}
+    .btn:hover{opacity:.85}
+    ::-webkit-scrollbar{width:4px}
+    ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:2px}
+    .back-link{text-decoration:none;color:#64748b;font-size:13px;display:inline-flex;align-items:center;gap:5px}
+    .back-link:hover{color:#334155}
+  </style>
+
+<style>
+.iai-nav{position:sticky;top:0;z-index:999;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.iai-nav-inner{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:24px;height:44px;overflow-x:auto}
+.iai-nav-logo{display:flex;align-items:center;gap:7px;text-decoration:none;font-size:12px;font-weight:600;color:#0f172a;white-space:nowrap;flex-shrink:0;font-family:'DM Mono',monospace}
+.iai-nav-dot{width:8px;height:8px;border-radius:99px;background:#f97316;flex-shrink:0}
+.iai-nav-links{display:flex;gap:2px;align-items:center}
+.iai-nav-links a{text-decoration:none;font-size:12px;color:#64748b;padding:4px 10px;border-radius:6px;white-space:nowrap;transition:background .15s,color .15s}
+.iai-nav-links a:hover{background:#f1f5f9;color:#0f172a}
+.iai-nav-links a.active{background:#fff7ed;color:#f97316;font-weight:500}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  var cur=window.location.pathname.split('/').pop()||'index.html';
+  document.querySelectorAll('.iai-nav-links a').forEach(function(a){
+    if(a.getAttribute('href')===cur)a.classList.add('active');
+  });
+});
+</script>
+
+</head>
+<body>
+<nav class="iai-nav">
+  <div class="iai-nav-inner">
+    <a class="iai-nav-logo" href="index.html">
+      <span class="iai-nav-dot"></span>
+      <span>IAI · Documentación</span>
+    </a>
+    <div class="iai-nav-links">
+      <a href="index.html">Inicio</a>
+      <a href="alta-socios.html">Alta socios</a>
+      <a href="acceso-portal.html">Acceso portal</a>
+      <a href="gestion-socios.html">Gestión socios</a>
+      <a href="ciclo-producto.html">Productos</a>
+      <a href="inscripciones-aforo-diplomas.html">Inscripciones</a>
+      <a href="administracion-pagos.html">Pagos</a>
+      <a href="consultas-reportes-notificaciones.html">Consultas</a>
+      <a href="privacidad-etica.html">Privacidad</a>
+      <a href="renovacion-cuota.html">Renovación</a>
+      <a href="estado-proyecto.html">Estado</a>
+      <a href="inventario.html">Inventario</a>
+    </div>
+  </div>
+</nav>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const SYS_COLOR = {
+  usuario:"#64748b", weweb:"#8b5cf6", supabase:"#10b981",
+  n8n:"#ef4444", hubspot:"#f97316", moodle:"#06b6d4", iai_admin:"#f43f5e",
+};
+const SYS_LABEL = {
+  usuario:"Usuario", weweb:"Portal del socio", supabase:"Base de datos",
+  n8n:"Automatización", hubspot:"CRM", moodle:"Campus virtual", iai_admin:"IAI (gestión interna)",
+};
+
+const FASE_STYLES = {
+  acceso:       {bg:"#eff6ff",text:"#1d4ed8",border:"#bfdbfe",label:"Acceso"},
+  consulta:     {bg:"#f5f3ff",text:"#5b21b6",border:"#ddd6fe",label:"Consulta de disponibilidad"},
+  inscripcion:  {bg:"#ecfdf5",text:"#065f46",border:"#a7f3d0",label:"Inscripción"},
+  pago:         {bg:"#fffbeb",text:"#92400e",border:"#fde68a",label:"Pago"},
+  confirmacion: {bg:"#ecfdf5",text:"#065f46",border:"#a7f3d0",label:"Confirmación"},
+  plazo:        {bg:"#fff1f2",text:"#9f1239",border:"#fecdd3",label:"Verificación de plazo"},
+  cancelacion:  {bg:"#fef2f2",text:"#991b1b",border:"#fecaca",label:"Cancelación"},
+  devolucion:   {bg:"#fffbeb",text:"#92400e",border:"#fde68a",label:"Devolución"},
+  completado:   {bg:"#ecfdf5",text:"#065f46",border:"#a7f3d0",label:"Formación completada"},
+  diploma:      {bg:"#eef2ff",text:"#3730a3",border:"#c7d2fe",label:"Generación de diploma"},
+  entrega:      {bg:"#ecfeff",text:"#155e75",border:"#a5f3fc",label:"Entrega"},
+  invitacion:   {bg:"#fff7ed",text:"#9a3412",border:"#fed7aa",label:"Invitación"},
+  rol:          {bg:"#f5f3ff",text:"#5b21b6",border:"#ddd6fe",label:"Asignación de rol"},
+  aceptacion:   {bg:"#ecfdf5",text:"#065f46",border:"#a7f3d0",label:"Aceptación"},
+  construccion: {bg:"#f8fafc",text:"#475569",border:"#cbd5e1",label:"En construcción"},
+};
+
+const SCENARIOS = {
+  aforo: {
+    icon:"🎯", label:"Control de aforo",
+    color:"#8b5cf6", ac:"AC-09",
+    desc:"Gestión de plazas disponibles y lista de espera",
+    end:"El usuario queda inscrito o en lista de espera según disponibilidad.",
+  },
+  cancelacion_usuario: {
+    icon:"❌", label:"Cancelación por el usuario",
+    color:"#ef4444", ac:"AC-12",
+    desc:"El usuario cancela su inscripción dentro del plazo permitido",
+    end:"Inscripción cancelada. Créditos devueltos si aplica. IAI notificada.",
+  },
+  cancelacion_admin: {
+    icon:"🏛️", label:"Cancelación por IAI",
+    color:"#f43f5e", ac:"AC-12",
+    desc:"IAI cancela una inscripción desde el panel de administración",
+    end:"Inscripción cancelada por IAI. Sin restricción de plazo.",
+  },
+  diploma: {
+    icon:"📜", label:"Diploma de asistencia",
+    color:"#6366f1", ac:"AC-13",
+    desc:"Generación y entrega del diploma al completar una formación",
+    end:"El alumno tiene su diploma disponible para descarga en el portal.",
+  },
+  evento_invitacion: {
+    icon:"📩", label:"Invitación a evento (guest / ponente)",
+    color:"#f97316", ac:"AC-11",
+    desc:"Admin invita a participantes o ponentes — se confirma directamente o esperan aceptación",
+    end:"Invitados registrados en el evento con el rol asignado.",
+  },
+  evento_pendiente: {
+    icon:"✅", label:"Aceptación de invitación",
+    color:"#10b981", ac:"AC-11",
+    desc:"El usuario invitado recibe el email y confirma su asistencia al evento",
+    end:"Inscripción confirmada y visible en el portal del usuario.",
+  },
+  evento_pago: {
+    icon:"💳", label:"Evento de pago",
+    color:"#8b5cf6", ac:"AC-11",
+    desc:"Inscripción a un evento con precio — sigue el flujo estándar de checkout",
+    end:"Usuario inscrito y pago registrado. Factura disponible.",
+  },
+};
+
+const ALL_STEPS = [
+
+  // ── AFORO ──
+  {scenario:"aforo", sys:"weweb", fase:"acceso",
+    who:"El usuario",
+    what:"Accede a la ficha del curso o evento y ve las plazas disponibles",
+    why:"El portal muestra en tiempo real cuántas plazas quedan. Si no hay plazas, el botón de inscripción cambia a 'Lista de espera'.",
+    tech:"products.max_capacity vs COUNT(product_registrations WHERE status != cancelled). Portal WeWeb consulta Supabase en tiempo real."},
+
+  {scenario:"aforo", sys:"supabase", fase:"consulta",
+    who:"El sistema",
+    what:"Verifica si hay plazas disponibles en el momento de la inscripción",
+    why:"Aunque el portal ya muestre las plazas, el sistema vuelve a comprobarlo en el momento exacto de la inscripción para evitar dobles reservas simultáneas.",
+    tech:"event-registration-check: comprueba product_registrations por hubspot_product_id. Verificación también en redsys-initiate-payment y transfer-initiate-payment antes de crear el cart."},
+
+  {scenario:"aforo", sys:"weweb", fase:"inscripcion",
+    who:"El usuario",
+    what:"Se inscribe normalmente si hay plazas disponibles",
+    why:"Si hay plazas, el flujo continúa con el proceso de pago habitual (tarjeta, transferencia o crédito formativo).",
+    tech:"Flujo estándar de matricula. Ver proceso de Matrícula para el detalle completo."},
+
+  {scenario:"aforo", sys:"weweb", fase:"consulta",
+    who:"El usuario",
+    what:"Se apunta a la lista de espera si el curso está completo",
+    why:"Cuando se agotan las plazas, el usuario puede apuntarse a la lista de espera. Si alguien cancela, se le notifica automáticamente.",
+    tech:"product_registrations con status='waitlist'. Cuando una plaza queda libre (cancelación), n8n notifica al primero de la lista."},
+
+  {scenario:"aforo", sys:"n8n", fase:"confirmacion",
+    who:"El sistema",
+    what:"Notifica al siguiente de la lista de espera cuando hay una plaza libre",
+    why:"Si un inscrito cancela, el sistema avisa automáticamente al primer usuario en lista de espera para que pueda completar su inscripción.",
+    tech:"n8n workflow detecta cancelación con usuarios en waitlist → send-ticket-notification al primer usuario en lista → plazo de 24h para confirmar."},
+
+  // ── CANCELACIÓN USUARIO ──
+  {scenario:"cancelacion_usuario", sys:"weweb", fase:"acceso",
+    who:"El usuario",
+    what:"Accede a 'Mis inscripciones' y solicita la cancelación",
+    why:"El usuario puede cancelar cualquier inscripción activa desde su área personal del portal.",
+    tech:"Portal WeWeb → sección /mis-inscripciones → botón cancelar en el registro activo."},
+
+  {scenario:"cancelacion_usuario", sys:"supabase", fase:"plazo",
+    who:"El sistema",
+    what:"Comprueba si la cancelación está dentro del plazo permitido",
+    why:"Solo se pueden cancelar inscripciones hasta 72 horas hábiles antes del inicio del curso. Los festivos de Madrid no cuentan como días hábiles.",
+    tech:"cancel-registration Edge Fn: calcula deadline sumando 3 días hábiles desde ahora. Festivos obtenidos de date.nager.at API + festivos locales Madrid (15 mayo, 9 noviembre). Si fecha_inicio > deadline → permitido."},
+
+  {scenario:"cancelacion_usuario", sys:"weweb", fase:"plazo",
+    who:"El usuario",
+    what:"Ve un aviso si está fuera de plazo",
+    why:"Si han pasado más de 72 horas hábiles antes del curso, el sistema informa al usuario de que ya no puede cancelar por su cuenta y debe contactar con IAI.",
+    tech:"cancel-registration retorna HTTP 422 con mensaje 'Fuera de plazo' y las fechas de referencia. WeWeb muestra el mensaje al usuario."},
+
+  {scenario:"cancelacion_usuario", sys:"supabase", fase:"cancelacion",
+    who:"El sistema",
+    what:"Cancela la inscripción y devuelve los créditos si se pagó con crédito formativo",
+    why:"La inscripción queda anulada inmediatamente. Si el usuario había pagado con crédito formativo, el saldo le es devuelto automáticamente.",
+    tech:"product_registrations: status=cancelled, cancelled_at. Si deal_item_id tiene credit_allocations → status=cancelled → saldo devuelto al usuario. credit_allocation_participants también cancelados."},
+
+  {scenario:"cancelacion_usuario", sys:"n8n", fase:"cancelacion",
+    who:"El sistema",
+    what:"Notifica a IAI y actualiza el CRM",
+    why:"IAI recibe un aviso de la cancelación. El deal en HubSpot se actualiza para que quede reflejo en el historial comercial.",
+    tech:"cancel-registration → POST webhook a n8n /webhook/cancelacion/inscripcion con registration_id y hubspot_deal_id → n8n actualiza deal en HubSpot."},
+
+  {scenario:"cancelacion_usuario", sys:"weweb", fase:"confirmacion",
+    who:"El usuario",
+    what:"Ve la confirmación de la cancelación en el portal",
+    why:"El portal muestra la inscripción como cancelada y, si hubo devolución de crédito, el saldo actualizado.",
+    tech:"product_registrations.status=cancelled visible en /mis-inscripciones. Saldo de créditos actualizado en user_profiles si aplica."},
+
+  // ── CANCELACIÓN ADMIN ──
+  {scenario:"cancelacion_admin", sys:"iai_admin", fase:"acceso",
+    who:"IAI admin",
+    what:"Localiza la inscripción en el panel de administración",
+    why:"IAI puede cancelar cualquier inscripción desde el panel de admin, sin restricción de plazo y con justificación interna.",
+    tech:"Panel admin WeWeb → gestión de inscripciones → buscar por usuario o producto → botón cancelar con campo de motivo."},
+
+  {scenario:"cancelacion_admin", sys:"supabase", fase:"cancelacion",
+    who:"El sistema",
+    what:"Cancela la inscripción sin verificar el plazo",
+    why:"Los administradores de IAI pueden cancelar en cualquier momento — antes o después del inicio del curso — independientemente del plazo de 72h.",
+    tech:"cancel-registration con rol admin: skip_deadline_check=true omite la verificación de plazo. Misma lógica de devolución de créditos si aplica."},
+
+  {scenario:"cancelacion_admin", sys:"n8n", fase:"cancelacion",
+    who:"El sistema",
+    what:"Actualiza el CRM y notifica al usuario",
+    why:"El deal en HubSpot queda actualizado y el usuario recibe un email informándole de la cancelación.",
+    tech:"Mismo webhook n8n que cancelación de usuario. n8n gestiona la notificación al alumno y la actualización del deal."},
+
+  // ── DIPLOMA ──
+  {scenario:"diploma", sys:"moodle", fase:"completado",
+    who:"El sistema",
+    what:"Registra la finalización del curso en el campus virtual",
+    why:"Cuando el alumno completa todas las actividades del curso en Moodle, el sistema registra automáticamente que ha superado la formación.",
+    tech:"Moodle marca completion. n8n o webhook de Moodle → product_registrations: completion_date, cpe_hours_earned, certificate_issued=true."},
+
+  {scenario:"diploma", sys:"weweb", fase:"diploma",
+    who:"El usuario",
+    what:"Solicita la descarga de su diploma desde el portal",
+    why:"Una vez finalizado el curso, el alumno puede descargar su diploma oficial de IAI desde 'Mis inscripciones' en el portal.",
+    tech:"portal.auditoresinternos.es/mis-inscripciones → botón 'Descargar diploma' visible solo si certificate_issued=true."},
+
+  {scenario:"diploma", sys:"supabase", fase:"diploma",
+    who:"El sistema",
+    what:"Genera el diploma en PDF con los datos del alumno y del curso",
+    why:"El sistema crea automáticamente un documento PDF oficial con el nombre del alumno, el título del curso, las horas lectivas, la fecha y la firma de la Directora General.",
+    tech:"generate-certificate Edge Fn (pdf-lib): logo IAI desde Supabase Storage, nombre en mayúsculas, título del curso, horas CPE, fecha en español, firma de Gabriela González-Valdés desde assets-private."},
+
+  {scenario:"diploma", sys:"weweb", fase:"entrega",
+    who:"El usuario",
+    what:"Descarga el diploma en PDF desde el portal",
+    why:"El diploma se descarga directamente en el navegador. Es el documento oficial de IAI que acredita la participación y las horas de formación continua.",
+    tech:"generate-certificate retorna pdf_base64 + filename. WeWeb presenta el PDF para descarga directa en el navegador del usuario."},
+
+  {scenario:"diploma", sys:"n8n", fase:"entrega",
+    who:"El sistema",
+    what:"Envía el diploma por email al alumno",
+    why:"Además de la descarga manual, el alumno recibe el diploma en su correo electrónico para que lo tenga disponible siempre.",
+    tech:"n8n workflow post-completion: llama a generate-certificate → adjunta el PDF al email de notificación al alumno."},
+
+  // ── EVENTO: INVITACIÓN (GUEST / PONENTE) ──
+  {scenario:"evento_invitacion", sys:"iai_admin", fase:"invitacion",
+    who:"IAI admin",
+    what:"Prepara la lista de invitados o ponentes para el evento",
+    why:"La mayoría de los eventos de IAI son por invitación. El admin sube una lista de emails o los introduce manualmente, asignando a cada uno su rol en el evento.",
+    tech:"Panel admin WeWeb → bulk-invite-event Edge Fn. Parámetros: product_id, emails[], attendee_role (guest | speaker | participant), auto_confirm (true/false)."},
+
+  {scenario:"evento_invitacion", sys:"iai_admin", fase:"rol",
+    who:"IAI admin",
+    what:"Elige el rol de los invitados y si se confirman automáticamente",
+    why:"Hay tres roles posibles: invitado (guest), ponente (speaker) o participante. El admin también decide si la inscripción se confirma al instante o si el usuario debe aceptar primero.",
+    tech:"attendee_role: 'guest' | 'speaker' | 'participant'. auto_confirm: true → status=confirmed directo. auto_confirm: false → status=pending + email de aceptación. 🚧 auto_confirm pendiente de implementar como parámetro explícito."},
+
+  {scenario:"evento_invitacion", sys:"supabase", fase:"invitacion",
+    who:"El sistema",
+    what:"Crea las inscripciones y envía las notificaciones",
+    why:"El sistema registra a cada invitado en el evento con su rol asignado. Si la confirmación es automática quedan inscritos al momento. Si no, reciben un email para aceptar.",
+    tech:"bulk-invite-event: inserta en product_registrations con is_invitation=true, is_speaker=true/false. Si auto_confirm: confirmed_at=now, status=confirmed. Si no: status=pending, send-event-invitation-email."},
+
+  {scenario:"evento_invitacion", sys:"n8n", fase:"invitacion",
+    who:"El sistema",
+    what:"Notifica a HubSpot y dispara los workflows de comunicación del evento",
+    why:"HubSpot queda actualizado con las inscripciones para el seguimiento y los workflows de recordatorio se activan automáticamente.",
+    tech:"n8n webhook post-invitación → crea/actualiza deals en HubSpot → activa workflows de email recordatorio según fecha del evento."},
+
+  // ── EVENTO: ACEPTACIÓN PENDIENTE ──
+  {scenario:"evento_pendiente", sys:"usuario", fase:"aceptacion",
+    who:"El usuario invitado",
+    what:"Recibe el email de invitación y hace clic en 'Confirmar asistencia'",
+    why:"El usuario recibe un email personalizado con los detalles del evento. Si quiere asistir, confirma con un clic. Si no puede, puede rechazar para que IAI tenga visibilidad.",
+    tech:"send-event-invitation-email: email con enlace tokenizado. Al hacer clic → portal WeWeb con el token de confirmación en la URL."},
+
+  {scenario:"evento_pendiente", sys:"weweb", fase:"aceptacion",
+    who:"El usuario",
+    what:"Confirma su asistencia desde el portal",
+    why:"El portal muestra los detalles del evento y pide confirmación explícita. Si el usuario no tiene sesión, se le pide que inicie sesión primero.",
+    tech:"Portal procesa el token → UPDATE product_registrations: status=confirmed, confirmed_at=now. Si el usuario no tiene sesión activa: flujo de login → redirección de vuelta a la confirmación."},
+
+  {scenario:"evento_pendiente", sys:"supabase", fase:"aceptacion",
+    who:"El sistema",
+    what:"Registra la confirmación y actualiza el aforo disponible",
+    why:"La inscripción queda confirmada y el contador de plazas ocupadas se actualiza para que el panel de admin refleje la ocupación real.",
+    tech:"product_registrations.status=confirmed, confirmed_at. products.current_registrations += 1. Trigger automático en Supabase."},
+
+  // ── EVENTO DE PAGO ──
+  {scenario:"evento_pago", sys:"weweb", fase:"inscripcion",
+    who:"El usuario",
+    what:"Descubre el evento en la web o el portal y se inscribe",
+    why:"Algunos eventos de IAI tienen precio de inscripción. El usuario los encuentra en la web pública o en el portal y sigue el flujo estándar de compra.",
+    tech:"Productos con precio > 0 en HubSpot. WordPress muestra el evento publicado vía SYNC-WP-01. Portal del socio permite la compra directa."},
+
+  {scenario:"evento_pago", sys:"supabase", fase:"pago",
+    who:"El sistema",
+    what:"Procesa el pago por tarjeta o transferencia",
+    why:"Los eventos de pago admiten tarjeta (inmediato) o transferencia (con confirmación de IAI). No se puede pagar con crédito formativo.",
+    tech:"Flujo idéntico a matrícula de cursos. redsys-initiate-payment o transfer-initiate-payment. No aplica credit_type — los eventos no consumen crédito formativo."},
+
+  {scenario:"evento_pago", sys:"supabase", fase:"confirmacion",
+    who:"El sistema",
+    what:"Confirma la inscripción al recibir el pago",
+    why:"En cuanto se confirma el pago, el usuario queda inscrito en el evento y recibe el email de confirmación con todos los detalles.",
+    tech:"deals + deal_items creados. product_registrations: status=confirmed, registration_type=standard. n8n → HubSpot deal → closedwon → email de confirmación al asistente."},
+];
+
+function SystemTag({sys}) {
+  var c=SYS_COLOR[sys]||"#94a3b8"; var l=SYS_LABEL[sys]||sys;
+  return <span style={{display:"inline-flex",alignItems:"center",gap:3,background:c+"18",border:"1px solid "+c+"44",borderRadius:99,padding:"1px 8px",fontSize:10,color:c,fontWeight:500,fontFamily:"DM Mono,monospace",whiteSpace:"nowrap"}}>{l}</span>;
+}
+
+function FaseBadge({fase}) {
+  var c=FASE_STYLES[fase]||FASE_STYLES.acceso;
+  return <span style={{display:"inline-block",padding:"2px 8px",borderRadius:99,fontSize:10,fontWeight:500,whiteSpace:"nowrap",background:c.bg,color:c.text,border:"1px solid "+c.border}}>{c.label}</span>;
+}
+
+function PhaseHeader({fase,isFirst}) {
+  var c=FASE_STYLES[fase]||FASE_STYLES.acceso;
+  return (
+    <div style={{display:"flex",alignItems:"center",gap:10,margin:isFirst?"0 0 12px":"22px 0 12px"}}>
+      <div style={{width:8,height:8,borderRadius:99,background:c.text,flexShrink:0}}/>
+      <span style={{fontSize:11,fontWeight:600,color:c.text,fontFamily:"DM Mono,monospace",textTransform:"uppercase",letterSpacing:"0.07em"}}>{c.label}</span>
+      <div style={{flex:1,height:1,background:"#e2e8f0"}}/>
+    </div>
+  );
+}
+
+function Step({step,idx,techMode,isActive,onToggle}) {
+  var sc=SYS_COLOR[step.sys]||"#94a3b8";
+  return (
+    <div style={{position:"relative"}}>
+      {idx>0&&<div style={{height:18,marginLeft:20}}><div style={{width:2,height:"100%",background:"#e2e8f0",borderRadius:1}}/></div>}
+      <div className="step-card" onClick={function(){onToggle(idx);}}
+        style={{background:"white",border:"1px solid "+(isActive?sc+"60":"#e2e8f0"),
+          borderLeft:"3px solid "+sc,borderRadius:12,padding:"14px 16px",
+          display:"flex",gap:12,alignItems:"flex-start",
+          boxShadow:isActive?"0 2px 12px rgba(0,0,0,.08)":"0 1px 3px rgba(0,0,0,.04)"}}>
+        <div style={{width:32,height:32,borderRadius:99,flexShrink:0,
+          background:isActive?sc:"#f1f5f9",border:"2px solid "+(isActive?sc:"#e2e8f0"),
+          display:"flex",alignItems:"center",justifyContent:"center",
+          fontSize:12,fontWeight:600,color:isActive?"white":"#94a3b8",transition:"all .2s",marginTop:1}}>
+          {idx+1}
+        </div>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{display:"flex",alignItems:"flex-start",gap:8,flexWrap:"wrap",marginBottom:5}}>
+            <span style={{fontSize:13,fontWeight:600,color:"#1e293b",lineHeight:1.35,flex:1,minWidth:100}}>
+              <span style={{color:"#94a3b8",fontWeight:400,marginRight:4}}>{step.who} —</span>
+              {step.what}
+            </span>
+            <FaseBadge fase={step.fase}/>
+          </div>
+          <p style={{fontSize:13,color:"#475569",lineHeight:1.6,marginBottom:6}}>{step.why}</p>
+          <SystemTag sys={step.sys}/>
+          {(techMode||isActive)&&step.tech&&(
+            <div style={{marginTop:10,padding:"8px 12px",background:"#f8fafc",borderRadius:8,border:"1px solid #e2e8f0",animation:"fadeIn .2s ease"}}>
+              <div style={{fontSize:10,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:3,fontFamily:"DM Mono,monospace"}}>Detalle técnico</div>
+              <p style={{fontSize:12,color:"#64748b",lineHeight:1.55,fontFamily:"DM Mono,monospace"}}>{step.tech}</p>
+            </div>
+          )}
+        </div>
+        <div style={{color:"#cbd5e1",fontSize:14,flexShrink:0,marginTop:6,transform:isActive?"rotate(180deg)":"none",transition:"transform .2s"}}>▾</div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  var sa=useState("aforo"); var scenario=sa[0]; var setScenario=sa[1];
+  var ta=useState(false); var techMode=ta[0]; var setTechMode=ta[1];
+  var aa=useState(null); var activeStep=aa[0]; var setActiveStep=aa[1];
+
+  function toggle(idx){setActiveStep(activeStep===idx?null:idx);}
+
+  var steps=ALL_STEPS.filter(function(s){return s.scenario===scenario;});
+  var sc=SCENARIOS[scenario];
+  var lastFase=null;
+
+  var groups = [
+    {ac:"AC-09", label:"Aforo", keys:["aforo"]},
+    {ac:"AC-12", label:"Inscripción / Cancelación", keys:["cancelacion_usuario","cancelacion_admin"]},
+    {ac:"AC-13", label:"Diplomas", keys:["diploma"]},
+    {ac:"AC-11", label:"Eventos", keys:["evento_invitacion","evento_pendiente","evento_pago"]},
+  ];
+
+  return (
+    <div style={{background:"#f8fafc",minHeight:"100vh",color:"#1e293b"}}>
+
+      <div style={{background:"white",borderBottom:"1px solid #e2e8f0",padding:"16px 20px",position:"sticky",top:0,zIndex:10}}>
+        <div style={{maxWidth:720,margin:"0 auto"}}>
+          <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}>
+            <div>
+              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4,flexWrap:"wrap"}}>
+                <a href="index.html" className="back-link">← Todos los procesos</a>
+                <span style={{color:"#e2e8f0"}}>·</span>
+                <span style={{fontSize:11,color:"#94a3b8",fontFamily:"DM Mono,monospace"}}>AC-09 · AC-11 · AC-12 · AC-13</span>
+              </div>
+              <h1 style={{fontSize:20,fontWeight:600,color:"#0f172a",letterSpacing:"-0.02em"}}>
+                🎯 Inscripciones, Aforo, Eventos y Diplomas
+              </h1>
+              <p style={{fontSize:13,color:"#64748b",marginTop:2}}>
+                Control de plazas, cancelaciones, invitaciones a eventos y generación de diplomas
+              </p>
+            </div>
+            <button className="btn" onClick={function(){setTechMode(!techMode);}}
+              style={{padding:"7px 14px",borderRadius:8,fontSize:12,fontWeight:500,
+                background:techMode?"#1e293b":"#f1f5f9",color:techMode?"white":"#64748b",
+                border:"1px solid "+(techMode?"#1e293b":"#e2e8f0"),flexShrink:0,marginTop:2}}>
+              {techMode?"⚙️ Técnico":"👁 Funcional"}
+            </button>
+          </div>
+
+          {/* Grouped scenario selector */}
+          <div style={{marginTop:12,display:"flex",flexDirection:"column",gap:8}}>
+            {groups.map(function(g){
+              return (
+                <div key={g.ac}>
+                  <div style={{fontSize:10,color:"#94a3b8",fontFamily:"DM Mono,monospace",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:5}}>{g.ac} · {g.label}</div>
+                  <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                    {g.keys.map(function(key){
+                      var s=SCENARIOS[key]; var active=scenario===key;
+                      return (
+                        <button key={key} className="btn"
+                          onClick={function(){setScenario(key);setActiveStep(null);}}
+                          style={{padding:"6px 13px",borderRadius:8,fontSize:12,fontWeight:active?600:400,
+                            background:active?s.color:"white",color:active?"white":"#64748b",
+                            border:"1px solid "+(active?s.color:"#e2e8f0")}}>
+                          {s.icon} {s.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Active scenario pill */}
+          <div style={{marginTop:10,padding:"7px 12px",background:sc.color+"0f",
+            border:"1px solid "+sc.color+"30",borderRadius:8,
+            display:"flex",alignItems:"center",gap:8}}>
+            <div style={{width:5,height:5,borderRadius:99,background:sc.color,flexShrink:0}}/>
+            <span style={{fontSize:12,color:sc.color}}>{sc.desc}</span>
+            <span style={{fontSize:12,color:"#94a3b8"}}>· {steps.length} pasos</span>
+          </div>
+        </div>
+      </div>
+
+      <div style={{maxWidth:720,margin:"0 auto",padding:"24px 16px"}}>
+        {steps.map(function(step,idx){
+          var showHeader=step.fase!==lastFase;
+          lastFase=step.fase;
+          return (
+            <div key={idx}>
+              {showHeader&&<PhaseHeader fase={step.fase} isFirst={idx===0}/>}
+              <Step step={step} idx={idx} techMode={techMode} isActive={activeStep===idx} onToggle={toggle}/>
+            </div>
+          );
+        })}
+
+        <div style={{height:18,marginLeft:20}}><div style={{width:2,height:"100%",background:"#e2e8f0"}}/></div>
+        <div style={{display:"flex",gap:12,alignItems:"center",background:"white",
+          border:"1px solid #a7f3d0",borderLeft:"3px solid #10b981",
+          borderRadius:12,padding:"14px 16px",boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
+          <div style={{width:32,height:32,borderRadius:99,background:"#10b981",color:"white",
+            display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>✓</div>
+          <div>
+            <div style={{fontSize:13,fontWeight:600,color:"#065f46"}}>Proceso completado</div>
+            <div style={{fontSize:12,color:"#6b7280",marginTop:1}}>{sc.end}</div>
+          </div>
+        </div>
+
+        {/* Nota sobre plazo cancelación */}
+        {(scenario==="cancelacion_usuario"||scenario==="cancelacion_admin")&&(
+          <div style={{marginTop:20,padding:"12px 14px",background:"#fff1f2",borderRadius:10,border:"1px solid #fecdd3"}}>
+            <div style={{fontSize:12,color:"#9f1239",lineHeight:1.6}}>
+              <strong>Plazo de cancelación:</strong> hasta 72 horas hábiles antes del inicio del curso. Los sábados, domingos y festivos de Madrid (nacionales y locales: 15 de mayo y 9 de noviembre) no cuentan. Los administradores de IAI pueden cancelar sin restricción de plazo.
+            </div>
+          </div>
+        )}
+
+        <div style={{marginTop:24,padding:"16px",background:"white",borderRadius:12,border:"1px solid #e2e8f0"}}>
+          <div style={{fontSize:11,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:10,fontFamily:"DM Mono,monospace"}}>Sistemas involucrados</div>
+          <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+            {Object.keys(SYS_COLOR).map(function(s){return <SystemTag key={s} sys={s}/>;})}
+          </div>
+          <div style={{marginTop:10,fontSize:12,color:"#94a3b8",lineHeight:1.6}}>
+            Haz clic en cualquier paso para más detalle. Activa <strong style={{color:"#1e293b"}}>modo técnico</strong> para ver los sistemas y automatizaciones implicadas.
+          </div>
+        </div>
+        <div style={{height:40}}/>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+</script>
+</body>
+</html>
