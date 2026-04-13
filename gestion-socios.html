@@ -189,7 +189,7 @@ const ALL_STEPS = [
     why:"El equipo de IAI trabaja habitualmente en HubSpot. Poder marcar la baja desde allí evita tener que entrar al portal de administración.",
     tech:"🚧 EN CONSTRUCCIÓN — Ampliar SYNC-HS-CONTACT-V2 para detectar membership_status=baja en HubSpot → UPDATE user_profiles en Supabase → si el usuario pertenece a company_members, llamar lógica de remove-corporate-member y recalcular tramo."},
 
-
+  {scenario:"baja_individual", sys:"supabase", fase:"confirmacion", wip:false,
     who:"El sistema",
     what:"Revoca el acceso de socio en el portal",
     why:"El portal deja de mostrar al usuario como socio activo. Pierde acceso a contenido exclusivo pero conserva su cuenta de usuario registrado.",
