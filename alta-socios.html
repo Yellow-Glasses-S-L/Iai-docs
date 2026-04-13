@@ -244,6 +244,13 @@ const STEPS = [
     tech:"Edge Fn accept-invitation valida token, crea company_members.",
     paths:["corporativo"] },
 
+  { sys:"hubspot", fase:"gestion",
+    who:"El sistema",
+    what:"Registra al empleado invitado en el CRM y lo asocia a la empresa",
+    why:"IAI tiene constancia del nuevo socio corporativo desde el primer momento. El Contact queda vinculado a la Company para seguimiento comercial y envío de comunicaciones.",
+    tech:"n8n crea/actualiza Contact en HubSpot con los datos del empleado y lo asocia a la Company del representante.",
+    paths:["corporativo"] },
+
   { sys:"weweb", fase:"gestion",
     who:"El representante de empresa",
     what:"Puede dar de baja a socios de la empresa cuando sea necesario",

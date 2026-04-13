@@ -98,12 +98,16 @@
     .crit-item.inc{border-left:3px solid var(--red)}
     .crit-item.chg{border-left:3px solid var(--yellow)}
     .crit-item.deadline{border-left:3px solid var(--pink);background:var(--pink-l)}
+    .crit-item.done{border-left:3px solid var(--green);background:var(--green-l)}
+    .crit-item.done .crit-title{color:var(--text-2)}
+    .crit-item.done .crit-desc{color:var(--text-2)}
     .crit-icon{font-size:15px;flex-shrink:0;margin-top:1px}
     .crit-body{flex:1}
     .crit-top{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:3px}
     .crit-title{font-size:13px;font-weight:600;color:var(--text);flex:1;min-width:100px}
     .crit-tag{font-size:10px;font-family:'DM Mono',monospace;font-weight:500;padding:1px 7px;border-radius:99px;white-space:nowrap}
     .tag-inc{background:var(--red-l);color:var(--red);border:1px solid var(--red-b)}
+    .tag-done{background:var(--green-l);color:#065f46;border:1px solid var(--green-b)}
     .tag-chg{background:var(--yellow-l);color:#92400e;border:1px solid var(--yellow-b)}
     .tag-crit{background:var(--pink-l);color:#9f1239;border:1px solid var(--pink-b)}
     .tag-task{background:var(--blue-l);color:var(--blue);border:1px solid var(--blue-b)}
@@ -221,7 +225,7 @@ document.addEventListener('DOMContentLoaded',function(){
   <!-- STATS -->
   <div class="stats">
     <div class="stat"><div class="stat-n" style="color:var(--green)">13</div><div class="stat-l">Procesos documentados</div></div>
-    <div class="stat"><div class="stat-n" style="color:var(--red)">5</div><div class="stat-l">Incidentes abiertos</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--red)">3</div><div class="stat-l">Incidentes abiertos</div><div style="font-size:10px;color:var(--green);font-family:'DM Mono',monospace;margin-top:2px">+2 resueltos ✓</div></div>
     <div class="stat"><div class="stat-n" style="color:var(--yellow)">3</div><div class="stat-l">Cambios solicitados</div></div>
     <div class="stat"><div class="stat-n" style="color:var(--purple)">6</div><div class="stat-l">Funcionalidades Fase 2</div></div>
   </div>
@@ -245,7 +249,7 @@ document.addEventListener('DOMContentLoaded',function(){
         <div class="macro-bar"><div class="macro-bar-fill" style="width:65%;background:var(--green)"></div></div>
         <div class="macro-pills">
           <span class="pill p-done">Alta HubSpot ✓</span><span class="pill p-done">Sync WordPress ✓</span><span class="pill p-done">Moodle ✓</span>
-          <span class="pill p-inc">🐛 WP no actualiza desde portal</span><span class="pill p-f2">Nirestream F2</span><span class="pill p-f2">Publicaciones F2</span>
+          <span class="pill p-done">Portal → WordPress ✓</span><span class="pill p-f2">Nirestream F2</span><span class="pill p-f2">Publicaciones F2</span>
         </div>
       </div>
 
@@ -308,30 +312,30 @@ document.addEventListener('DOMContentLoaded',function(){
 
   <!-- CRITICAL PENDING -->
   <div class="sec">
-    <div class="sec-head"><span class="sec-label">Incidentes · Cierre previsto semana del 14 abril</span><div class="sec-line"></div></div>
+    <div class="sec-head"><span class="sec-label">Incidentes · 2 resueltos · 3 abiertos (cierre previsto semana del 14 abril)</span><div class="sec-line"></div></div>
     <div class="critical-list">
 
-      <div class="crit-item inc">
-        <div class="crit-icon">🐛</div>
+      <div class="crit-item done">
+        <div class="crit-icon">✅</div>
         <div class="crit-body">
           <div class="crit-top">
             <span class="crit-title">INC-01 · Nuevo usuario por invitación corporativa no llega a HubSpot</span>
-            <span class="crit-tag tag-inc">INCIDENTE</span>
+            <span class="crit-tag tag-done">RESUELTO</span>
           </div>
-          <div class="crit-desc">Cuando un representante invita a un usuario que no existe, la cuenta se crea en Supabase pero el contacto no aparece en HubSpot. Pendiente de confirmar con prueba en usuario real — datos actuales sugieren que puede estar resuelto.</div>
-          <div class="crit-owner">Yellow Glasses · Prueba pendiente</div>
+          <div class="crit-desc">Causa: el flujo n8n que sincroniza el alta a HubSpot estaba sin activar. Flujo activado y probado — el alta de socios funciona completa end-to-end (Supabase → HubSpot → WordPress).</div>
+          <div class="crit-owner">Yellow Glasses · Cerrado · Listo para revisión IAI</div>
         </div>
       </div>
 
-      <div class="crit-item inc">
-        <div class="crit-icon">🐛</div>
+      <div class="crit-item done">
+        <div class="crit-icon">✅</div>
         <div class="crit-body">
           <div class="crit-top">
             <span class="crit-title">INC-02 · Additional Information no sincroniza a WordPress desde el portal</span>
-            <span class="crit-tag tag-inc">INCIDENTE</span>
+            <span class="crit-tag tag-done">RESUELTO</span>
           </div>
-          <div class="crit-desc">PORTAL-01 actualiza Supabase y HubSpot correctamente, pero no dispara SYNC-WP-01. Falta añadir un nodo en PORTAL-01 que llame al webhook de SYNC-WP-01 tras el PATCH a HubSpot.</div>
-          <div class="crit-owner">Yellow Glasses · n8n PORTAL-01</div>
+          <div class="crit-desc">PORTAL-01 ahora dispara SYNC-WP-01 tras el PATCH a HubSpot. Probado end-to-end — los cambios de Additional Information desde el portal se propagan a WordPress.</div>
+          <div class="crit-owner">Yellow Glasses · Cerrado · Listo para revisión IAI</div>
         </div>
       </div>
 
