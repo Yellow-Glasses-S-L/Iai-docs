@@ -30,8 +30,8 @@ Integra: Portal WeWeb · HubSpot CRM · Moodle Campus · Business Central · Sup
 Una vez subidos los archivos, activa GitHub Pages en:  
 **Settings → Pages → Branch: main → Save**
 
-La documentación quedará disponible en:  
-`https://choyos-yg.github.io/iai-docs/`
+La documentación está publicada en:  
+**https://yellow-glasses-s-l.github.io/Iai-docs/**
 
 ---
 
