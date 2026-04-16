@@ -207,6 +207,12 @@ const SCENARIOS = {
     ac:"AC-05",
     end:"Empresa o miembros dados de baja. Actualización en cascada en portal y CRM.",
   },
+  cambio_tramo: {
+    icon:"📊", label:"Cambio de tramo",
+    color:"#6366f1", desc:"Subida o bajada de tramo de una empresa corporativa — genera deal de ajuste proporcional",
+    ac:"AC-04",
+    end:"Tramo actualizado. Si es subida, deal de ajuste generado con la parte proporcional del año restante.",
+  },
 };
 
 // ─── STEPS ────────────────────────────────────────────────────────────────────
@@ -268,6 +274,35 @@ const ALL_STEPS = [
     what:"Refleja los datos actualizados para el socio",
     why:"El socio ve siempre los datos vigentes en su perfil del portal, que están en sincronía con lo que IAI tiene en HubSpot.",
     tech:"user_profiles actualizado. WeWeb lee en tiempo real de Supabase.",
+    techSystems:["weweb","supabase"] },
+
+  // ── CAMBIO DE TRAMO ──
+  { scenario:"cambio_tramo", sys:"iai_admin", fase:"edicion", wip:false,
+    who:"IAI admin",
+    what:"Cambia el campo Tramo de la empresa en HubSpot (Tramo 1, 2, 3 o 4)",
+    why:"El campo Tramo se configura exclusivamente desde HubSpot. Solo debe tocarse para cambiar de un tramo a otro (upgrade o downgrade), no para asignaciones iniciales.",
+    tech:"HubSpot Company property: tramo_cuota. 4 opciones: Tramo 1, 2, 3, 4. El cambio dispara el webhook de n8n.",
+    techSystems:["iai_admin","hubspot"] },
+
+  { scenario:"cambio_tramo", sys:"n8n", fase:"sincronizacion", wip:false,
+    who:"El sistema",
+    what:"Si es subida de tramo, genera automáticamente un deal de ajuste proporcional",
+    why:"Cuando una empresa sube de tramo, el sistema calcula la diferencia de cuota prorrateada por los meses restantes del año. Ejemplo: de Tramo 1 (1.890 EUR/año) a Tramo 3 (3.735 EUR/año) en abril = deal por 1.230 EUR (diferencia 1.845 EUR x 8/12 meses).",
+    tech:"n8n detecta cambio en tramo_cuota. Si nuevo > anterior: calcula diferencia anual, aplica prorrateo por meses restantes, crea Deal en HubSpot con el importe de ajuste. Si nuevo < anterior: solo actualiza el campo, sin generar deal.",
+    techSystems:["n8n","hubspot"] },
+
+  { scenario:"cambio_tramo", sys:"supabase", fase:"sincronizacion", wip:false,
+    who:"El sistema",
+    what:"Actualiza el tramo en el portal y los créditos asociados",
+    why:"El portal refleja el nuevo tramo de la empresa. Los créditos formativos y condiciones se ajustan según el tramo nuevo.",
+    tech:"SYNC-HS-COMPANY → Supabase: companies.membership_tier_id actualizado. Si hay deal de ajuste, se replica en deals + deal_items.",
+    techSystems:["supabase","n8n"] },
+
+  { scenario:"cambio_tramo", sys:"weweb", fase:"edicion", wip:false,
+    who:"El portal",
+    what:"El representante ve el tramo actualizado en el panel de empresa",
+    why:"El panel de empresa en el portal muestra el tramo actual, los créditos disponibles y el historial de cambios.",
+    tech:"Portal WeWeb lee companies.membership_tier_id + v_company_credit_balance. El representante ve el nuevo tramo reflejado en tiempo real.",
     techSystems:["weweb","supabase"] },
 
   // ── BAJA INDIVIDUAL ──
