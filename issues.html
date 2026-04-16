@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IAI · Incidentes Post-migración</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--bg:#f8fafc;--surface:#fff;--border:#e2e8f0;--text:#0f172a;--text-2:#475569;--text-3:#94a3b8;--orange:#f97316;--green:#10b981;--green-l:#ecfdf5;--green-b:#a7f3d0;--yellow:#f59e0b;--yellow-l:#fffbeb;--yellow-b:#fde68a;--red:#ef4444;--red-l:#fef2f2;--red-b:#fecaca;--pink:#f43f5e;--pink-l:#fff1f2;--pink-b:#fecdd3;--blue:#3b82f6;--blue-l:#eff6ff;--blue-b:#bfdbfe;--purple:#8b5cf6;--purple-l:#f5f3ff;--purple-b:#ddd6fe}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{min-height:100%;background:var(--bg);font-family:'DM Sans',system-ui,sans-serif;color:var(--text)}
+    .page{max-width:900px;margin:0 auto;padding:40px 20px 80px}
+    .header{margin-bottom:28px}
+    .header-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+    .logo{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+    .logo-dot{width:9px;height:9px;border-radius:99px;background:var(--orange)}
+    .logo-text{font-size:12px;font-weight:500;color:var(--text-3);font-family:'DM Mono',monospace;letter-spacing:.04em}
+    h1{font-size:24px;font-weight:600;letter-spacing:-.03em;line-height:1.2}
+    .subtitle{font-size:13px;color:var(--text-2);margin-top:3px}
+    .date-pill{font-size:11px;font-family:'DM Mono',monospace;color:var(--text-3);background:var(--border);padding:4px 10px;border-radius:99px;white-space:nowrap;align-self:flex-start;margin-top:4px}
+
+    /* SUMMARY CARDS */
+    .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px}
+    .sum-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;text-align:center}
+    .sum-n{font-size:32px;font-weight:600;font-family:'DM Mono',monospace;line-height:1}
+    .sum-l{font-size:11px;color:var(--text-3);margin-top:4px}
+    .sum-green .sum-n{color:var(--green)}
+    .sum-orange .sum-n{color:var(--orange)}
+    .sum-total .sum-n{color:var(--text)}
+
+    /* PROCESS CARDS */
+    .proc-grid{display:grid;gap:12px;margin-bottom:32px}
+    .proc{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:box-shadow .15s}
+    .proc:hover{box-shadow:0 2px 8px rgba(0,0,0,.06)}
+    .proc-head{padding:16px 20px;display:flex;align-items:center;gap:14px}
+    .proc-icon{font-size:20px;flex-shrink:0}
+    .proc-info{flex:1;min-width:0}
+    .proc-name{font-size:14px;font-weight:600;margin-bottom:4px}
+    .proc-bar{height:6px;background:var(--bg);border-radius:99px;overflow:hidden}
+    .proc-bar-fill{height:100%;border-radius:99px;transition:width .4s}
+    .proc-stats{display:flex;gap:8px;margin-top:6px}
+    .proc-pill{font-size:10px;font-family:'DM Mono',monospace;font-weight:500;padding:2px 8px;border-radius:99px}
+    .pp-done{background:var(--green-l);color:#065f46;border:1px solid var(--green-b)}
+    .pp-pend{background:var(--red-l);color:var(--red);border:1px solid var(--red-b)}
+    .proc-pct{font-size:15px;font-weight:600;font-family:'DM Mono',monospace;color:var(--text-2);flex-shrink:0}
+    .proc-arrow{font-size:12px;color:var(--text-3);flex-shrink:0;transition:transform .2s}
+    .proc.open .proc-arrow{transform:rotate(180deg)}
+
+    /* DETAIL */
+    .proc-detail{display:none;border-top:1px solid var(--border);padding:0 20px 16px}
+    .proc.open .proc-detail{display:block}
+    .detail-sec{margin-top:14px}
+    .detail-sec-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3);font-family:'DM Mono',monospace;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+    .detail-sec-title span{font-size:14px}
+    .issue{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:8px;margin-bottom:4px;border-left:3px solid transparent}
+    .issue.pending{background:var(--red-l);border-left-color:var(--red)}
+    .issue.resolved{background:var(--green-l);border-left-color:var(--green)}
+    .issue-body{flex:1;min-width:0}
+    .issue-title{font-size:12px;font-weight:600;margin-bottom:2px}
+    .issue-desc{font-size:11px;color:var(--text-2);line-height:1.5}
+    .issue-meta{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap}
+    .badge{font-size:9px;font-family:'DM Mono',monospace;font-weight:500;padding:1px 7px;border-radius:99px}
+    .b-alta{background:var(--red-l);color:var(--red);border:1px solid var(--red-b)}
+    .b-media{background:var(--yellow-l);color:#92400e;border:1px solid var(--yellow-b)}
+    .b-baja{background:var(--bg);color:var(--text-3);border:1px solid var(--border)}
+    .b-urgente{background:var(--pink-l);color:#9f1239;border:1px solid var(--pink-b)}
+    .b-num{background:var(--blue-l);color:var(--blue);border:1px solid var(--blue-b)}
+
+    /* MEJORAS */
+    .mejoras{margin-top:32px}
+    .mejora{background:var(--purple-l);border:1px solid var(--purple-b);border-radius:8px;padding:10px 14px;margin-bottom:6px}
+    .mejora-title{font-size:12px;font-weight:600;color:#5b21b6}
+    .mejora-where{font-size:11px;color:var(--text-3);margin-top:2px}
+
+    /* FOOTER */
+    .footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--border);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+    .footer-text{font-size:11px;color:var(--text-3);font-family:'DM Mono',monospace}
+
+    /* NAV */
+    .iai-nav{position:sticky;top:0;z-index:999;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+    .iai-nav-inner{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:24px;height:44px;overflow-x:auto}
+    .iai-nav-logo{display:flex;align-items:center;gap:7px;text-decoration:none;font-size:12px;font-weight:600;color:#0f172a;white-space:nowrap;flex-shrink:0;font-family:'DM Mono',monospace}
+    .iai-nav-dot{width:8px;height:8px;border-radius:99px;background:#f97316;flex-shrink:0}
+    .iai-nav-links{display:flex;gap:2px;align-items:center}
+    .iai-nav-links a{text-decoration:none;font-size:12px;color:#64748b;padding:4px 10px;border-radius:6px;white-space:nowrap;transition:background .15s,color .15s}
+    .iai-nav-links a:hover{background:#f1f5f9;color:#0f172a}
+    .iai-nav-links a.active{background:#fff7ed;color:#f97316;font-weight:500}
+
+    @media(max-width:580px){.summary{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<nav class="iai-nav">
+  <div class="iai-nav-inner">
+    <a class="iai-nav-logo" href="index.html"><span class="iai-nav-dot"></span><span>IAI</span></a>
+    <div class="iai-nav-links">
+      <a href="index.html">Inicio</a>
+      <a href="issues.html" class="active">Incidentes</a>
+      <a href="estado-proyecto.html">Estado</a>
+      <a href="inventario.html">Inventario</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="header">
+    <div class="header-top">
+      <div>
+        <div class="logo"><div class="logo-dot"></div><span class="logo-text">IAI · auditoresinternos.es</span></div>
+        <h1>Incidentes Post-migración</h1>
+        <p class="subtitle">Seguimiento de incidencias desde la salida a producción (23/03/2026)</p>
+      </div>
+      <span class="date-pill">16 abr 2026</span>
+    </div>
+  </div>
+
+  <div class="summary">
+    <div class="sum-card sum-green"><div class="sum-n">45</div><div class="sum-l">Resueltos</div></div>
+    <div class="sum-card sum-orange"><div class="sum-n">13</div><div class="sum-l">Pendientes</div></div>
+    <div class="sum-card sum-total"><div class="sum-n">58</div><div class="sum-l">Total</div></div>
+  </div>
+
+  <div class="proc-grid" id="processes"></div>
+
+  <div class="mejoras">
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3);font-family:'DM Mono',monospace;margin-bottom:10px">Mejoras solicitadas</div>
+    <div class="mejora"><div class="mejora-title">M1 · Imprimir credenciales/carteles para cursos presenciales</div><div class="mejora-where">Portal / HubSpot</div></div>
+    <div class="mejora"><div class="mejora-title">M2 · Exportar listado de asistentes</div><div class="mejora-where">Portal / HubSpot</div></div>
+    <div class="mejora"><div class="mejora-title">M3 · Mostrar IIA Global y email en listado asistentes</div><div class="mejora-where">Portal / HubSpot</div></div>
+    <div class="mejora"><div class="mejora-title">M4 · Proceso upgrade de tramo con prorrateo automático</div><div class="mejora-where">Portal / BC</div></div>
+    <div class="mejora"><div class="mejora-title">M5 · Múltiples cursos en una compra = un Deal y Factura por curso</div><div class="mejora-where">Portal / n8n</div></div>
+    <div class="mejora"><div class="mejora-title">M6 · Integración Nirestream (streaming eventos)</div><div class="mejora-where">Portal / n8n</div></div>
+  </div>
+
+  <div class="footer">
+    <span class="footer-text">Yellow Glasses S.L. — IAI</span>
+    <span class="footer-text">Actualizado 16 abr 2026</span>
+  </div>
+</div>
+
+<script>
+const DATA = [
+  {
+    name: "Gestión de Socios", icon: "👥",
+    resolved: [
+      {n:"#28",t:"Usuarios registrados de empresa socia no pueden inscribir compañeros",d:"Cambiar subtipo a socio-representante"},
+      {n:"#30",t:"Perfil socio representante no muestra tramo/sector empresa",d:"Ajustado"},
+      {n:"—",t:"76 company_members con status inactive incorrecto",d:"Corregido: 76 activados tras cruce con HubSpot"},
+      {n:"—",t:"Vilma Tejada con rol WEB en Supabase en vez de INM",d:"Rol corregido a socio-individual"}
+    ],
+    pending: [
+      {n:"#24",t:"593 usuarios sin Subtipo de Miembro en HubSpot",d:"No se les asigna rol correcto en Supabase",c:"ALTA",who:"Milagros"},
+      {n:"#29",t:"Olga Moreno no aparece en listado para inscribir",c:"MEDIA",who:"Milagros"},
+      {n:"#31",t:'Botón "solicitar baja" sin acción en portal',c:"ALTA",who:"Milagros"},
+      {n:"#32",t:"Tarjeta perfil muestra tramo de socio (no debería)",c:"MEDIA",who:"Milagros"},
+      {n:"#38",t:"Datos actualizados en portal no sincronizan a HubSpot",c:"ALTA",who:"Milagros"},
+      {n:"—",t:"Gestionar bajas: SABA, Sofía Robredo, Luis Da Costa, GESTAMP",c:"MEDIA",who:"IAI"}
+    ]
+  },
+  {
+    name: "Ciclo de Producto", icon: "🔄",
+    resolved: [
+      {n:"#2",t:"Faltan reuniones y foros en la parte de eventos",d:"Sincronizado"},
+      {n:"—",t:"Editar cursos en HubSpot duplica en WordPress",d:"Corregido"},
+      {n:"—",t:"Moodle: Duplicate Course enviaba body incorrecto",d:"Template IDs (Presencial=51, Virtual=50, E-learning=507) + options"},
+      {n:"—",t:"Moodle: Update post-duplicate no reemplazaba __COURSE_ID__",d:"parseInt preserva placeholder"}
+    ],
+    pending: [
+      {n:"#37",t:"Publicaciones (tienda online) no visibles en web",c:"MEDIA",who:"Fátima"}
+    ]
+  },
+  {
+    name: "Inscripciones y Eventos", icon: "📋",
+    resolved: [
+      {n:"#3",t:"Buscador Campus: solo filtra por una fecha",d:"Ajustado"},
+      {n:"#4",t:"Buscador alta Socios: filtro fecha no funciona",d:"Ajustado"},
+      {n:"#5",t:"Eventos: no posible añadir asistentes",d:"Aclarado"},
+      {n:"#7",t:"3 inscripciones e-learning apetito riesgo no aparecían",d:"Inscripción realizada"},
+      {n:"#11",t:"Error al inscribir e-learning (cálculo capacidad)",d:"Campo corregido"},
+      {n:"#12",t:"Error inscribir MEDIAPRO (empresa sin company_members activo)",d:"company_members activado"},
+      {n:"#13",t:"Inscritos no registrados en Moodle",d:"Inscripciones realizadas"},
+      {n:"#15",t:"Andrea Rubio inscripción no aparecía",d:"Realizada"},
+      {n:"#16",t:"Proceso anular inscripción con créditos",d:"Ajustado"},
+      {n:"#21",t:"Ponentes aparecen como participantes",d:"Ajustado"},
+      {n:"#22",t:"Inscripciones canceladas en IMIS aparecen como participante",d:"29 product_registrations canceladas"},
+      {n:"#43",t:'Error "no son socios corporativos activos" (Esther/CLECE)',d:"company_members.status corregido"},
+      {n:"#44",t:"Prefactura solo facturaba 1 inscripción de 3",d:"Fix: crea N line items"},
+      {n:"#50",t:"Elena Saborit no en Moodle ni HubSpot",d:"Trigger fn_handle_cap_approved + webhook n8n"},
+      {n:"—",t:"Auto-approve créditos no llamaba webhook n8n",d:"Trigger añadido"},
+      {n:"—",t:"3 registrations fantasma (user_id null)",d:"Canceladas"}
+    ],
+    pending: [
+      {n:"#19",t:"Jorge Figueredo: inscripción no detectada",c:"MEDIA",who:"Milagros"},
+      {n:"—",t:"Socio Individual con créditos no puede inscribir desde admin",c:"ALTA",who:"Dev"},
+      {n:"—",t:"Inscripciones Kutxabank: 49 e-learning, 35 personas",c:"MEDIA"},
+      {n:"—",t:"Inscripciones DSV: 18 personas",c:"MEDIA"}
+    ]
+  },
+  {
+    name: "Facturación y BC", icon: "🧾",
+    resolved: [
+      {n:"#14",t:"No se puede actualizar tramo desde portal",d:"Se hace desde HubSpot"},
+      {n:"#25",t:"Prefacturas no entran en BC",d:"Environment cambiado a IAI"},
+      {n:"#36",t:"Belinda no visualiza cancelación inscripciones",d:"Permisos actualizados"},
+      {n:"#44",t:"Prefactura con 1 item en vez de 3",d:"Fix line items en workflows"},
+      {n:"#45",t:"Actualizar texto email prefacturas",d:"Actualizado"},
+      {n:"#47",t:"CIF del contacto en vez de CIF empresa",d:"Fix nifcif en 3 workflows"},
+      {n:"—",t:"dimensionCode2 igual para todas las líneas",d:"Fix: lineDimCode2 por línea"},
+      {n:"—",t:"Dirección facturación concatenada",d:"RPC devuelve campos separados + streets limpiados"},
+      {n:"—",t:"Modalidad no viene en line item → Get IVA falla",d:"Nodo Get Product tipos como fallback"},
+      {n:"—",t:"24 deals pendientes de facturar (~22.160€)",d:"Reporte generado y enviado"}
+    ],
+    pending: [
+      {n:"#26",t:"Belinda no recibe copia de prefacturas por email",c:"ALTA",who:"Belinda"},
+      {n:"#46",t:"Logotipo en prefactura se visualiza mal",c:"MEDIA",who:"Belinda"},
+      {n:"—",t:'538 usuarios con NIF "PENDIENTE" de migración IMIS',c:"MEDIA",who:"IAI"},
+      {n:"—",t:"8 deals con prefactura generada (7.090€) — revisar en BC",c:"ALTA",who:"Belinda"}
+    ]
+  },
+  {
+    name: "Acceso y Autenticación", icon: "🔐",
+    resolved: [
+      {n:"#6",t:"Usuario no recibe clave reset contraseña",d:"Proceso documentado"},
+      {n:"#9",t:"Usuario bloqueada actualizando datos",d:"Ajustado"},
+      {n:"#17",t:'URL restablecer contraseña "enlace no válido"',d:"Migración sin confirmación corregida"},
+      {n:"#34",t:"Login anómalo socio corporativo Santiago",d:"Ajustado"},
+      {n:"#48",t:"aangulos@iberdrola.es reset contraseña",d:"Contraseña reseteada"},
+      {n:"—",t:'Carolina Ferreiro OAuth "Client not found"',d:"Transitorio, funciona"},
+      {n:"—",t:"WordPress calculateWordPressRole prioriza Premium sobre ASC",d:"Identificado, pendiente fix"},
+      {n:"—",t:"get_invitation_by_token devolvía 404",d:"Schema cache recargado"}
+    ],
+    pending: [
+      {n:"#40",t:"Gmail: recuperar contraseña página en blanco",c:"ALTA"},
+      {n:"#42",t:"Pascual Saez (Telefónica) error recuperar contraseña",c:"ALTA",who:"Milagros"}
+    ]
+  },
+  {
+    name: "Portal — UX y Admin", icon: "🖥️",
+    resolved: [
+      {n:"#10",t:"Documentos Esfera Consejeros no disponibles",d:"Perfiles WordPress revisados"},
+      {n:"#20",t:"Certificados/diplomas e-learning no se habilitan",d:"Corregido"},
+      {n:"#27",t:"Horarios cursos 1h diferencia",d:"Corregido"},
+      {n:"#33",t:"Personalización vistas HubSpot",d:"Corregido (altas y bajas)"},
+      {n:"#39",t:"Dirección migrada incorrectamente desde IMIS",d:"Solucionado"},
+      {n:"—",t:'Código descuento muestra "null"',d:"Corregido"},
+      {n:"—",t:"Población vacía al usar datos facturación",d:"Corregido"},
+      {n:"—",t:"Ciudades en MAYÚSCULAS no matchean dropdown",d:"6.155 registros corregidos"},
+      {n:"—",t:"geo-data error 400 sin provincia",d:"Edge function devuelve []"},
+      {n:"—",t:'"Ir al campus" abre pestaña pero queda en portal',d:"Corregido"},
+      {n:"—",t:"Admin: ver créditos formativos por empresa",d:"Agregado"},
+      {n:"—",t:"Checkbox Redsys términos/condiciones",d:"Agregado"}
+    ],
+    pending: [
+      {n:"#8",t:"Incluir información asociación individual en enlace",c:"ALTA",who:"Milagros"},
+      {n:"#41",t:"Menú Campus Virtual texto mal alineado",c:"BAJA"}
+    ]
+  }
+];
+
+function getColor(pct){return pct>=80?'var(--green)':pct>=60?'var(--yellow)':'var(--red)'}
+
+function render(){
+  const grid=document.getElementById('processes');
+  DATA.forEach((p,i)=>{
+    const total=p.resolved.length+p.pending.length;
+    const pct=Math.round(p.resolved.length/total*100);
+    const color=getColor(pct);
+    const div=document.createElement('div');
+    div.className='proc';
+    div.innerHTML=`
+      <div class="proc-head" onclick="this.parentElement.classList.toggle('open')">
+        <span class="proc-icon">${p.icon}</span>
+        <div class="proc-info">
+          <div class="proc-name">${p.name}</div>
+          <div class="proc-bar"><div class="proc-bar-fill" style="width:${pct}%;background:${color}"></div></div>
+          <div class="proc-stats">
+            <span class="proc-pill pp-done">${p.resolved.length} resueltos</span>
+            ${p.pending.length?`<span class="proc-pill pp-pend">${p.pending.length} pendientes</span>`:''}
+          </div>
+        </div>
+        <span class="proc-pct" style="color:${color}">${pct}%</span>
+        <span class="proc-arrow">▼</span>
+      </div>
+      <div class="proc-detail">
+        ${p.pending.length?`
+        <div class="detail-sec">
+          <div class="detail-sec-title"><span>⚠️</span> Pendientes (${p.pending.length})</div>
+          ${p.pending.map(x=>`
+            <div class="issue pending">
+              <div class="issue-body">
+                <div class="issue-title">${x.t}</div>
+                ${x.d?`<div class="issue-desc">${x.d}</div>`:''}
+                <div class="issue-meta">
+                  ${x.n!=='—'?`<span class="badge b-num">${x.n}</span>`:''}
+                  ${x.c?`<span class="badge b-${x.c.toLowerCase()}">${x.c}</span>`:''}
+                  ${x.who?`<span class="badge" style="background:var(--bg);color:var(--text-3);border:1px solid var(--border)">${x.who}</span>`:''}
+                </div>
+              </div>
+            </div>`).join('')}
+        </div>`:''}
+        <div class="detail-sec">
+          <div class="detail-sec-title"><span>✅</span> Resueltos (${p.resolved.length})</div>
+          ${p.resolved.map(x=>`
+            <div class="issue resolved">
+              <div class="issue-body">
+                <div class="issue-title">${x.t}</div>
+                <div class="issue-desc">${x.d||''}</div>
+                <div class="issue-meta">
+                  ${x.n!=='—'?`<span class="badge b-num">${x.n}</span>`:''}
+                </div>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`;
+    grid.appendChild(div);
+  });
+}
+render();
+</script>
+</body>
+</html>
