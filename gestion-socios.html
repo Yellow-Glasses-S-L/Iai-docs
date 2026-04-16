@@ -1,26 +1,90 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>IAI · Modificación y Baja de Socios</title>
   <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html,body{min-height:100%;background:#f8fafc;font-family:'DM Sans',system-ui,sans-serif}
     #root{min-height:100%}
     @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-    .step-card{cursor:pointer;transition:box-shadow .15s,transform .15s}
-    .step-card:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
-    .btn{cursor:pointer;transition:all .15s;border:none;font-family:'DM Sans',sans-serif}
-    .btn:hover{opacity:.85}
+    .toggle-btn{cursor:pointer;transition:all .15s;border:none;font-family:'DM Sans',sans-serif}
+    .toggle-btn:hover{opacity:.85}
     ::-webkit-scrollbar{width:4px}
     ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:2px}
     .back-link{text-decoration:none;color:#64748b;font-size:13px;display:inline-flex;align-items:center;gap:5px}
     .back-link:hover{color:#334155}
+    @media(max-width:767px){.desktop-only{display:none!important}}
+    @media(min-width:768px){.mobile-only{display:none!important}}
+
+    /* ── DUAL-COLUMN LAYOUT ── */
+    .flow-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:0;
+      position:relative;
+    }
+    @media(max-width:767px){
+      .flow-grid{grid-template-columns:1fr;}
+    }
+
+    /* Column headers */
+    .col-header{
+      padding:10px 16px;
+      font-size:10px;
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:0.07em;
+      font-family:'DM Mono',monospace;
+      color:#94a3b8;
+      background:#f8fafc;
+      border-bottom:1px solid #e2e8f0;
+    }
+    .col-header-left{border-right:1px solid #e2e8f0;}
+    .col-header-right{color:#64748b;}
+
+    /* Row cells */
+    .step-row-left,.step-row-right{
+      padding:16px;
+      border-bottom:1px solid #f1f5f9;
+      position:relative;
+      background:white;
+      transition:background .15s;
+    }
+    .step-row-left{
+      border-right:1px solid #e2e8f0;
+    }
+
+    /* Phase header row */
+    .phase-cell{
+      padding:8px 16px 6px;
+      background:#f8fafc;
+      border-bottom:1px solid #e2e8f0;
+    }
+    .phase-cell-left{border-right:1px solid #e2e8f0;}
+
+    /* Step number badge */
+    .step-num{
+      width:22px;height:22px;border-radius:99px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:10px;font-weight:600;
+      flex-shrink:0;
+      position:relative;z-index:1;
+    }
+
+    /* System tags */
+    .sys-tag{
+      display:inline-flex;align-items:center;gap:3px;
+      border-radius:99px;padding:2px 8px;
+      font-size:10px;font-weight:500;
+      font-family:'DM Mono',monospace;
+      letter-spacing:0.02em;white-space:nowrap;
+    }
   </style>
 
 <style>
@@ -63,7 +127,6 @@ document.addEventListener('DOMContentLoaded',function(){
       <a href="renovacion-cuota.html">Renovación</a>
       <a href="estado-proyecto.html">Estado</a>
       <a href="inventario.html">Inventario</a>
-      <a href="issues.html">Incidentes</a>
     </div>
   </div>
 </nav>
@@ -71,27 +134,54 @@ document.addEventListener('DOMContentLoaded',function(){
 <script type="text/babel">
 const { useState } = React;
 
-const SYS_COLOR = {
-  usuario:"#64748b", weweb:"#8b5cf6", supabase:"#10b981",
-  n8n:"#ef4444", hubspot:"#f97316", iai_admin:"#f43f5e",
-};
-const SYS_LABEL = {
-  usuario:"Usuario / Socio", weweb:"Portal del socio",
-  supabase:"Base de datos", n8n:"Automatización",
-  hubspot:"CRM", iai_admin:"IAI (gestión interna)",
-};
-
-const FASE_STYLES = {
-  acceso:       {bg:"#eff6ff", text:"#1d4ed8", border:"#bfdbfe", label:"Acceso"},
-  edicion:      {bg:"#f5f3ff", text:"#5b21b6", border:"#ddd6fe", label:"Edición"},
-  sincronizacion:{bg:"#fef2f2",text:"#991b1b", border:"#fecaca", label:"Sincronización CRM"},
-  solicitud:    {bg:"#fffbeb", text:"#92400e", border:"#fde68a", label:"Solicitud de baja"},
-  confirmacion: {bg:"#fff1f2", text:"#9f1239", border:"#fecdd3", label:"Confirmación"},
-  cascada:      {bg:"#fef3c7", text:"#78350f", border:"#fde68a", label:"Baja en cascada"},
-  construccion: {bg:"#f1f5f9", text:"#475569", border:"#cbd5e1", label:"En construcción"},
-  cierre:       {bg:"#ecfdf5", text:"#065f46", border:"#a7f3d0", label:"Cierre"},
+// ─── COLOUR PALETTE ───────────────────────────────────────────────────────────
+const SYSTEM_COLORS = {
+  usuario:   "#64748b",
+  wordpress: "#3b82f6",
+  weweb:     "#8b5cf6",
+  supabase:  "#10b981",
+  redsys:    "#f59e0b",
+  n8n:       "#ef4444",
+  hubspot:   "#f97316",
+  moodle:    "#06b6d4",
+  bc:        "#6366f1",
+  iai_admin: "#f43f5e",
 };
 
+const SYSTEM_LABELS = {
+  usuario:   "Usuario / Socio",
+  wordpress: "Web pública",
+  weweb:     "Portal del socio",
+  supabase:  "Base de datos",
+  redsys:    "Pasarela de pago",
+  n8n:       "Automatización",
+  hubspot:   "CRM",
+  moodle:    "Campus virtual",
+  bc:        "Facturación",
+  iai_admin: "IAI (gestión interna)",
+};
+
+const FASE_COLORS = {
+  acceso:        { bg:"#eff6ff", text:"#1d4ed8", border:"#bfdbfe" },
+  edicion:       { bg:"#f5f3ff", text:"#5b21b6", border:"#ddd6fe" },
+  sincronizacion:{ bg:"#fef2f2", text:"#991b1b", border:"#fecaca" },
+  solicitud:     { bg:"#fffbeb", text:"#92400e", border:"#fde68a" },
+  confirmacion:  { bg:"#fff1f2", text:"#9f1239", border:"#fecdd3" },
+  cascada:       { bg:"#fef3c7", text:"#78350f", border:"#fde68a" },
+  cierre:        { bg:"#ecfdf5", text:"#065f46", border:"#a7f3d0" },
+};
+
+const FASE_LABELS = {
+  acceso:        "Acceso",
+  edicion:       "Edición",
+  sincronizacion:"Sincronización CRM",
+  solicitud:     "Solicitud de baja",
+  confirmacion:  "Confirmación",
+  cascada:       "Baja en cascada",
+  cierre:        "Cierre",
+};
+
+// ─── SCENARIOS ────────────────────────────────────────────────────────────────
 const SCENARIOS = {
   mod_individual: {
     icon:"✏️", label:"Modificar datos (individual)",
@@ -119,230 +209,326 @@ const SCENARIOS = {
   },
 };
 
+// ─── STEPS ────────────────────────────────────────────────────────────────────
 const ALL_STEPS = [
 
   // ── MOD INDIVIDUAL ──
-  {scenario:"mod_individual", sys:"weweb", fase:"acceso", wip:false,
+  { scenario:"mod_individual", sys:"weweb", fase:"acceso", wip:false,
     who:"El socio",
     what:"Accede a 'Mi perfil' en el portal",
     why:"El socio puede actualizar en cualquier momento sus datos personales, laborales, de facturación o sus preferencias de comunicación.",
-    tech:"Portal WeWeb → sección /perfil. Lee user_profiles del usuario autenticado."},
+    tech:"Portal WeWeb → sección /perfil. Lee user_profiles del usuario autenticado.",
+    techSystems:["weweb","supabase"] },
 
-  {scenario:"mod_individual", sys:"weweb", fase:"edicion", wip:false,
+  { scenario:"mod_individual", sys:"weweb", fase:"edicion", wip:false,
     who:"El socio",
     what:"Modifica los datos que necesita y guarda los cambios",
     why:"El socio puede actualizar datos personales (nombre, teléfono, dirección), datos laborales (empresa, cargo), datos de facturación y preferencias.",
-    tech:"Campos editables en user_profiles: first_name, last_name_1, phone, address_*, billing_*, job_title_id, linkedin_url, allow_directory_listing, marketing_consent."},
+    tech:"Campos editables en user_profiles: first_name, last_name_1, phone, address_*, billing_*, job_title_id, linkedin_url, allow_directory_listing, marketing_consent.",
+    techSystems:["weweb","supabase"] },
 
-  {scenario:"mod_individual", sys:"supabase", fase:"edicion", wip:false,
+  { scenario:"mod_individual", sys:"supabase", fase:"edicion", wip:false,
     who:"El sistema",
     what:"Guarda los cambios y registra la actividad",
     why:"Los cambios quedan guardados inmediatamente. El sistema registra qué cambió y cuándo para trazabilidad.",
-    tech:"UPDATE user_profiles. Inserción en user_activity_log. updated_at actualizado automáticamente."},
+    tech:"UPDATE user_profiles. Inserción en user_activity_log. updated_at actualizado automáticamente.",
+    techSystems:["supabase"] },
 
-  {scenario:"mod_individual", sys:"n8n", fase:"sincronizacion", wip:false,
+  { scenario:"mod_individual", sys:"n8n", fase:"sincronizacion", wip:false,
     who:"El sistema",
     what:"Sincroniza los cambios al CRM",
     why:"HubSpot se actualiza automáticamente para que IAI siempre tenga los datos del socio al día sin intervención manual.",
-    tech:"Workflow SYNC-SP-PROFILE-UPDATED-01 detecta el cambio en user_profiles → PATCH al Contacto en HubSpot con los campos actualizados."},
+    tech:"Workflow SYNC-SP-PROFILE-UPDATED-01 detecta el cambio en user_profiles → PATCH al Contacto en HubSpot con los campos actualizados.",
+    techSystems:["n8n","hubspot"] },
 
   // ── MOD ADMIN ──
-  {scenario:"mod_admin", sys:"iai_admin", fase:"acceso", wip:false,
+  { scenario:"mod_admin", sys:"iai_admin", fase:"acceso", wip:false,
     who:"El equipo de IAI",
     what:"Modifica los datos del socio desde HubSpot",
     why:"IAI gestiona los datos maestros de socios desde HubSpot. Es el sistema donde el equipo trabaja habitualmente.",
-    tech:"HubSpot CRM → ficha del Contacto. Campos sincronizados con el portal via SYNC-HS-CONTACT-V2."},
+    tech:"HubSpot CRM → ficha del Contacto. Campos sincronizados con el portal via SYNC-HS-CONTACT-V2.",
+    techSystems:["hubspot"] },
 
-  {scenario:"mod_admin", sys:"hubspot", fase:"edicion", wip:false,
+  { scenario:"mod_admin", sys:"hubspot", fase:"edicion", wip:false,
     who:"El equipo de IAI",
     what:"Actualiza los campos necesarios en la ficha del socio",
     why:"IAI puede modificar cualquier dato del socio: tipo de membresía, categoría, datos de contacto, estado de pago, observaciones internas...",
-    tech:"Propiedades HubSpot sincronizadas: membership_type, member_category, individual_member_subtype, iva_exento, payment_days, imis_id, iia_id."},
+    tech:"Propiedades HubSpot sincronizadas: membership_type, member_category, individual_member_subtype, iva_exento, payment_days, imis_id, iia_id.",
+    techSystems:["hubspot"] },
 
-  {scenario:"mod_admin", sys:"n8n", fase:"sincronizacion", wip:false,
+  { scenario:"mod_admin", sys:"n8n", fase:"sincronizacion", wip:false,
     who:"El sistema",
     what:"Propaga los cambios al portal automáticamente",
     why:"En cuanto IAI guarda los cambios en HubSpot, el portal se actualiza solo. El socio verá sus datos actualizados la próxima vez que acceda.",
-    tech:"Workflow SYNC-HS-CONTACT-V2: HubSpot webhook → n8n → UPDATE user_profiles en Supabase con los campos modificados."},
+    tech:"Workflow SYNC-HS-CONTACT-V2: HubSpot webhook → n8n → UPDATE user_profiles en Supabase con los campos modificados.",
+    techSystems:["n8n","hubspot","supabase"] },
 
-  {scenario:"mod_admin", sys:"weweb", fase:"edicion", wip:false,
+  { scenario:"mod_admin", sys:"weweb", fase:"edicion", wip:false,
     who:"El portal",
     what:"Refleja los datos actualizados para el socio",
     why:"El socio ve siempre los datos vigentes en su perfil del portal, que están en sincronía con lo que IAI tiene en HubSpot.",
-    tech:"user_profiles actualizado. WeWeb lee en tiempo real de Supabase."},
+    tech:"user_profiles actualizado. WeWeb lee en tiempo real de Supabase.",
+    techSystems:["weweb","supabase"] },
 
   // ── BAJA INDIVIDUAL ──
-  {scenario:"baja_individual", sys:"weweb", fase:"solicitud", wip:false,
+  { scenario:"baja_individual", sys:"weweb", fase:"solicitud", wip:false,
     who:"El socio o IAI admin",
     what:"Se tramita la baja desde el portal o desde el CRM",
     why:"La baja puede tramitarla el propio socio desde su perfil o el equipo de IAI desde el panel de administración. Hay dos modalidades: baja inmediata o baja al vencimiento de la cuota en curso.",
-    tech:"Portal WeWeb (admin panel) → actualización de membership_applications o directamente sobre user_profiles. IAI también puede iniciarlo desde HubSpot."},
+    tech:"Portal WeWeb (admin panel) → actualización de membership_applications o directamente sobre user_profiles. IAI también puede iniciarlo desde HubSpot.",
+    techSystems:["weweb","hubspot","supabase"] },
 
-  {scenario:"baja_individual", sys:"iai_admin", fase:"confirmacion", wip:false,
+  { scenario:"baja_individual", sys:"iai_admin", fase:"confirmacion", wip:false,
     who:"El equipo de IAI",
     what:"Confirma y procesa la baja",
     why:"IAI verifica la solicitud y decide si la baja es inmediata o al final del periodo en curso. En ningún caso hay devolución automática de cuota.",
-    tech:"Admin actualiza user_profiles: membership_status = 'baja' o membership_end_date = fecha futura. Inserción en user_activity_log."},
+    tech:"Admin actualiza user_profiles: membership_status = 'baja' o membership_end_date = fecha futura. Inserción en user_activity_log.",
+    techSystems:["iai_admin","supabase"] },
 
-  {scenario:"baja_individual", sys:"hubspot", fase:"confirmacion", wip:true,
+  { scenario:"baja_individual", sys:"hubspot", fase:"confirmacion", wip:false,
     who:"IAI admin",
     what:"Alternativa: marca la baja directamente en la ficha del contacto en HubSpot",
-    why:"El equipo de IAI trabaja habitualmente en HubSpot. Poder marcar la baja desde allí evita tener que entrar al portal de administración.",
-    tech:"🚧 EN CONSTRUCCIÓN — Ampliar SYNC-HS-CONTACT-V2 para detectar membership_status=baja en HubSpot → UPDATE user_profiles en Supabase → si el usuario pertenece a company_members, llamar lógica de remove-corporate-member y recalcular tramo."},
+    why:"El equipo de IAI trabaja habitualmente en HubSpot. Poder marcar la baja desde allí evita tener que entrar al portal de administración. El cambio se sincroniza automáticamente al portal.",
+    tech:"SYNC-HS-CONTACT-V2 detecta cambio de membership_status en HubSpot → UPDATE user_profiles en Supabase → si el usuario pertenece a company_members, ejecuta remove-corporate-member y recalcula tramo.",
+    techSystems:["hubspot","n8n","supabase"] },
 
-  {scenario:"baja_individual", sys:"supabase", fase:"confirmacion", wip:false,
+  { scenario:"baja_individual", sys:"supabase", fase:"confirmacion", wip:false,
     who:"El sistema",
     what:"Revoca el acceso de socio en el portal",
     why:"El portal deja de mostrar al usuario como socio activo. Pierde acceso a contenido exclusivo pero conserva su cuenta de usuario registrado.",
-    tech:"user_profiles: membership_status = null o 'baja'. users_roles: rol de socio eliminado. Si baja diferida, se ejecuta al llegar membership_end_date."},
+    tech:"user_profiles: membership_status = null o 'baja'. users_roles: rol de socio eliminado. Si baja diferida, se ejecuta al llegar membership_end_date.",
+    techSystems:["supabase","weweb"] },
 
-  {scenario:"baja_individual", sys:"n8n", fase:"sincronizacion", wip:false,
+  { scenario:"baja_individual", sys:"n8n", fase:"sincronizacion", wip:false,
     who:"El sistema",
     what:"Actualiza el estado en HubSpot",
     why:"El CRM queda actualizado con la fecha de baja y el nuevo estado del contacto para el seguimiento y reporting de IAI.",
-    tech:"n8n detecta cambio en user_profiles → PATCH Contacto HubSpot: membership_status, membership_end_date, member_type vacío."},
+    tech:"n8n detecta cambio en user_profiles → PATCH Contacto HubSpot: membership_status, membership_end_date, member_type vacío.",
+    techSystems:["n8n","hubspot"] },
 
   // ── BAJA CORPORATIVA ──
-  {scenario:"baja_corporativa", sys:"weweb", fase:"solicitud", wip:false,
+  { scenario:"baja_corporativa", sys:"weweb", fase:"solicitud", wip:false,
     who:"El representante o IAI admin",
     what:"Solicita la baja de la empresa o de miembros concretos",
     why:"Hay dos tipos: baja de un miembro individual del colectivo (lo gestiona el representante desde el panel de empresa) o baja de la empresa completa (lo gestiona IAI).",
-    tech:"Baja de miembro: remove-corporate-member Edge Fn → company_member_removal_requests. Baja de empresa: admin panel → companies.membership_status."},
+    tech:"Baja de miembro: remove-corporate-member Edge Fn → company_member_removal_requests. Baja de empresa: admin panel → companies.membership_status.",
+    techSystems:["weweb","supabase"] },
 
-  {scenario:"baja_corporativa", sys:"iai_admin", fase:"confirmacion", wip:false,
+  { scenario:"baja_corporativa", sys:"iai_admin", fase:"confirmacion", wip:false,
     who:"IAI admin (baja de empresa) o representante (baja de miembro)",
     what:"Confirma la baja y elige si es inmediata o al vencimiento",
     why:"Para bajas de empresa, IAI decide la fecha efectiva. Para bajas de miembros concretos, el representante puede ejecutarla directamente.",
-    tech:"companies: membership_status, membership_end_date. company_member_removal_requests: status = approved, effective_date."},
+    tech:"companies: membership_status, membership_end_date. company_member_removal_requests: status = approved, effective_date.",
+    techSystems:["iai_admin","supabase"] },
 
-  {scenario:"baja_corporativa", sys:"supabase", fase:"cascada", wip:true,
+  { scenario:"baja_corporativa", sys:"supabase", fase:"cascada", wip:false,
     who:"El sistema",
-    what:"Da de baja automáticamente a todos los miembros de la empresa",
-    why:"Cuando una empresa causa baja, todos sus empleados asociados deben quedar dados de baja también. Este proceso se ejecuta en cascada de forma automática.",
-    tech:"🚧 EN CONSTRUCCIÓN — Supabase trigger en companies: cuando membership_status → 'baja', ejecuta función que actualiza company_members (status=inactive, end_date), inserta en user_company_history y limpia membership_status en user_profiles de cada miembro."},
+    what:"Da de baja automáticamente a todos los miembros ASC de la empresa",
+    why:"Cuando se cambia el tipo_de_miembro de una empresa de COM a cualquier otro valor, todos los contactos asociados con tipo ASC pasan automáticamente a usuario-cliente (WEB). Los contactos con otros tipos (INM, WEB, etc.) no se tocan. Importante: si la empresa vuelve a ser COM, los contactos NO se re-convierten a ASC — hay que reasignarlos manualmente.",
+    tech:"n8n detecta cambio de tipo_de_miembro en HubSpot Company. Busca todos los contactos asociados con member_type=ASC. PATCH cada contacto a WEB en HubSpot. Sync a Supabase: users_roles actualizado a usuario-cliente, company_members status=inactive.",
+    techSystems:["supabase","n8n","hubspot"] },
 
-  {scenario:"baja_corporativa", sys:"n8n", fase:"cascada", wip:true,
+  { scenario:"baja_corporativa", sys:"n8n", fase:"cascada", wip:false,
     who:"El sistema",
-    what:"Actualiza HubSpot para la empresa y todos sus contactos",
-    why:"El CRM debe reflejar la baja tanto en la ficha de la empresa como en cada uno de los contactos que eran miembros del colectivo.",
-    tech:"🚧 EN CONSTRUCCIÓN — n8n escucha webhook de Supabase en companies. Para cada miembro dado de baja en cascada: PATCH Contacto HubSpot (member_type vacío, membership_end_date, individual_member_subtype vacío). PATCH Company HubSpot (membership_status=baja)."},
+    what:"Actualiza HubSpot para la empresa y todos sus contactos ASC",
+    why:"El CRM refleja la baja en tiempo real: la empresa deja de ser COM y cada contacto ASC pasa a WEB. Se sincroniza automáticamente entre HubSpot y el portal.",
+    tech:"n8n escucha cambio en companies.tipo_de_miembro. Para cada miembro ASC: PATCH Contacto HubSpot (member_type=WEB). PATCH Company HubSpot (tipo_de_miembro actualizado). Sync bidireccional HubSpot ↔ Supabase.",
+    techSystems:["n8n","hubspot"] },
 
-  {scenario:"baja_corporativa", sys:"weweb", fase:"cierre", wip:false,
+  { scenario:"baja_corporativa", sys:"weweb", fase:"cierre", wip:false,
     who:"El portal",
     what:"El portal refleja el nuevo estado para la empresa y sus miembros",
     why:"La empresa desaparece del directorio de socios corporativos. Cada miembro ve su cuenta como usuario registrado sin membresía activa.",
-    tech:"companies.membership_status = baja. company_members.status = inactive. user_profiles de cada miembro: membership_status limpio. Panel corporativo deshabilitado."},
+    tech:"companies.membership_status = baja. company_members.status = inactive. user_profiles de cada miembro: membership_status limpio. Panel corporativo deshabilitado.",
+    techSystems:["weweb","supabase"] },
 
-  {scenario:"baja_corporativa", sys:"hubspot", fase:"cierre", wip:false,
+  { scenario:"baja_corporativa", sys:"hubspot", fase:"cierre", wip:false,
     who:"El sistema",
     what:"HubSpot queda actualizado con todo el histórico",
     why:"IAI tiene en el CRM el registro completo: fecha de baja de la empresa, qué miembros tenía y cuándo causaron baja cada uno.",
-    tech:"Company HubSpot: membership_status=baja, fecha_baja. Cada Contacto: member_type vacío, membership_end_date, historial de asociación a la empresa preservado."},
+    tech:"Company HubSpot: membership_status=baja, fecha_baja. Cada Contacto: member_type vacío, membership_end_date, historial de asociación a la empresa preservado.",
+    techSystems:["hubspot"] },
 ];
 
+// ─── COMPONENTS ───────────────────────────────────────────────────────────────
 function SystemTag({ sys }) {
-  var c=SYS_COLOR[sys]||"#94a3b8"; var l=SYS_LABEL[sys]||sys;
-  return <span style={{display:"inline-flex",alignItems:"center",gap:3,background:c+"18",border:"1px solid "+c+"44",borderRadius:99,padding:"1px 8px",fontSize:10,color:c,fontWeight:500,fontFamily:"DM Mono,monospace",whiteSpace:"nowrap"}}>{l}</span>;
+  var color = SYSTEM_COLORS[sys] || "#94a3b8";
+  var label = SYSTEM_LABELS[sys] || sys;
+  return (
+    <span className="sys-tag" style={{
+      background:color+"18",
+      border:"1px solid "+color+"44",
+      color:color,
+    }}>
+      {label}
+    </span>
+  );
 }
 
 function FaseBadge({ fase }) {
-  var c=FASE_STYLES[fase]||FASE_STYLES.acceso;
-  return <span style={{display:"inline-block",padding:"2px 8px",borderRadius:99,fontSize:10,fontWeight:500,whiteSpace:"nowrap",background:c.bg,color:c.text,border:"1px solid "+c.border}}>{c.label}</span>;
+  var c = FASE_COLORS[fase] || FASE_COLORS.acceso;
+  var label = FASE_LABELS[fase] || fase;
+  return (
+    <span style={{display:"inline-block",padding:"2px 8px",borderRadius:99,
+      fontSize:10,fontWeight:500,letterSpacing:"0.03em",whiteSpace:"nowrap",
+      background:c.bg,color:c.text,border:"1px solid "+c.border}}>
+      {label}
+    </span>
+  );
 }
 
 function WipBadge() {
-  return <span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"2px 8px",borderRadius:99,fontSize:10,fontWeight:500,background:"#fef3c7",color:"#92400e",border:"1px solid #fde68a",whiteSpace:"nowrap"}}>🚧 En construcción</span>;
-}
-
-function PhaseHeader({ fase, isFirst }) {
-  var c=FASE_STYLES[fase]||FASE_STYLES.acceso;
   return (
-    <div style={{display:"flex",alignItems:"center",gap:10,margin:isFirst?"0 0 12px":"22px 0 12px"}}>
-      <div style={{width:8,height:8,borderRadius:99,background:c.text,flexShrink:0}}/>
-      <span style={{fontSize:11,fontWeight:600,color:c.text,fontFamily:"DM Mono,monospace",textTransform:"uppercase",letterSpacing:"0.07em"}}>{c.label}</span>
-      <div style={{flex:1,height:1,background:"#e2e8f0"}}/>
-    </div>
+    <span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"2px 8px",
+      borderRadius:99,fontSize:10,fontWeight:500,
+      background:"#fef3c7",color:"#92400e",border:"1px solid #fde68a",whiteSpace:"nowrap"}}>
+      🚧 En construcción
+    </span>
   );
 }
 
-function Step({ step, idx, techMode, isActive, onToggle }) {
-  var sc=SYS_COLOR[step.sys]||"#94a3b8";
-  var wipBorder = step.wip ? "#fbbf24" : null;
+// Phase header spanning both columns
+function PhaseHeaderRow({ fase }) {
+  var c = FASE_COLORS[fase] || FASE_COLORS.acceso;
+  var label = FASE_LABELS[fase] || fase;
   return (
-    <div style={{position:"relative"}}>
-      {idx>0&&<div style={{height:18,marginLeft:20}}><div style={{width:2,height:"100%",background:"#e2e8f0",borderRadius:1}}/></div>}
-      <div className="step-card" onClick={function(){onToggle(idx);}}
-        style={{background:step.wip?"#fffbeb":"white",
-          border:"1px solid "+(isActive?sc+"60":(wipBorder||"#e2e8f0")),
-          borderLeft:"3px solid "+(wipBorder||sc),
-          borderRadius:12,padding:"14px 16px",
-          display:"flex",gap:12,alignItems:"flex-start",
-          boxShadow:isActive?"0 2px 12px rgba(0,0,0,.08)":"0 1px 3px rgba(0,0,0,.04)"}}>
-        <div style={{width:32,height:32,borderRadius:99,flexShrink:0,
-          background:isActive?sc:(step.wip?"#fef3c7":"#f1f5f9"),
-          border:"2px solid "+(isActive?sc:(step.wip?"#fbbf24":"#e2e8f0")),
-          display:"flex",alignItems:"center",justifyContent:"center",
-          fontSize:step.wip?16:12,fontWeight:600,
-          color:isActive?"white":(step.wip?"#92400e":"#94a3b8"),
-          transition:"all .2s",marginTop:1}}>
-          {step.wip?"🚧":idx+1}
+    <React.Fragment>
+      <div className="phase-cell phase-cell-left">
+        <div style={{display:"flex",alignItems:"center",gap:8}}>
+          <div style={{width:7,height:7,borderRadius:99,background:c.text,flexShrink:0}}/>
+          <span style={{fontSize:10,fontWeight:600,color:c.text,
+            fontFamily:"DM Mono, monospace",textTransform:"uppercase",letterSpacing:"0.07em"}}>
+            {label}
+          </span>
+          <div style={{flex:1,height:1,background:c.border}}/>
         </div>
-        <div style={{flex:1,minWidth:0}}>
-          <div style={{display:"flex",alignItems:"flex-start",gap:8,flexWrap:"wrap",marginBottom:5}}>
-            <span style={{fontSize:13,fontWeight:600,color:"#1e293b",lineHeight:1.35,flex:1,minWidth:100}}>
-              <span style={{color:"#94a3b8",fontWeight:400,marginRight:4}}>{step.who} —</span>
-              {step.what}
-            </span>
-            <FaseBadge fase={step.fase}/>
-            {step.wip&&<WipBadge/>}
-          </div>
-          <p style={{fontSize:13,color:"#475569",lineHeight:1.6,marginBottom:6}}>{step.why}</p>
-          <SystemTag sys={step.sys}/>
-          {(techMode||isActive)&&step.tech&&(
-            <div style={{marginTop:10,padding:"8px 12px",
-              background:step.wip?"#fef9c3":"#f8fafc",
-              borderRadius:8,border:"1px solid "+(step.wip?"#fde68a":"#e2e8f0"),
-              animation:"fadeIn .2s ease"}}>
-              <div style={{fontSize:10,fontWeight:600,color:step.wip?"#92400e":"#94a3b8",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:3,fontFamily:"DM Mono,monospace"}}>
-                {step.wip?"Estado técnico":"Detalle técnico"}
-              </div>
-              <p style={{fontSize:12,color:step.wip?"#78350f":"#64748b",lineHeight:1.55,fontFamily:"DM Mono,monospace"}}>{step.tech}</p>
-            </div>
-          )}
-        </div>
-        <div style={{color:"#cbd5e1",fontSize:14,flexShrink:0,marginTop:6,transform:isActive?"rotate(180deg)":"none",transition:"transform .2s"}}>▾</div>
       </div>
-    </div>
+      <div className="phase-cell">
+        <div style={{height:7}}/>
+      </div>
+    </React.Fragment>
   );
 }
 
+function StepRow({ step, idx, hoveredRow, setHoveredRow }) {
+  var sc = SYSTEM_COLORS[step.sys] || "#94a3b8";
+  var isHovered = hoveredRow === idx;
+  var rowBg = isHovered ? (step.wip ? "#fffbeb" : "#f8fafc") : (step.wip ? "#fffef5" : "white");
+  var leftBorder = step.wip ? "#fbbf24" : sc;
+
+  return (
+    <React.Fragment>
+      {/* LEFT: functional / process */}
+      <div
+        className="step-row-left"
+        style={{background:rowBg, borderLeft:"3px solid "+leftBorder+"55"}}
+        onMouseEnter={function(){setHoveredRow(idx);}}
+        onMouseLeave={function(){setHoveredRow(null);}}>
+
+        {/* Timeline line */}
+        <div style={{
+          position:"absolute",left:27,top:0,bottom:0,
+          width:2,background:"#e2e8f0",zIndex:0,
+        }}/>
+
+        <div style={{display:"flex",gap:10,alignItems:"flex-start",position:"relative",zIndex:1}}>
+          {/* Step number */}
+          <div className="step-num" style={{
+            background:isHovered ? (step.wip ? "#fbbf24" : sc) : (step.wip ? "#fef3c7" : "#f1f5f9"),
+            border:"2px solid "+(isHovered ? (step.wip ? "#fbbf24" : sc) : (step.wip ? "#fde68a" : "#e2e8f0")),
+            color:isHovered ? "white" : (step.wip ? "#92400e" : "#94a3b8"),
+            transition:"all .2s",
+            marginTop:1,
+          }}>
+            {step.wip ? "🚧" : idx+1}
+          </div>
+
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap",marginBottom:4}}>
+              <FaseBadge fase={step.fase}/>
+              {step.wip && <WipBadge/>}
+            </div>
+            <p style={{fontSize:12,color:"#94a3b8",fontWeight:400,marginBottom:2,lineHeight:1.3}}>
+              {step.who}
+            </p>
+            <p style={{fontSize:13,fontWeight:600,color:"#1e293b",lineHeight:1.4,marginBottom:6}}>
+              {step.what}
+            </p>
+            <p style={{fontSize:12,color:"#64748b",lineHeight:1.6}}>
+              {step.why}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* RIGHT: system / technical */}
+      <div
+        className="step-row-right"
+        style={{background:rowBg}}
+        onMouseEnter={function(){setHoveredRow(idx);}}
+        onMouseLeave={function(){setHoveredRow(null);}}>
+
+        <div style={{paddingLeft:4}}>
+          {/* System tags */}
+          <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:8}}>
+            {(step.techSystems || [step.sys]).map(function(s){
+              return <SystemTag key={s} sys={s}/>;
+            })}
+          </div>
+
+          {/* Tech description */}
+          <p style={{
+            fontSize:12,color:step.wip ? "#78350f" : "#64748b",lineHeight:1.6,
+            fontFamily:"DM Mono, monospace",
+            padding:"8px 10px",
+            background:step.wip ? "#fef9c3" : "#f8fafc",
+            borderRadius:7,
+            border:"1px solid "+(step.wip ? "#fde68a" : "#e2e8f0"),
+          }}>
+            {step.tech}
+          </p>
+        </div>
+      </div>
+    </React.Fragment>
+  );
+}
+
+// ─── APP ──────────────────────────────────────────────────────────────────────
 function App() {
-  var sa=useState("mod_individual"); var scenario=sa[0]; var setScenario=sa[1];
-  var ta=useState(false); var techMode=ta[0]; var setTechMode=ta[1];
-  var aa=useState(null); var activeStep=aa[0]; var setActiveStep=aa[1];
+  var sa = useState("mod_individual"); var scenario = sa[0]; var setScenario = sa[1];
+  var ha = useState(null); var hoveredRow = ha[0]; var setHoveredRow = ha[1];
 
-  function toggle(idx){setActiveStep(activeStep===idx?null:idx);}
+  var steps = ALL_STEPS.filter(function(s){ return s.scenario === scenario; });
+  var sc = SCENARIOS[scenario];
+  var wipCount = steps.filter(function(s){ return s.wip; }).length;
 
-  var steps=ALL_STEPS.filter(function(s){return s.scenario===scenario;});
-  var sc=SCENARIOS[scenario];
-  var lastFase=null;
-  var wipCount=steps.filter(function(s){return s.wip;}).length;
-
-  // Group scenarios by AC
   var ac04 = ["mod_individual","mod_admin"];
   var ac05 = ["baja_individual","baja_corporativa"];
+
+  // Build rows: insert phase headers when fase changes
+  var rows = [];
+  var lastFase = null;
+  steps.forEach(function(step, idx){
+    var showHeader = step.fase !== lastFase;
+    lastFase = step.fase;
+    if(showHeader){
+      rows.push({ type:"phase", fase:step.fase, key:"phase-"+step.fase+"-"+idx });
+    }
+    rows.push({ type:"step", step:step, idx:idx, key:"step-"+idx });
+  });
 
   return (
     <div style={{background:"#f8fafc",minHeight:"100vh",color:"#1e293b"}}>
 
-      <div style={{background:"white",borderBottom:"1px solid #e2e8f0",padding:"16px 20px",position:"sticky",top:0,zIndex:10}}>
-        <div style={{maxWidth:720,margin:"0 auto"}}>
+      {/* ── HEADER ── */}
+      <div style={{background:"white",borderBottom:"1px solid #e2e8f0",padding:"16px 20px"}}>
+        <div style={{maxWidth:1100,margin:"0 auto"}}>
           <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}>
             <div>
               <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4,flexWrap:"wrap"}}>
                 <a href="index.html" className="back-link">← Todos los procesos</a>
                 <span style={{color:"#e2e8f0"}}>·</span>
-                <span style={{fontSize:11,color:"#94a3b8",fontFamily:"DM Mono,monospace"}}>AC-04 · AC-05</span>
+                <span style={{fontSize:11,color:"#94a3b8",fontFamily:"DM Mono, monospace"}}>AC-04 · AC-05</span>
               </div>
               <h1 style={{fontSize:20,fontWeight:600,color:"#0f172a",letterSpacing:"-0.02em"}}>
                 ✏️ Modificación y Baja de Socios
@@ -351,27 +537,26 @@ function App() {
                 Gestión del ciclo de vida del socio una vez dado de alta
               </p>
             </div>
-            <button className="btn" onClick={function(){setTechMode(!techMode);}}
-              style={{padding:"7px 14px",borderRadius:8,fontSize:12,fontWeight:500,
-                background:techMode?"#1e293b":"#f1f5f9",color:techMode?"white":"#64748b",
-                border:"1px solid "+(techMode?"#1e293b":"#e2e8f0"),flexShrink:0,marginTop:2}}>
-              {techMode?"⚙️ Técnico":"👁 Funcional"}
-            </button>
           </div>
 
-          {/* Scenario groups */}
-          <div style={{marginTop:12,display:"flex",flexDirection:"column",gap:8}}>
+          {/* Scenario selectors */}
+          <div style={{marginTop:14,display:"flex",flexDirection:"column",gap:10}}>
             {/* AC-04 */}
             <div>
-              <div style={{fontSize:10,color:"#94a3b8",fontFamily:"DM Mono,monospace",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:5}}>AC-04 · Modificación</div>
+              <div style={{fontSize:10,color:"#94a3b8",fontFamily:"DM Mono,monospace",
+                textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:6}}>
+                AC-04 · Modificación
+              </div>
               <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
                 {ac04.map(function(key){
-                  var s=SCENARIOS[key]; var active=scenario===key;
+                  var s = SCENARIOS[key]; var active = scenario === key;
                   return (
-                    <button key={key} className="btn"
-                      onClick={function(){setScenario(key);setActiveStep(null);}}
-                      style={{padding:"6px 13px",borderRadius:8,fontSize:12,fontWeight:active?600:400,
-                        background:active?s.color:"white",color:active?"white":"#64748b",
+                    <button key={key} className="toggle-btn"
+                      onClick={function(){setScenario(key);setHoveredRow(null);}}
+                      style={{padding:"6px 13px",borderRadius:8,fontSize:12,
+                        fontWeight:active?600:400,
+                        background:active?s.color:"white",
+                        color:active?"white":"#64748b",
                         border:"1px solid "+(active?s.color:"#e2e8f0")}}>
                       {s.icon} {s.label}
                     </button>
@@ -381,20 +566,29 @@ function App() {
             </div>
             {/* AC-05 */}
             <div>
-              <div style={{fontSize:10,color:"#94a3b8",fontFamily:"DM Mono,monospace",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:5}}>AC-05 · Baja</div>
+              <div style={{fontSize:10,color:"#94a3b8",fontFamily:"DM Mono,monospace",
+                textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:6}}>
+                AC-05 · Baja
+              </div>
               <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
                 {ac05.map(function(key){
-                  var s=SCENARIOS[key]; var active=scenario===key;
-                  var hasWip=ALL_STEPS.filter(function(x){return x.scenario===key&&x.wip;}).length>0;
+                  var s = SCENARIOS[key]; var active = scenario === key;
+                  var hasWip = ALL_STEPS.filter(function(x){return x.scenario===key&&x.wip;}).length > 0;
                   return (
-                    <button key={key} className="btn"
-                      onClick={function(){setScenario(key);setActiveStep(null);}}
-                      style={{padding:"6px 13px",borderRadius:8,fontSize:12,fontWeight:active?600:400,
-                        background:active?s.color:"white",color:active?"white":"#64748b",
+                    <button key={key} className="toggle-btn"
+                      onClick={function(){setScenario(key);setHoveredRow(null);}}
+                      style={{padding:"6px 13px",borderRadius:8,fontSize:12,
+                        fontWeight:active?600:400,
+                        background:active?s.color:"white",
+                        color:active?"white":"#64748b",
                         border:"1px solid "+(active?s.color:"#e2e8f0"),
                         position:"relative"}}>
                       {s.icon} {s.label}
-                      {hasWip&&<span style={{position:"absolute",top:-4,right:-4,width:8,height:8,borderRadius:99,background:"#f59e0b",border:"1px solid white"}}/>}
+                      {hasWip && (
+                        <span style={{position:"absolute",top:-4,right:-4,
+                          width:8,height:8,borderRadius:99,
+                          background:"#f59e0b",border:"1px solid white"}}/>
+                      )}
                     </button>
                   );
                 })}
@@ -403,70 +597,135 @@ function App() {
           </div>
 
           {/* Active scenario pill */}
-          <div style={{marginTop:10,padding:"7px 12px",background:sc.color+"0f",
-            border:"1px solid "+sc.color+"30",borderRadius:8,
-            display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+          <div style={{marginTop:12,padding:"7px 12px",
+            background:sc.color+"0f",border:"1px solid "+sc.color+"30",
+            borderRadius:8,display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
             <div style={{width:5,height:5,borderRadius:99,background:sc.color,flexShrink:0}}/>
             <span style={{fontSize:12,color:sc.color}}>{sc.desc}</span>
             <span style={{fontSize:12,color:"#94a3b8"}}>· {steps.length} pasos</span>
-            {wipCount>0&&<span style={{fontSize:11,color:"#92400e",background:"#fef3c7",padding:"1px 8px",borderRadius:99,border:"1px solid #fde68a"}}>🚧 {wipCount} paso{wipCount>1?"s":""} en construcción</span>}
+            {wipCount > 0 && (
+              <span style={{fontSize:11,color:"#92400e",background:"#fef3c7",
+                padding:"1px 8px",borderRadius:99,border:"1px solid #fde68a"}}>
+                🚧 {wipCount} paso{wipCount>1?"s":""} en construcción
+              </span>
+            )}
           </div>
         </div>
       </div>
 
-      {/* FLOW */}
-      <div style={{maxWidth:720,margin:"0 auto",padding:"24px 16px"}}>
+      {/* ── FLOW ── */}
+      <div style={{maxWidth:1100,margin:"0 auto",padding:"24px 16px"}}>
 
-        {steps.map(function(step,idx){
-          var showHeader=step.fase!==lastFase;
-          lastFase=step.fase;
-          return (
-            <div key={idx}>
-              {showHeader&&<PhaseHeader fase={step.fase} isFirst={idx===0}/>}
-              <Step step={step} idx={idx} techMode={techMode} isActive={activeStep===idx} onToggle={toggle}/>
+        {/* Grid container */}
+        <div style={{
+          background:"white",
+          border:"1px solid #e2e8f0",
+          borderRadius:12,
+          overflow:"hidden",
+          boxShadow:"0 1px 4px rgba(0,0,0,.05)",
+        }}>
+          {/* Column headers */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr"}}>
+            <div className="col-header col-header-left" style={{
+              display:"flex",alignItems:"center",gap:7,
+              borderRight:"1px solid #e2e8f0",
+            }}>
+              <span style={{
+                width:6,height:6,borderRadius:99,background:"#64748b",
+                display:"inline-block",flexShrink:0,
+              }}/>
+              Qué ocurre (proceso)
             </div>
-          );
-        })}
-
-        {/* End */}
-        <div style={{height:18,marginLeft:20}}><div style={{width:2,height:"100%",background:"#e2e8f0"}}/></div>
-        <div style={{display:"flex",gap:12,alignItems:"center",background:"white",
-          border:"1px solid "+(wipCount>0?"#fde68a":"#a7f3d0"),
-          borderLeft:"3px solid "+(wipCount>0?"#f59e0b":"#10b981"),
-          borderRadius:12,padding:"14px 16px",boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
-          <div style={{width:32,height:32,borderRadius:99,
-            background:wipCount>0?"#f59e0b":"#10b981",color:"white",
-            display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>
-            {wipCount>0?"🚧":"✓"}
-          </div>
-          <div>
-            <div style={{fontSize:13,fontWeight:600,color:wipCount>0?"#92400e":"#065f46"}}>
-              {wipCount>0?"Proceso parcialmente implementado":"Proceso completado"}
+            <div className="col-header col-header-right" style={{
+              display:"flex",alignItems:"center",gap:7,
+            }}>
+              <span style={{
+                width:6,height:6,borderRadius:99,background:"#10b981",
+                display:"inline-block",flexShrink:0,
+              }}/>
+              Qué hace el sistema
             </div>
-            <div style={{fontSize:12,color:"#6b7280",marginTop:1}}>{sc.end}</div>
-            {wipCount>0&&<div style={{fontSize:12,color:"#92400e",marginTop:3}}>
-              {wipCount} paso{wipCount>1?"s":""} en construcción — pendiente de implementación por el equipo técnico.
-            </div>}
           </div>
-        </div>
 
-        {/* Info */}
-        <div style={{marginTop:32,padding:"16px",background:"white",borderRadius:12,border:"1px solid #e2e8f0"}}>
-          <div style={{fontSize:11,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:12,fontFamily:"DM Mono,monospace"}}>Sistemas involucrados</div>
-          <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:12}}>
-            {Object.keys(SYS_COLOR).map(function(s){return <SystemTag key={s} sys={s}/>;})}
+          {/* Rows */}
+          <div className="flow-grid">
+            {rows.map(function(row){
+              if(row.type === "phase"){
+                return <PhaseHeaderRow key={row.key} fase={row.fase}/>;
+              }
+              return (
+                <StepRow
+                  key={row.key}
+                  step={row.step}
+                  idx={row.idx}
+                  hoveredRow={hoveredRow}
+                  setHoveredRow={setHoveredRow}
+                />
+              );
+            })}
           </div>
-          {(scenario==="baja_corporativa")&&(
-            <div style={{padding:"10px 12px",background:"#fffbeb",borderRadius:8,border:"1px solid #fde68a",marginBottom:10}}>
-              <div style={{fontSize:12,color:"#92400e",lineHeight:1.6}}>
-                <strong>🚧 Baja en cascada en desarrollo.</strong> El proceso de dar de baja automáticamente a todos los miembros de una empresa cuando esta causa baja está siendo implementado por el equipo técnico. El diseño previsto usa un trigger en Supabase para los datos y un workflow en n8n para actualizar HubSpot.
+
+          {/* End row */}
+          <div style={{
+            padding:"14px 16px",
+            borderTop:"1px solid #f1f5f9",
+            background:wipCount>0?"#fffbeb":"#f0fdf4",
+            display:"flex",alignItems:"center",gap:10,
+          }}>
+            <div style={{
+              width:28,height:28,borderRadius:99,
+              background:wipCount>0?"#f59e0b":"#10b981",
+              display:"flex",alignItems:"center",justifyContent:"center",
+              fontSize:13,flexShrink:0,color:"white",fontWeight:700,
+            }}>{wipCount>0?"🚧":"✓"}</div>
+            <div>
+              <div style={{fontSize:13,fontWeight:600,
+                color:wipCount>0?"#92400e":"#065f46"}}>
+                {wipCount>0?"Proceso parcialmente implementado":"Proceso completado"}
               </div>
+              <div style={{fontSize:12,color:"#6b7280",marginTop:1}}>{sc.end}</div>
+              {wipCount>0 && (
+                <div style={{fontSize:12,color:"#92400e",marginTop:3}}>
+                  {wipCount} paso{wipCount>1?"s":""} en construcción — pendiente de implementación por el equipo técnico.
+                </div>
+              )}
             </div>
-          )}
-          <div style={{fontSize:12,color:"#94a3b8",lineHeight:1.6}}>
-            Haz clic en cualquier paso para más detalle. Los pasos con 🚧 corresponden a funcionalidad en construcción. Activa <strong style={{color:"#1e293b"}}>modo técnico</strong> para ver los sistemas y automatizaciones implicadas.
           </div>
         </div>
+
+        {/* Legend */}
+        <div style={{
+          marginTop:20,padding:"14px 16px",
+          background:"white",borderRadius:10,
+          border:"1px solid #e2e8f0",
+          display:"flex",gap:16,alignItems:"flex-start",flexWrap:"wrap",
+        }}>
+          <div style={{flex:1,minWidth:200}}>
+            <div style={{fontSize:10,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",
+              letterSpacing:"0.06em",marginBottom:8,fontFamily:"DM Mono, monospace"}}>
+              Sistemas involucrados
+            </div>
+            <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+              {["usuario","weweb","supabase","n8n","hubspot","iai_admin"].map(function(s){
+                return <SystemTag key={s} sys={s}/>;
+              })}
+            </div>
+          </div>
+          <div style={{
+            fontSize:12,color:"#94a3b8",lineHeight:1.6,
+            borderLeft:"1px solid #f1f5f9",paddingLeft:16,
+            maxWidth:380,
+          }}>
+            La columna izquierda describe <strong style={{color:"#475569"}}>lo que ocurre</strong> desde el punto de vista del usuario o del administrador.
+            La columna derecha muestra <strong style={{color:"#475569"}}>los sistemas y las operaciones técnicas</strong> que se ejecutan en cada paso.
+            {scenario==="baja_corporativa" && (
+              <span style={{display:"block",marginTop:8,color:"#92400e"}}>
+                <strong>✅ Baja en cascada operativa.</strong> Cuando se cambia el tipo_de_miembro de una empresa de COM a otro valor en HubSpot, todos los contactos ASC pasan automáticamente a WEB. Nota: la re-conversión no es automática si la empresa vuelve a COM.
+              </span>
+            )}
+          </div>
+        </div>
+
         <div style={{height:40}}/>
       </div>
     </div>
