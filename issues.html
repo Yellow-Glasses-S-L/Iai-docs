@@ -103,16 +103,7 @@
     <a class="iai-nav-logo" href="index.html"><span class="iai-nav-dot"></span><span>IAI · Documentación</span></a>
     <div class="iai-nav-links">
       <a href="index.html">Inicio</a>
-      <a href="alta-socios.html">Alta socios</a>
-      <a href="acceso-portal.html">Acceso portal</a>
-      <a href="gestion-socios.html">Gestión socios</a>
-      <a href="ciclo-producto.html">Productos</a>
-      <a href="inscripciones-aforo-diplomas.html">Inscripciones</a>
-      <a href="administracion-pagos.html">Pagos</a>
-      <a href="consultas-reportes-notificaciones.html">Consultas</a>
-      <a href="privacidad-etica.html">Privacidad</a>
-      <a href="estado-proyecto.html">Estado</a>
-      <a href="inventario.html">Inventario</a>
+      <a href="inventario.html">Procesos</a>
       <a href="issues.html">Incidentes</a>
     </div>
 
@@ -132,9 +123,9 @@
   </div>
 
   <div class="summary">
-    <div class="sum-card sum-green"><div class="sum-n">46</div><div class="sum-l">Resueltos</div></div>
-    <div class="sum-card sum-orange"><div class="sum-n">12</div><div class="sum-l">Pendientes</div></div>
-    <div class="sum-card sum-total"><div class="sum-n">58</div><div class="sum-l">Total</div></div>
+    <div class="sum-card sum-green"><div class="sum-n">51</div><div class="sum-l">Resueltos</div></div>
+    <div class="sum-card sum-orange"><div class="sum-n">10</div><div class="sum-l">Pendientes</div></div>
+    <div class="sum-card sum-total"><div class="sum-n">61</div><div class="sum-l">Total</div></div>
   </div>
 
   <div class="proc-grid" id="processes"></div>
@@ -158,6 +149,16 @@
 <script>
 const DATA = [
   {
+    name: "Integraciones generales", icon: "🔗",
+    resolved: [
+      {n:"INC-01",t:"Nuevo usuario por invitación corporativa no llega a HubSpot",d:"Causa: flujo n8n de sincronización no estaba activado. Flujo activado y probado — el alta end-to-end (Supabase → HubSpot → WordPress) funciona correctamente."},
+      {n:"INC-02",t:"Additional Information no sincroniza a WordPress desde el portal",d:"PORTAL-01 ahora dispara SYNC-WP-01 tras el PATCH a HubSpot. Probado end-to-end — los cambios de Additional Information desde el portal se propagan a WordPress."}
+    ],
+    pending: [
+      {n:"INC-03",t:"Progreso de Moodle no visible en el histórico del socio",d:"Flujo n8n desarrollado, pendiente de pruebas y puesta en producción.",c:"ALTA",who:"Yellow Glasses"}
+    ]
+  },
+  {
     name: "Gestión de Socios", icon: "👥",
     resolved: [
       {n:"#28",t:"Usuarios registrados de empresa socia no pueden inscribir compañeros",d:"Cambiar subtipo a socio-representante"},
@@ -166,10 +167,10 @@ const DATA = [
       {n:"—",t:"Vilma Tejada con rol WEB en Supabase en vez de INM",d:"Rol corregido a socio-individual"}
     ],
     pending: [
-      {n:"#24",t:"593 usuarios sin Subtipo de Miembro en HubSpot",d:"No se les asigna rol correcto en Supabase",c:"ALTA",who:"Milagros"},
+      {n:"#24",t:"593 usuarios sin Subtipo de Miembro en HubSpot",d:"Resuelto"},
       {n:"#29",t:"Olga Moreno no aparece en listado para inscribir",c:"MEDIA",who:"Milagros"},
-      {n:"#31",t:'Botón "solicitar baja" sin acción en portal',c:"ALTA",who:"Milagros"},
-      {n:"#32",t:"Tarjeta perfil muestra tramo de socio (no debería)",c:"MEDIA",who:"Milagros"},
+      {n:"#31",t:'Botón "solicitar baja" sin acción en portal',d:"Resuelto"},
+      {n:"#32",t:"Tarjeta perfil muestra tramo de socio (no debería)",d:"Resuelto"},
       {n:"#38",t:"Datos actualizados en portal no sincronizan a HubSpot",c:"ALTA",who:"Milagros"},
       {n:"—",t:"Gestionar bajas: SABA, Sofía Robredo, Luis Da Costa, GESTAMP",c:"MEDIA",who:"IAI"}
     ]

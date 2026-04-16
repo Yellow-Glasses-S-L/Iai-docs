@@ -62,7 +62,7 @@
     .leg-dot{width:7px;height:7px;border-radius:99px;flex-shrink:0}
 
     /* STATS ROW */
-    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
     .stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-align:center}
     .stat-n{font-size:26px;font-weight:600;font-family:'DM Mono',monospace;line-height:1}
     .stat-l{font-size:11px;color:var(--text-3);margin-top:3px}
@@ -153,16 +153,7 @@ document.addEventListener('DOMContentLoaded',function(){
     </a>
     <div class="iai-nav-links">
       <a href="index.html">Inicio</a>
-      <a href="alta-socios.html">Alta socios</a>
-      <a href="acceso-portal.html">Acceso portal</a>
-      <a href="gestion-socios.html">Gestión socios</a>
-      <a href="ciclo-producto.html">Productos</a>
-      <a href="inscripciones-aforo-diplomas.html">Inscripciones</a>
-      <a href="administracion-pagos.html">Pagos</a>
-      <a href="consultas-reportes-notificaciones.html">Consultas</a>
-      <a href="privacidad-etica.html">Privacidad</a>
-      <a href="estado-proyecto.html">Estado</a>
-      <a href="inventario.html">Inventario</a>
+      <a href="inventario.html">Procesos</a>
       <a href="issues.html">Incidentes</a>
     </div>
   </div>
@@ -225,7 +216,6 @@ document.addEventListener('DOMContentLoaded',function(){
   <!-- STATS -->
   <div class="stats">
     <div class="stat"><div class="stat-n" style="color:var(--green)">13</div><div class="stat-l">Procesos documentados</div></div>
-    <div class="stat"><div class="stat-n" style="color:var(--red)">3</div><div class="stat-l">Incidentes abiertos</div><div style="font-size:10px;color:var(--green);font-family:'DM Mono',monospace;margin-top:2px">+2 resueltos ✓</div></div>
     <div class="stat"><div class="stat-n" style="color:var(--yellow)">3</div><div class="stat-l">Cambios solicitados</div></div>
     <div class="stat"><div class="stat-n" style="color:var(--purple)">6</div><div class="stat-l">Funcionalidades Fase 2</div></div>
   </div>
@@ -258,7 +248,7 @@ document.addEventListener('DOMContentLoaded',function(){
         <div class="macro-bar"><div class="macro-bar-fill" style="width:80%;background:var(--green)"></div></div>
         <div class="macro-pills">
           <span class="pill p-done">Aforo ✓</span><span class="pill p-done">Cancelación 72h ✓</span><span class="pill p-done">Diplomas ✓</span><span class="pill p-done">Invitaciones ✓</span>
-          <span class="pill p-chg">CHG auto-confirm</span><span class="pill p-inc">🐛 Progreso Moodle</span>
+          <span class="pill p-done">Auto-confirm ✓</span><span class="pill p-inc">🐛 Progreso Moodle</span>
         </div>
       </div>
 
@@ -267,7 +257,7 @@ document.addEventListener('DOMContentLoaded',function(){
         <div class="macro-bar"><div class="macro-bar-fill" style="width:75%;background:var(--green)"></div></div>
         <div class="macro-pills">
           <span class="pill p-done">Checkout 3 vías ✓</span><span class="pill p-done">Facturación BC ✓</span><span class="pill p-done">Créditos ✓</span>
-          <span class="pill p-chg">CHG abono cancelación</span>
+          <span class="pill p-done">Abono cancelación ✓</span>
         </div>
       </div>
 
@@ -304,74 +294,6 @@ document.addEventListener('DOMContentLoaded',function(){
         <div class="macro-pills">
           <span class="pill p-done">Emails transaccionales ✓</span>
           <span class="pill p-pend">Segmentación pendiente</span><span class="pill p-f2">Encuestas Vexco F2</span>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- CRITICAL PENDING -->
-  <div class="sec">
-    <div class="sec-head"><span class="sec-label">Incidentes · 2 resueltos · 3 abiertos (cierre previsto semana del 14 abril)</span><div class="sec-line"></div></div>
-    <div class="critical-list">
-
-      <div class="crit-item done">
-        <div class="crit-icon">✅</div>
-        <div class="crit-body">
-          <div class="crit-top">
-            <span class="crit-title">INC-01 · Nuevo usuario por invitación corporativa no llega a HubSpot</span>
-            <span class="crit-tag tag-done">RESUELTO</span>
-          </div>
-          <div class="crit-desc">Causa: el flujo n8n que sincroniza el alta a HubSpot estaba sin activar. Flujo activado y probado — el alta de socios funciona completa end-to-end (Supabase → HubSpot → WordPress).</div>
-          <div class="crit-owner">Yellow Glasses · Cerrado · Listo para revisión IAI</div>
-        </div>
-      </div>
-
-      <div class="crit-item done">
-        <div class="crit-icon">✅</div>
-        <div class="crit-body">
-          <div class="crit-top">
-            <span class="crit-title">INC-02 · Additional Information no sincroniza a WordPress desde el portal</span>
-            <span class="crit-tag tag-done">RESUELTO</span>
-          </div>
-          <div class="crit-desc">PORTAL-01 ahora dispara SYNC-WP-01 tras el PATCH a HubSpot. Probado end-to-end — los cambios de Additional Information desde el portal se propagan a WordPress.</div>
-          <div class="crit-owner">Yellow Glasses · Cerrado · Listo para revisión IAI</div>
-        </div>
-      </div>
-
-      <div class="crit-item inc">
-        <div class="crit-icon">🐛</div>
-        <div class="crit-body">
-          <div class="crit-top">
-            <span class="crit-title">INC-03 · Progreso de Moodle no visible en el histórico del socio</span>
-            <span class="crit-tag tag-inc">INCIDENTE</span>
-          </div>
-          <div class="crit-desc">El flujo n8n de consulta de progreso está desarrollado pero pendiente de pruebas y puesta en producción.</div>
-          <div class="crit-owner">Yellow Glasses · n8n + WeWeb</div>
-        </div>
-      </div>
-
-      <div class="crit-item inc">
-        <div class="crit-icon">🐛</div>
-        <div class="crit-body">
-          <div class="crit-top">
-            <span class="crit-title">INC-04 · Baja en cascada corporativa no implementada</span>
-            <span class="crit-tag tag-inc">INCIDENTE</span>
-          </div>
-          <div class="crit-desc">Al dar de baja una empresa, sus miembros no se dan de baja automáticamente. Requiere trigger en Supabase y workflow n8n que actualice HubSpot en cascada.</div>
-          <div class="crit-owner">Yellow Glasses · Supabase + n8n</div>
-        </div>
-      </div>
-
-      <div class="crit-item inc">
-        <div class="crit-icon">🐛</div>
-        <div class="crit-body">
-          <div class="crit-top">
-            <span class="crit-title">INC-05 · Cambio de tramo en HubSpot no se refleja en el portal</span>
-            <span class="crit-tag tag-inc">INCIDENTE</span>
-          </div>
-          <div class="crit-desc">Cuando se modifica el tramo de cuota de una empresa desde HubSpot, SYNC-HS-COMPANY-01 no detecta el cambio y Supabase no se actualiza. El portal sigue mostrando el tramo anterior.</div>
-          <div class="crit-owner">Yellow Glasses · n8n SYNC-HS-COMPANY-01</div>
         </div>
       </div>
 

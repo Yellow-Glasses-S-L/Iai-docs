@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>IAI · Inventario de Procesos</title>
+<title>IAI · Procesos</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'DM Sans',system-ui,sans-serif;background:#f8fafc;color:#1e293b;padding:24px 20px;max-width:720px;margin:0 auto}
+  body{font-family:'DM Sans',system-ui,sans-serif;background:#f8fafc;color:#1e293b}
   h2{font-size:18px;font-weight:600;color:#0f172a;margin-bottom:4px;letter-spacing:-0.02em}
   .subtitle{font-size:13px;color:#64748b;margin-bottom:20px}
   .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
@@ -36,6 +36,7 @@
 </style>
 
 <style>
+/* NAV */
 .iai-nav{position:sticky;top:0;z-index:999;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .iai-nav-inner{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:24px;height:44px;overflow-x:auto}
 .iai-nav-logo{display:flex;align-items:center;gap:7px;text-decoration:none;font-size:12px;font-weight:600;color:#0f172a;white-space:nowrap;flex-shrink:0;font-family:'DM Mono',monospace}
@@ -44,6 +45,33 @@
 .iai-nav-links a{text-decoration:none;font-size:12px;color:#64748b;padding:4px 10px;border-radius:6px;white-space:nowrap;transition:background .15s,color .15s}
 .iai-nav-links a:hover{background:#f1f5f9;color:#0f172a}
 .iai-nav-links a.active{background:#fff7ed;color:#f97316;font-weight:500}
+
+/* LAYOUT */
+.page-outer{max-width:1100px;margin:0 auto;padding:32px 20px 80px;display:flex;gap:28px;align-items:flex-start}
+
+/* SIDEBAR */
+.sidebar{width:200px;flex-shrink:0;position:sticky;top:60px}
+.sidebar-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#94a3b8;font-family:'DM Mono',monospace;margin-bottom:10px;padding:0 4px}
+.sidebar-links{display:flex;flex-direction:column;gap:2px}
+.sidebar-links a{text-decoration:none;font-size:13px;color:#475569;padding:7px 10px;border-radius:8px;transition:background .15s,color .15s;display:block;line-height:1.3}
+.sidebar-links a:hover{background:#f1f5f9;color:#0f172a}
+.sidebar-links a.current{background:#fff7ed;color:#f97316;font-weight:500}
+
+/* MAIN */
+.main-content{flex:1;min-width:0}
+
+/* MOBILE PILLS */
+.mobile-pills{display:none;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.mobile-pills a{text-decoration:none;font-size:12px;color:#475569;padding:5px 12px;border-radius:99px;border:1px solid #e2e8f0;background:#fff;transition:background .15s,color .15s,border-color .15s}
+.mobile-pills a:hover{background:#f1f5f9;color:#0f172a}
+.mobile-pills a.current{background:#fff7ed;color:#f97316;border-color:#fed7aa;font-weight:500}
+
+@media(max-width:700px){
+  .page-outer{flex-direction:column;gap:0;padding:20px 16px 60px}
+  .sidebar{display:none}
+  .mobile-pills{display:flex}
+  .summary{grid-template-columns:repeat(2,1fr)}
+}
 </style>
 <script>
 document.addEventListener('DOMContentLoaded',function(){
@@ -64,98 +92,126 @@ document.addEventListener('DOMContentLoaded',function(){
     </a>
     <div class="iai-nav-links">
       <a href="index.html">Inicio</a>
-      <a href="alta-socios.html">Alta socios</a>
-      <a href="acceso-portal.html">Acceso portal</a>
-      <a href="gestion-socios.html">Gestión socios</a>
-      <a href="ciclo-producto.html">Productos</a>
-      <a href="inscripciones-aforo-diplomas.html">Inscripciones</a>
-      <a href="administracion-pagos.html">Pagos</a>
-      <a href="consultas-reportes-notificaciones.html">Consultas</a>
-      <a href="privacidad-etica.html">Privacidad</a>
-      <a href="estado-proyecto.html">Estado</a>
-      <a href="inventario.html">Inventario</a>
+      <a href="inventario.html">Procesos</a>
       <a href="issues.html">Incidentes</a>
     </div>
   </div>
 </nav>
 
-<h2>Inventario de Procesos IAI</h2>
-<p class="subtitle">Estado de documentación · Abril 2026</p>
+<div class="page-outer">
 
-<div class="summary">
-  <div class="sm"><div class="sn" style="color:#10b981">13</div><div class="sl">Documentados</div></div>
-  <div class="sm"><div class="sn" style="color:#f59e0b">6</div><div class="sl">En construcción</div></div>
-  <div class="sm"><div class="sn" style="color:#94a3b8">7</div><div class="sl">Pendientes</div></div>
-  <div class="sm"><div class="sn" style="color:#0f172a">26</div><div class="sl">Total</div></div>
-</div>
-<div class="prog">
-  <div class="pd" style="width:50%"></div>
-  <div class="pw" style="width:23%"></div>
-</div>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-label">Páginas de proceso</div>
+    <nav class="sidebar-links">
+      <a href="alta-socios.html">Alta de socios</a>
+      <a href="acceso-portal.html">Acceso al portal</a>
+      <a href="gestion-socios.html">Gestión de socios</a>
+      <a href="ciclo-producto.html">Productos</a>
+      <a href="matricula.html">Matrícula</a>
+      <a href="inscripciones-aforo-diplomas.html">Inscripciones</a>
+      <a href="administracion-pagos.html">Pagos</a>
+      <a href="consultas-reportes-notificaciones.html">Consultas</a>
+      <a href="privacidad-etica.html">Privacidad</a>
+    </nav>
+  </aside>
 
-<div class="sec">
-  <div class="sec-head">
-    <span class="sec-title">Gestión de socios</span>
-    <span class="sec-tag t-wip">4 doc · 1 construcción</span>
-  </div>
-  <div class="row"><span class="ac">AC-01</span><div class="lbl">Alta socio individual<div class="sub">alta-socios.html</div></div><span class="badge done">Documentado</span></div>
-  <div class="row"><span class="ac">AC-02</span><div class="lbl">Alta socio corporativo<div class="sub">alta-socios.html</div></div><span class="badge done">Documentado</span></div>
-  <div class="row"><span class="ac">AC-03</span><div class="lbl">Alta usuario web · Login · SSO · Recuperación<div class="sub">acceso-portal.html</div></div><span class="badge done">Documentado</span></div>
-  <div class="row"><span class="ac">AC-04</span><div class="lbl">Modificación de socio<div class="sub">gestion-socios.html</div></div><span class="badge done">Documentado</span></div>
-  <div class="row"><span class="ac">AC-05</span><div class="lbl">Baja de socio · Cascada corporativa · Baja admin vía HubSpot<div class="sub">gestion-socios.html · cascada + baja admin operativos</div></div><span class="badge done">✅ Operativo</span></div>
-</div>
+  <!-- MAIN -->
+  <div class="main-content">
 
-<div class="sec">
-  <div class="sec-head">
-    <span class="sec-title">Gestión de productos — cursos, formaciones, eventos</span>
-    <span class="sec-tag t-wip">8 doc · 4 construcción · 1 pend</span>
-  </div>
-  <div class="row"><span class="ac">AC-06</span><div class="lbl">Alta de producto / curso<div class="sub">ciclo-producto.html</div></div><span class="badge done">Documentado</span></div>
-  <div class="row"><span class="ac">AC-07</span><div class="lbl">Autorización de datos / privacidad<div class="sub">Pendiente — marketing_consent en user_profiles</div></div><span class="badge pend">Pendiente</span></div>
-  <div class="row"><span class="ac">AC-08</span><div class="lbl">Publicación de cursos en web<div class="sub">ciclo-producto.html</div></div><span class="badge done">Documentado</span></div>
-  <div class="row"><span class="ac">AC-09</span><div class="lbl">Control de aforo y lista de espera<div class="sub">inscripciones-aforo-diplomas.html</div></div><span class="badge done">Documentado</span></div>
-  <div class="row"><span class="ac">AC-10</span><div class="lbl">Creación de cursos en Moodle<div class="sub">ciclo-producto.html</div></div><span class="badge done">Documentado</span></div>
-  <div class="row"><span class="ac">AC-11</span><div class="lbl">Nirestream · Canal Los Lunes · Pack anual · Visualización 80%<div class="sub">ciclo-producto.html filtro Los Lunes · todo en construcción</div></div><span class="badge done">✅ Operativo</span></div>
-  <div class="row"><span class="ac">AC-12</span><div class="lbl">Inscripción y cancelación · 72h hábiles · Devolución créditos<div class="sub">inscripciones-aforo-diplomas.html</div></div><span class="badge done">Documentado</span></div>
-  <div class="row"><span class="ac">AC-13</span><div class="lbl">Diplomas de asistencia · PDF firmado<div class="sub">inscripciones-aforo-diplomas.html</div></div><span class="badge done">Documentado</span></div>
-  <div class="row"><span class="ac">AC-14</span><div class="lbl">Encuestas de valoración<div class="sub">Previsto con HubSpot + Vexco · hoy manual</div></div><span class="badge done">✅ Operativo</span></div>
-  <div class="row"><span class="ac">AC-15</span><div class="lbl">Histórico de cursos por socio · Progreso Moodle<div class="sub">consultas-reportes-notificaciones.html · progreso Moodle en construcción</div></div><span class="badge done">Documentado</span></div>
-  <div class="row"><span class="ac">AC-16</span><div class="lbl">Listados de inscripciones para IAI<div class="sub">consultas-reportes-notificaciones.html</div></div><span class="badge done">Documentado</span></div>
-  <div class="row"><span class="ac">AC-17</span><div class="lbl">Recordatorios email HubSpot · Notificaciones portal<div class="sub">consultas-reportes-notificaciones.html · módulo in-app en construcción</div></div><span class="badge done">Documentado</span></div>
-</div>
+    <!-- MOBILE PILLS -->
+    <div class="mobile-pills">
+      <a href="alta-socios.html">Alta de socios</a>
+      <a href="acceso-portal.html">Acceso al portal</a>
+      <a href="gestion-socios.html">Gestión de socios</a>
+      <a href="ciclo-producto.html">Productos</a>
+      <a href="matricula.html">Matrícula</a>
+      <a href="inscripciones-aforo-diplomas.html">Inscripciones</a>
+      <a href="administracion-pagos.html">Pagos</a>
+      <a href="consultas-reportes-notificaciones.html">Consultas</a>
+      <a href="privacidad-etica.html">Privacidad</a>
+    </div>
 
-<div class="sec">
-  <div class="sec-head">
-    <span class="sec-title">Publicaciones</span>
-    <span class="sec-tag t-wip">1 doc · 2 construcción</span>
-  </div>
-  <div class="row"><span class="ac">—</span><div class="lbl">Publicación en WordPress<div class="sub">ciclo-producto.html · filtro Publicación</div></div><span class="badge done">Documentado</span></div>
-  <div class="row"><span class="ac">—</span><div class="lbl">Generación PDF · acceso protegido · URL firmada · marca de agua<div class="sub">ciclo-producto.html · Supabase Storage privado</div></div><span class="badge done">✅ Operativo</span></div>
-  <div class="row"><span class="ac">—</span><div class="lbl">Publicaciones físicas · cobro de envío según destino · gestión manual<div class="sub">ciclo-producto.html · deals.shipping_amount + gestión IAI</div></div><span class="badge done">✅ Operativo</span></div>
-</div>
+    <h2>Procesos IAI</h2>
+    <p class="subtitle">Estado de documentación · Abril 2026</p>
 
-<div class="sec">
-  <div class="sec-head">
-    <span class="sec-title">Comunicaciones y marketing</span>
-    <span class="sec-tag t-pend">0 / 4 documentados</span>
-  </div>
-  <div class="row"><span class="ac">AC-18</span><div class="lbl">Gestión de listados de envíos<div class="sub">Flags en user_profiles identificados. Sin diagrama.</div></div><span class="badge pend">Pendiente</span></div>
-  <div class="row"><span class="ac">AC-19</span><div class="lbl">Envío de comunicaciones<div class="sub">HubSpot email + n8n. Sin diagrama.</div></div><span class="badge pend">Pendiente</span></div>
-  <div class="row"><span class="ac">AC-20</span><div class="lbl">Seguimiento de comunicaciones<div class="sub">HubSpot reporting. Sin diagrama.</div></div><span class="badge pend">Pendiente</span></div>
-  <div class="row"><span class="ac">AC-21</span><div class="lbl">Gestión de leads / funnel de ventas<div class="sub">HubSpot pipeline. Sin diagrama.</div></div><span class="badge pend">Pendiente</span></div>
-</div>
+    <div class="summary">
+      <div class="sm"><div class="sn" style="color:#10b981">13</div><div class="sl">Documentados</div></div>
+      <div class="sm"><div class="sn" style="color:#f59e0b">6</div><div class="sl">En construcción</div></div>
+      <div class="sm"><div class="sn" style="color:#94a3b8">7</div><div class="sl">Pendientes</div></div>
+      <div class="sm"><div class="sn" style="color:#0f172a">26</div><div class="sl">Total</div></div>
+    </div>
+    <div class="prog">
+      <div class="pd" style="width:50%"></div>
+      <div class="pw" style="width:23%"></div>
+    </div>
 
-<div class="sec">
-  <div class="sec-head">
-    <span class="sec-title">Administración</span>
-    <span class="sec-tag t-done">✓ Completo</span>
-  </div>
-  <div class="row"><span class="ac">AC-22</span><div class="lbl">Facturación de cuotas<div class="sub">administracion-pagos.html</div></div><span class="badge done">Documentado</span></div>
-  <div class="row"><span class="ac">AC-23</span><div class="lbl">Crédito formativo y bolsa de horas · individual y empresa<div class="sub">administracion-pagos.html</div></div><span class="badge done">Documentado</span></div>
-  <div class="row"><span class="ac">AC-24</span><div class="lbl">Gestión de saldo · FIFO por caducidad<div class="sub">administracion-pagos.html</div></div><span class="badge done">Documentado</span></div>
-  <div class="row"><span class="ac">AC-25</span><div class="lbl">Facturación de inscripciones<div class="sub">administracion-pagos.html</div></div><span class="badge done">Documentado</span></div>
-  <div class="row"><span class="ac">AC-26</span><div class="lbl">Sistemas de pago · tarjeta, transferencia, crédito<div class="sub">administracion-pagos.html</div></div><span class="badge done">Documentado</span></div>
-</div>
+    <div class="sec">
+      <div class="sec-head">
+        <span class="sec-title">Gestión de socios</span>
+        <span class="sec-tag t-wip">4 doc · 1 construcción</span>
+      </div>
+      <div class="row"><span class="ac">AC-01</span><div class="lbl">Alta socio individual<div class="sub">alta-socios.html</div></div><span class="badge done">Documentado</span></div>
+      <div class="row"><span class="ac">AC-02</span><div class="lbl">Alta socio corporativo<div class="sub">alta-socios.html</div></div><span class="badge done">Documentado</span></div>
+      <div class="row"><span class="ac">AC-03</span><div class="lbl">Alta usuario web · Login · SSO · Recuperación<div class="sub">acceso-portal.html</div></div><span class="badge done">Documentado</span></div>
+      <div class="row"><span class="ac">AC-04</span><div class="lbl">Modificación de socio<div class="sub">gestion-socios.html</div></div><span class="badge done">Documentado</span></div>
+      <div class="row"><span class="ac">AC-05</span><div class="lbl">Baja de socio · Cascada corporativa · Baja admin vía HubSpot<div class="sub">gestion-socios.html · cascada + baja admin operativos</div></div><span class="badge done">✅ Operativo</span></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head">
+        <span class="sec-title">Gestión de productos — cursos, formaciones, eventos</span>
+        <span class="sec-tag t-wip">8 doc · 4 construcción · 1 pend</span>
+      </div>
+      <div class="row"><span class="ac">AC-06</span><div class="lbl">Alta de producto / curso<div class="sub">ciclo-producto.html</div></div><span class="badge done">Documentado</span></div>
+      <div class="row"><span class="ac">AC-07</span><div class="lbl">Autorización de datos / privacidad<div class="sub">Pendiente — marketing_consent en user_profiles</div></div><span class="badge pend">Pendiente</span></div>
+      <div class="row"><span class="ac">AC-08</span><div class="lbl">Publicación de cursos en web<div class="sub">ciclo-producto.html</div></div><span class="badge done">Documentado</span></div>
+      <div class="row"><span class="ac">AC-09</span><div class="lbl">Control de aforo y lista de espera<div class="sub">inscripciones-aforo-diplomas.html</div></div><span class="badge done">Documentado</span></div>
+      <div class="row"><span class="ac">AC-10</span><div class="lbl">Creación de cursos en Moodle<div class="sub">ciclo-producto.html</div></div><span class="badge done">Documentado</span></div>
+      <div class="row"><span class="ac">AC-11</span><div class="lbl">Nirestream · Canal Los Lunes · Pack anual · Visualización 80%<div class="sub">ciclo-producto.html filtro Los Lunes · todo en construcción</div></div><span class="badge done">✅ Operativo</span></div>
+      <div class="row"><span class="ac">AC-12</span><div class="lbl">Inscripción y cancelación · 72h hábiles · Devolución créditos<div class="sub">inscripciones-aforo-diplomas.html</div></div><span class="badge done">Documentado</span></div>
+      <div class="row"><span class="ac">AC-13</span><div class="lbl">Diplomas de asistencia · PDF firmado<div class="sub">inscripciones-aforo-diplomas.html</div></div><span class="badge done">Documentado</span></div>
+      <div class="row"><span class="ac">AC-14</span><div class="lbl">Encuestas de valoración<div class="sub">Previsto con HubSpot + Vexco · hoy manual</div></div><span class="badge done">✅ Operativo</span></div>
+      <div class="row"><span class="ac">AC-15</span><div class="lbl">Histórico de cursos por socio · Progreso Moodle<div class="sub">consultas-reportes-notificaciones.html · progreso Moodle en construcción</div></div><span class="badge done">Documentado</span></div>
+      <div class="row"><span class="ac">AC-16</span><div class="lbl">Listados de inscripciones para IAI<div class="sub">consultas-reportes-notificaciones.html</div></div><span class="badge done">Documentado</span></div>
+      <div class="row"><span class="ac">AC-17</span><div class="lbl">Recordatorios email HubSpot · Notificaciones portal<div class="sub">consultas-reportes-notificaciones.html · módulo in-app en construcción</div></div><span class="badge done">Documentado</span></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head">
+        <span class="sec-title">Publicaciones</span>
+        <span class="sec-tag t-wip">1 doc · 2 construcción</span>
+      </div>
+      <div class="row"><span class="ac">—</span><div class="lbl">Publicación en WordPress<div class="sub">ciclo-producto.html · filtro Publicación</div></div><span class="badge done">Documentado</span></div>
+      <div class="row"><span class="ac">—</span><div class="lbl">Generación PDF · acceso protegido · URL firmada · marca de agua<div class="sub">ciclo-producto.html · Supabase Storage privado</div></div><span class="badge done">✅ Operativo</span></div>
+      <div class="row"><span class="ac">—</span><div class="lbl">Publicaciones físicas · cobro de envío según destino · gestión manual<div class="sub">ciclo-producto.html · deals.shipping_amount + gestión IAI</div></div><span class="badge done">✅ Operativo</span></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head">
+        <span class="sec-title">Comunicaciones y marketing</span>
+        <span class="sec-tag t-pend">0 / 4 documentados</span>
+      </div>
+      <div class="row"><span class="ac">AC-18</span><div class="lbl">Gestión de listados de envíos<div class="sub">Flags en user_profiles identificados. Sin diagrama.</div></div><span class="badge pend">Pendiente</span></div>
+      <div class="row"><span class="ac">AC-19</span><div class="lbl">Envío de comunicaciones<div class="sub">HubSpot email + n8n. Sin diagrama.</div></div><span class="badge pend">Pendiente</span></div>
+      <div class="row"><span class="ac">AC-20</span><div class="lbl">Seguimiento de comunicaciones<div class="sub">HubSpot reporting. Sin diagrama.</div></div><span class="badge pend">Pendiente</span></div>
+      <div class="row"><span class="ac">AC-21</span><div class="lbl">Gestión de leads / funnel de ventas<div class="sub">HubSpot pipeline. Sin diagrama.</div></div><span class="badge pend">Pendiente</span></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head">
+        <span class="sec-title">Administración</span>
+        <span class="sec-tag t-done">✓ Completo</span>
+      </div>
+      <div class="row"><span class="ac">AC-22</span><div class="lbl">Facturación de cuotas<div class="sub">administracion-pagos.html</div></div><span class="badge done">Documentado</span></div>
+      <div class="row"><span class="ac">AC-23</span><div class="lbl">Crédito formativo y bolsa de horas · individual y empresa<div class="sub">administracion-pagos.html</div></div><span class="badge done">Documentado</span></div>
+      <div class="row"><span class="ac">AC-24</span><div class="lbl">Gestión de saldo · FIFO por caducidad<div class="sub">administracion-pagos.html</div></div><span class="badge done">Documentado</span></div>
+      <div class="row"><span class="ac">AC-25</span><div class="lbl">Facturación de inscripciones<div class="sub">administracion-pagos.html</div></div><span class="badge done">Documentado</span></div>
+      <div class="row"><span class="ac">AC-26</span><div class="lbl">Sistemas de pago · tarjeta, transferencia, crédito<div class="sub">administracion-pagos.html</div></div><span class="badge done">Documentado</span></div>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /page-outer -->
 
 </body>
 </html>
