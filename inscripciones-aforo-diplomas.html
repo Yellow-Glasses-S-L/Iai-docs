@@ -387,7 +387,7 @@ const ALL_STEPS = [
     who:"IAI admin",
     what:"Elige el rol de los invitados y si se confirman automáticamente",
     why:"Hay tres roles posibles: invitado (guest), ponente (speaker) o participante. El admin también decide si la inscripción se confirma al instante o si el usuario debe aceptar primero.",
-    tech:"attendee_role: 'guest' | 'speaker' | 'participant'. auto_confirm: true → status=confirmed directo. auto_confirm: false → status=pending + email de aceptación. 🚧 auto_confirm pendiente de implementar como parámetro explícito.",
+    tech:"attendee_role: 'guest' | 'speaker' | 'participant'. auto_confirm: true → status=confirmed directo. auto_confirm: false → status=pending + email de aceptación. auto_confirm implementado: true → status=confirmed directo, false → status=pending + email de aceptación.",
     techSystems:["iai_admin","supabase"] },
 
   { scenario:"evento_invitacion", sys:"supabase", fase:"invitacion",
