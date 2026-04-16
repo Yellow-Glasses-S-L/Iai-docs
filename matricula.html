@@ -12,10 +12,7 @@
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html,body{min-height:100%;background:#f8fafc;font-family:'DM Sans',system-ui,sans-serif}
     #root{min-height:100%}
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
     @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-    .step-card{cursor:pointer;transition:box-shadow .15s,transform .15s}
-    .step-card:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
     .toggle-btn{cursor:pointer;transition:all .15s;border:none;font-family:'DM Sans',sans-serif}
     .toggle-btn:hover{opacity:.85}
     ::-webkit-scrollbar{width:4px}
@@ -24,6 +21,122 @@
     .back-link:hover{color:#334155}
     @media(max-width:767px){.desktop-only{display:none!important}}
     @media(min-width:768px){.mobile-only{display:none!important}}
+
+    /* ── DUAL-COLUMN LAYOUT ── */
+    .flow-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:0;
+      position:relative;
+    }
+    @media(max-width:767px){
+      .flow-grid{grid-template-columns:1fr;}
+    }
+
+    /* Column headers */
+    .col-header{
+      padding:10px 16px;
+      font-size:10px;
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:0.07em;
+      font-family:'DM Mono',monospace;
+      color:#94a3b8;
+      background:#f8fafc;
+      border-bottom:1px solid #e2e8f0;
+      position:sticky;
+      top:0;
+      z-index:5;
+    }
+    .col-header-left{border-right:1px solid #e2e8f0;}
+    .col-header-right{color:#64748b;}
+
+    /* Row */
+    .step-row{
+      display:contents;
+    }
+    .step-row-left,.step-row-right{
+      padding:16px;
+      border-bottom:1px solid #f1f5f9;
+      position:relative;
+      background:white;
+      transition:background .15s;
+    }
+    .step-row-left{
+      border-right:1px solid #e2e8f0;
+    }
+    .step-row-left:hover,.step-row-right:hover{
+      background:#fafbfc;
+    }
+    /* sync hover on same row via CSS sibling — done via JS highlight instead */
+
+    /* Phase header row */
+    .phase-row{
+      display:contents;
+    }
+    .phase-cell{
+      padding:8px 16px 6px;
+      background:#f8fafc;
+      border-bottom:1px solid #e2e8f0;
+    }
+    .phase-cell-left{border-right:1px solid #e2e8f0;}
+
+    /* Timeline dot and line inside left cell */
+    .tl-dot{
+      width:10px;height:10px;border-radius:99px;
+      border:2px solid white;
+      flex-shrink:0;
+      margin-top:3px;
+      box-shadow:0 0 0 2px #e2e8f0;
+    }
+    .tl-line{
+      position:absolute;
+      left:29px;
+      top:0;bottom:0;
+      width:2px;
+      background:#e2e8f0;
+      z-index:0;
+    }
+    .tl-line-first{top:24px;}
+    .tl-line-last{bottom:calc(100% - 24px);}
+
+    /* Step number badge */
+    .step-num{
+      width:22px;height:22px;border-radius:99px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:10px;font-weight:600;
+      flex-shrink:0;
+      position:relative;z-index:1;
+    }
+
+    /* System tags */
+    .sys-tag{
+      display:inline-flex;align-items:center;gap:3px;
+      border-radius:99px;padding:2px 8px;
+      font-size:10px;font-weight:500;
+      font-family:'DM Mono',monospace;
+      letter-spacing:0.02em;white-space:nowrap;
+    }
+
+    /* Path badge */
+    .path-badge{
+      display:inline-block;padding:1px 7px;border-radius:99px;
+      font-size:10px;font-weight:500;white-space:nowrap;
+    }
+
+    /* Connector between columns — decorative arrow */
+    .col-connector{
+      position:absolute;
+      right:-8px;
+      top:50%;
+      transform:translateY(-50%);
+      width:16px;height:16px;
+      background:#e2e8f0;
+      border-radius:99px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:8px;color:#94a3b8;
+      z-index:2;
+    }
   </style>
 
 <style>
@@ -66,6 +179,7 @@ document.addEventListener('DOMContentLoaded',function(){
       <a href="renovacion-cuota.html">Renovación</a>
       <a href="estado-proyecto.html">Estado</a>
       <a href="inventario.html">Inventario</a>
+      <a href="issues.html">Incidentes</a>
     </div>
   </div>
 </nav>
@@ -119,19 +233,13 @@ const FASE_LABELS = {
 };
 
 // ─── STEPS ────────────────────────────────────────────────────────────────────
-// Each step: { sys, fase, who, what, why, tech, paths }
-// who  = actor visible para el funcional
-// what = qué ocurre (lenguaje funcional)
-// why  = para qué sirve este paso
-// tech = detalle técnico (oculto por defecto)
-// paths = ["tarjeta","transferencia","credito"] o subset
-
 const STEPS = [
   { sys:"usuario", fase:"descubrimiento",
     who:"El usuario",
     what:"Navega por el catálogo de formación en la web",
     why:"Descubre los cursos disponibles con toda la información: fechas, precios, plazas y modalidad.",
     tech:"WordPress muestra los productos publicados sincronizados desde HubSpot vía SYNC-WP-01.",
+    techSystems:["wordpress","hubspot"],
     paths:["tarjeta","transferencia","credito"] },
 
   { sys:"weweb", fase:"descubrimiento",
@@ -139,6 +247,7 @@ const STEPS = [
     what:"Muestra el botón de inscripción con el precio según tipo de socio",
     why:"El precio que ve cada usuario se adapta automáticamente: socio individual, corporativo o no socio.",
     tech:"WeWeb consulta Supabase para determinar membership_type del usuario y mostrar el precio correcto.",
+    techSystems:["weweb","supabase"],
     paths:["tarjeta","transferencia","credito"] },
 
   { sys:"usuario", fase:"inicio",
@@ -146,6 +255,7 @@ const STEPS = [
     what:"Hace clic en 'Inscribirse' e inicia sesión en el portal",
     why:"Para completar la compra es necesario tener una cuenta. Si no la tiene, puede crearla en este momento.",
     tech:"Redireccionamiento a portal.auditoresinternos.es. Autenticación vía Supabase Auth.",
+    techSystems:["weweb","supabase"],
     paths:["tarjeta","transferencia","credito"] },
 
   { sys:"weweb", fase:"inicio",
@@ -153,6 +263,7 @@ const STEPS = [
     what:"Revisa el carrito y elige cómo pagar",
     why:"Puede pagar con tarjeta de forma inmediata, por transferencia bancaria o con crédito formativo si dispone de saldo.",
     tech:"El carrito se crea en shopping_carts + shopping_cart_items. Se consulta credits_granted del user_profile.",
+    techSystems:["weweb","supabase"],
     paths:["tarjeta","transferencia","credito"] },
 
   // TARJETA
@@ -161,6 +272,7 @@ const STEPS = [
     what:"Introduce sus datos de tarjeta en la pasarela de pago segura",
     why:"El pago se procesa a través de Redsys (TPV virtual de IAI). Es instantáneo y seguro.",
     tech:"Edge Function redsys-initiate-payment genera la firma. Redsys notifica el resultado vía POST al webhook.",
+    techSystems:["redsys","supabase"],
     paths:["tarjeta"] },
 
   { sys:"supabase", fase:"confirmacion",
@@ -168,6 +280,7 @@ const STEPS = [
     what:"Confirma el pago y registra la compra automáticamente",
     why:"En cuanto Redsys confirma el cobro, el sistema registra la inscripción sin intervención manual.",
     tech:"Edge Function redsys-webhook verifica firma, actualiza cart a 'pagado', crea deals + deal_items.",
+    techSystems:["supabase","redsys"],
     paths:["tarjeta"] },
 
   // TRANSFERENCIA
@@ -176,6 +289,7 @@ const STEPS = [
     what:"Genera el pedido y envía los datos bancarios al usuario por email",
     why:"El usuario recibe un email con el número de pedido y la cuenta bancaria a la que hacer la transferencia.",
     tech:"Edge Function transfer-initiate-payment. Cart en estado pendiente_transferencia en shopping_carts.",
+    techSystems:["supabase","n8n"],
     paths:["transferencia"] },
 
   { sys:"weweb", fase:"pago",
@@ -183,6 +297,7 @@ const STEPS = [
     what:"Realiza la transferencia bancaria con el número de pedido como referencia",
     why:"El número de pedido permite a IAI identificar el pago cuando llegue al banco.",
     tech:"Estado del cart queda en pendiente_transferencia hasta confirmación manual.",
+    techSystems:["weweb","supabase"],
     paths:["transferencia"] },
 
   { sys:"supabase", fase:"confirmacion",
@@ -190,6 +305,7 @@ const STEPS = [
     what:"Confirma el ingreso bancario y activa la inscripción",
     why:"Una persona de IAI verifica el extracto bancario y marca el pago como recibido en el portal.",
     tech:"Edge Function confirm-transfer actualiza cart a 'pagado', crea deals + deal_items en Supabase.",
+    techSystems:["supabase","weweb"],
     paths:["transferencia"] },
 
   // CRÉDITO
@@ -198,6 +314,7 @@ const STEPS = [
     what:"Descuenta el crédito formativo del saldo del usuario",
     why:"Si el usuario tiene saldo de crédito formativo suficiente, la inscripción se completa al instante sin pago externo.",
     tech:"Se verifica credits_granted en user_profiles. Se descuenta y se crea el cart en estado pagado directamente.",
+    techSystems:["supabase"],
     paths:["credito"] },
 
   { sys:"supabase", fase:"confirmacion",
@@ -205,6 +322,7 @@ const STEPS = [
     what:"Registra la inscripción como completada",
     why:"El saldo ha sido descontado y la inscripción queda confirmada automáticamente.",
     tech:"deals + deal_items creados con credits_used reflejando las horas consumidas.",
+    techSystems:["supabase"],
     paths:["credito"] },
 
   // COMÚN post-pago
@@ -213,6 +331,7 @@ const STEPS = [
     what:"Registra la venta en el CRM de IAI",
     why:"Cada inscripción queda registrada en HubSpot para el seguimiento comercial, reporting y facturación.",
     tech:"n8n workflow Post-Pago crea Deal en HubSpot: etapa qualifiedtobuy → line items → closedwon.",
+    techSystems:["n8n","hubspot"],
     paths:["tarjeta","transferencia","credito"] },
 
   { sys:"moodle", fase:"entrega",
@@ -220,6 +339,7 @@ const STEPS = [
     what:"Da acceso al usuario al curso en el campus virtual",
     why:"El alumno queda matriculado automáticamente y puede acceder al curso desde campus.auditoresinternos.es.",
     tech:"n8n workflow Moodle Enrollment: crea usuario si no existe, enrol_users con el moodle_course_id del producto.",
+    techSystems:["n8n","moodle"],
     paths:["tarjeta","transferencia","credito"] },
 
   { sys:"bc", fase:"facturacion",
@@ -227,6 +347,7 @@ const STEPS = [
     what:"Genera la prefactura con el IVA correcto",
     why:"Business Central crea el documento fiscal aplicando el IVA que corresponde según la ubicación y tipo del comprador.",
     tech:"n8n consulta iai_reglas_iva en Supabase por línea de producto. PATCH a BC para crear la prefactura.",
+    techSystems:["n8n","supabase","bc"],
     paths:["tarjeta","transferencia","credito"] },
 
   { sys:"weweb", fase:"facturacion",
@@ -234,6 +355,7 @@ const STEPS = [
     what:"Ve su nueva inscripción en 'Mis cursos' y puede descargar la factura",
     why:"El portal refleja el estado actualizado: matrícula activa, pago confirmado y factura disponible.",
     tech:"Portal WeWeb lee de Supabase: product_registrations, deals, deal_items. Factura desde BC.",
+    techSystems:["weweb","supabase","bc"],
     paths:["tarjeta","transferencia","credito"] },
 ];
 
@@ -248,10 +370,11 @@ function SystemTag({ sys }) {
   var color = SYSTEM_COLORS[sys] || "#94a3b8";
   var label = SYSTEM_LABELS[sys] || sys;
   return (
-    <span style={{display:"inline-flex",alignItems:"center",gap:3,
-      background:color+"18",border:"1px solid "+color+"44",
-      borderRadius:99,padding:"1px 8px",fontSize:10,color:color,fontWeight:500,
-      fontFamily:"DM Mono, monospace",letterSpacing:"0.02em",whiteSpace:"nowrap"}}>
+    <span className="sys-tag" style={{
+      background:color+"18",
+      border:"1px solid "+color+"44",
+      color:color,
+    }}>
       {label}
     </span>
   );
@@ -269,117 +392,125 @@ function FaseBadge({ fase }) {
   );
 }
 
-function Step({ step, idx, total, techMode, isActive, onToggle }) {
-  var fc = FASE_COLORS[step.fase] || FASE_COLORS.descubrimiento;
-  var sc = SYSTEM_COLORS[step.sys] || "#94a3b8";
-  var isPathOnly = step.paths.length === 1;
-  var pathColor = isPathOnly ? PATH_INFO[step.paths[0]].color : null;
-
-  return (
-    <div style={{position:"relative"}}>
-      {/* connector */}
-      {idx > 0 && (
-        <div style={{height:20,marginLeft:20,display:"flex",alignItems:"center"}}>
-          <div style={{width:2,height:"100%",background:"#e2e8f0",borderRadius:1}}/>
-        </div>
-      )}
-
-      <div className="step-card"
-        onClick={function(){onToggle(idx);}}
-        style={{
-          background:"white",
-          border:"1px solid "+(isActive?sc+"60":"#e2e8f0"),
-          borderLeft:"3px solid "+(pathColor||sc),
-          borderRadius:12,padding:"14px 16px",
-          display:"flex",gap:12,alignItems:"flex-start",
-          boxShadow:isActive?"0 2px 12px rgba(0,0,0,.08)":"0 1px 3px rgba(0,0,0,.04)",
-        }}>
-
-        {/* Step number */}
-        <div style={{
-          width:32,height:32,borderRadius:99,flexShrink:0,
-          background:isActive?sc:"#f1f5f9",
-          border:"2px solid "+(isActive?sc:"#e2e8f0"),
-          display:"flex",alignItems:"center",justifyContent:"center",
-          fontSize:12,fontWeight:600,
-          color:isActive?"white":"#94a3b8",
-          transition:"all .2s",
-          marginTop:1,
-        }}>
-          {idx+1}
-        </div>
-
-        <div style={{flex:1,minWidth:0}}>
-          {/* Header */}
-          <div style={{display:"flex",alignItems:"flex-start",gap:8,flexWrap:"wrap",marginBottom:5}}>
-            <span style={{fontSize:13,fontWeight:600,color:"#1e293b",lineHeight:1.35,flex:1,minWidth:100}}>
-              <span style={{color:"#94a3b8",fontWeight:400,marginRight:4}}>{step.who} —</span>
-              {step.what}
-            </span>
-            <FaseBadge fase={step.fase}/>
-            {isPathOnly && (
-              <span style={{display:"inline-block",padding:"2px 8px",borderRadius:99,
-                fontSize:10,fontWeight:500,whiteSpace:"nowrap",
-                background:pathColor+"18",color:pathColor,border:"1px solid "+pathColor+"44"}}>
-                {PATH_INFO[step.paths[0]].icon} solo {PATH_INFO[step.paths[0]].label}
-              </span>
-            )}
-          </div>
-
-          {/* Functional description */}
-          <p style={{fontSize:13,color:"#475569",lineHeight:1.6,marginBottom:6}}>
-            {step.why}
-          </p>
-
-          {/* System tag */}
-          <SystemTag sys={step.sys}/>
-
-          {/* Tech detail — only when techMode or expanded */}
-          {(techMode || isActive) && step.tech && (
-            <div style={{marginTop:10,padding:"8px 12px",background:"#f8fafc",
-              borderRadius:8,border:"1px solid #e2e8f0",animation:"fadeIn .2s ease"}}>
-              <div style={{fontSize:10,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",
-                letterSpacing:"0.06em",marginBottom:3,fontFamily:"DM Mono, monospace"}}>
-                Detalle técnico
-              </div>
-              <p style={{fontSize:12,color:"#64748b",lineHeight:1.55,fontFamily:"DM Mono, monospace"}}>
-                {step.tech}
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Expand arrow */}
-        <div style={{color:"#cbd5e1",fontSize:14,flexShrink:0,marginTop:6,
-          transform:isActive?"rotate(180deg)":"none",transition:"transform .2s"}}>▾</div>
-      </div>
-    </div>
-  );
-}
-
-function PhaseHeader({ fase, isFirst }) {
+// Phase header spanning both columns
+function PhaseHeaderRow({ fase }) {
   var c = FASE_COLORS[fase] || FASE_COLORS.descubrimiento;
   var label = FASE_LABELS[fase] || fase;
   return (
-    <div style={{display:"flex",alignItems:"center",gap:10,
-      margin:isFirst?"0 0 12px":"24px 0 12px"}}>
-      <div style={{width:8,height:8,borderRadius:99,background:c.text,flexShrink:0}}/>
-      <span style={{fontSize:11,fontWeight:600,color:c.text,
-        fontFamily:"DM Mono, monospace",textTransform:"uppercase",letterSpacing:"0.07em"}}>
-        {label}
-      </span>
-      <div style={{flex:1,height:1,background:"#e2e8f0"}}/>
-    </div>
+    <React.Fragment>
+      <div className="phase-cell phase-cell-left">
+        <div style={{display:"flex",alignItems:"center",gap:8}}>
+          <div style={{width:7,height:7,borderRadius:99,background:c.text,flexShrink:0}}/>
+          <span style={{fontSize:10,fontWeight:600,color:c.text,
+            fontFamily:"DM Mono, monospace",textTransform:"uppercase",letterSpacing:"0.07em"}}>
+            {label}
+          </span>
+          <div style={{flex:1,height:1,background:c.border}}/>
+        </div>
+      </div>
+      <div className="phase-cell">
+        <div style={{height:7}}/>
+      </div>
+    </React.Fragment>
+  );
+}
+
+function StepRow({ step, idx, isFirst, isLast, hoveredRow, setHoveredRow }) {
+  var sc = SYSTEM_COLORS[step.sys] || "#94a3b8";
+  var isPathOnly = step.paths.length === 1;
+  var pathColor = isPathOnly ? PATH_INFO[step.paths[0]].color : null;
+  var isHovered = hoveredRow === idx;
+
+  var rowBg = isHovered ? "#f8fafc" : "white";
+
+  return (
+    <React.Fragment>
+      {/* LEFT: functional / process */}
+      <div
+        className="step-row-left"
+        style={{background:rowBg, borderLeft:"3px solid "+(pathColor||sc)+"55"}}
+        onMouseEnter={function(){setHoveredRow(idx);}}
+        onMouseLeave={function(){setHoveredRow(null);}}>
+
+        {/* Timeline line */}
+        <div style={{
+          position:"absolute",left:27,top:0,bottom:0,
+          width:2,background:"#e2e8f0",zIndex:0,
+        }}/>
+
+        <div style={{display:"flex",gap:10,alignItems:"flex-start",position:"relative",zIndex:1}}>
+          {/* Step number dot */}
+          <div className="step-num" style={{
+            background:isHovered?sc:"#f1f5f9",
+            border:"2px solid "+(isHovered?sc:"#e2e8f0"),
+            color:isHovered?"white":"#94a3b8",
+            transition:"all .2s",
+            marginTop:1,
+          }}>
+            {idx+1}
+          </div>
+
+          <div style={{flex:1,minWidth:0}}>
+            {/* Who + What */}
+            <div style={{display:"flex",alignItems:"flex-start",gap:6,flexWrap:"wrap",marginBottom:5}}>
+              {isPathOnly && (
+                <span className="path-badge" style={{
+                  background:pathColor+"15",color:pathColor,
+                  border:"1px solid "+pathColor+"40",marginBottom:2,
+                }}>
+                  {PATH_INFO[step.paths[0]].icon} {PATH_INFO[step.paths[0]].label}
+                </span>
+              )}
+            </div>
+            <p style={{fontSize:12,color:"#94a3b8",fontWeight:400,marginBottom:2,lineHeight:1.3}}>
+              {step.who}
+            </p>
+            <p style={{fontSize:13,fontWeight:600,color:"#1e293b",lineHeight:1.4,marginBottom:6}}>
+              {step.what}
+            </p>
+            <p style={{fontSize:12,color:"#64748b",lineHeight:1.6}}>
+              {step.why}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* RIGHT: system / technical */}
+      <div
+        className="step-row-right"
+        style={{background:rowBg}}
+        onMouseEnter={function(){setHoveredRow(idx);}}
+        onMouseLeave={function(){setHoveredRow(null);}}>
+
+        <div style={{paddingLeft:4}}>
+          {/* System tags */}
+          <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:8}}>
+            {(step.techSystems || [step.sys]).map(function(s){
+              return <SystemTag key={s} sys={s}/>;
+            })}
+          </div>
+
+          {/* Tech description */}
+          <p style={{
+            fontSize:12,color:"#64748b",lineHeight:1.6,
+            fontFamily:"DM Mono, monospace",
+            padding:"8px 10px",
+            background:"#f8fafc",
+            borderRadius:7,
+            border:"1px solid #e2e8f0",
+          }}>
+            {step.tech}
+          </p>
+        </div>
+      </div>
+    </React.Fragment>
   );
 }
 
 // ─── APP ──────────────────────────────────────────────────────────────────────
 function App() {
   var pa = useState("tarjeta"); var path = pa[0]; var setPath = pa[1];
-  var ta = useState(false); var techMode = ta[0]; var setTechMode = ta[1];
-  var aa = useState(null); var activeStep = aa[0]; var setActiveStep = aa[1];
-
-  function toggleStep(idx) { setActiveStep(activeStep === idx ? null : idx); }
+  var ha = useState(null); var hoveredRow = ha[0]; var setHoveredRow = ha[1];
 
   var steps = STEPS.filter(function(s){
     return s.paths.indexOf(path) >= 0;
@@ -387,12 +518,23 @@ function App() {
 
   var lastFase = null;
 
+  // Build rows: insert phase headers when fase changes
+  var rows = [];
+  steps.forEach(function(step, idx){
+    var showHeader = step.fase !== lastFase;
+    lastFase = step.fase;
+    if(showHeader){
+      rows.push({ type:"phase", fase:step.fase, key:"phase-"+step.fase });
+    }
+    rows.push({ type:"step", step:step, idx:idx, key:"step-"+idx });
+  });
+
   return (
     <div style={{background:"#f8fafc",minHeight:"100vh",color:"#1e293b"}}>
 
       {/* ── HEADER ── */}
-      <div style={{background:"white",borderBottom:"1px solid #e2e8f0",padding:"16px 20px",position:"sticky",top:0,zIndex:10}}>
-        <div style={{maxWidth:720,margin:"0 auto"}}>
+      <div style={{background:"white",borderBottom:"1px solid #e2e8f0",padding:"16px 20px"}}>
+        <div style={{maxWidth:1100,margin:"0 auto"}}>
           <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}>
             <div>
               <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4,flexWrap:"wrap"}}>
@@ -407,23 +549,10 @@ function App() {
                 Desde que el usuario encuentra un curso hasta que accede al campus y recibe la factura
               </p>
             </div>
-
-            {/* Tech toggle */}
-            <button className="toggle-btn"
-              onClick={function(){setTechMode(!techMode);}}
-              style={{
-                padding:"7px 14px",borderRadius:8,fontSize:12,fontWeight:500,
-                background:techMode?"#1e293b":"#f1f5f9",
-                color:techMode?"white":"#64748b",
-                border:"1px solid "+(techMode?"#1e293b":"#e2e8f0"),
-                flexShrink:0,marginTop:2,
-              }}>
-              {techMode ? "⚙️ Técnico" : "👁 Funcional"}
-            </button>
           </div>
 
           {/* Payment path */}
-          <div style={{display:"flex",alignItems:"center",gap:8,marginTop:12,flexWrap:"wrap"}}>
+          <div style={{display:"flex",alignItems:"center",gap:8,marginTop:14,flexWrap:"wrap"}}>
             <span style={{fontSize:12,color:"#94a3b8",flexShrink:0}}>Vía de pago:</span>
             <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
               {Object.entries(PATH_INFO).map(function(e){
@@ -431,7 +560,7 @@ function App() {
                 var active=path===key;
                 return (
                   <button key={key} className="toggle-btn"
-                    onClick={function(){setPath(key);setActiveStep(null);}}
+                    onClick={function(){setPath(key);setHoveredRow(null);}}
                     style={{padding:"5px 12px",borderRadius:8,fontSize:12,fontWeight:active?600:400,
                       background:active?p.color:"white",color:active?"white":"#64748b",
                       border:"1px solid "+(active?p.color:"#e2e8f0")}}>
@@ -450,54 +579,110 @@ function App() {
       </div>
 
       {/* ── FLOW ── */}
-      <div style={{maxWidth:720,margin:"0 auto",padding:"24px 16px"}}>
+      <div style={{maxWidth:1100,margin:"0 auto",padding:"24px 16px"}}>
 
-        {steps.map(function(step, idx){
-          var showHeader = step.fase !== lastFase;
-          lastFase = step.fase;
-          return (
-            <div key={idx}>
-              {showHeader && <PhaseHeader fase={step.fase} isFirst={idx===0}/>}
-              <Step step={step} idx={idx} total={steps.length}
-                techMode={techMode} isActive={activeStep===idx} onToggle={toggleStep}/>
+        {/* Grid container */}
+        <div style={{
+          background:"white",
+          border:"1px solid #e2e8f0",
+          borderRadius:12,
+          overflow:"hidden",
+          boxShadow:"0 1px 4px rgba(0,0,0,.05)",
+        }}>
+          {/* Column headers */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr"}}>
+            <div className="col-header col-header-left" style={{
+              display:"flex",alignItems:"center",gap:7,
+              borderRight:"1px solid #e2e8f0",
+            }}>
+              <span style={{
+                width:6,height:6,borderRadius:99,
+                background:"#64748b",
+                display:"inline-block",flexShrink:0,
+              }}/>
+              Qué ocurre (proceso)
             </div>
-          );
-        })}
-
-        {/* End */}
-        <div style={{height:20,marginLeft:20}}>
-          <div style={{width:2,height:"100%",background:"#e2e8f0"}}/>
-        </div>
-        <div style={{display:"flex",gap:12,alignItems:"center",
-          background:"white",border:"1px solid #a7f3d0",borderLeft:"3px solid #10b981",
-          borderRadius:12,padding:"14px 16px",
-          boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
-          <div style={{width:32,height:32,borderRadius:99,background:"#10b981",
-            display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>
-            ✓
+            <div className="col-header col-header-right" style={{
+              display:"flex",alignItems:"center",gap:7,
+            }}>
+              <span style={{
+                width:6,height:6,borderRadius:99,
+                background:"#10b981",
+                display:"inline-block",flexShrink:0,
+              }}/>
+              Qué hace el sistema
+            </div>
           </div>
-          <div>
-            <div style={{fontSize:13,fontWeight:600,color:"#065f46"}}>Proceso completado</div>
-            <div style={{fontSize:12,color:"#6b7280",marginTop:1}}>
-              El usuario tiene acceso al curso · La compra está registrada · La factura está disponible
+
+          {/* Rows */}
+          <div className="flow-grid">
+            {rows.map(function(row){
+              if(row.type === "phase"){
+                return <PhaseHeaderRow key={row.key} fase={row.fase}/>;
+              }
+              return (
+                <StepRow
+                  key={row.key}
+                  step={row.step}
+                  idx={row.idx}
+                  hoveredRow={hoveredRow}
+                  setHoveredRow={setHoveredRow}
+                />
+              );
+            })}
+          </div>
+
+          {/* End row */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr"}}>
+            <div style={{
+              padding:"14px 16px",
+              borderRight:"1px solid #e2e8f0",
+              borderTop:"1px solid #f1f5f9",
+              background:"#f0fdf4",
+              display:"flex",alignItems:"center",gap:10,
+              gridColumn:"1 / -1",
+            }}>
+              <div style={{
+                width:28,height:28,borderRadius:99,
+                background:"#10b981",
+                display:"flex",alignItems:"center",justifyContent:"center",
+                fontSize:13,flexShrink:0,color:"white",fontWeight:700,
+              }}>✓</div>
+              <div>
+                <div style={{fontSize:13,fontWeight:600,color:"#065f46"}}>Proceso completado</div>
+                <div style={{fontSize:12,color:"#6b7280",marginTop:1}}>
+                  El usuario tiene acceso al curso · La compra está registrada · La factura está disponible
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Legend */}
-        <div style={{marginTop:32,padding:"16px",background:"white",borderRadius:12,border:"1px solid #e2e8f0"}}>
-          <div style={{fontSize:11,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",
-            letterSpacing:"0.06em",marginBottom:12,fontFamily:"DM Mono, monospace"}}>
-            Sistemas involucrados
+        <div style={{
+          marginTop:20,padding:"14px 16px",
+          background:"white",borderRadius:10,
+          border:"1px solid #e2e8f0",
+          display:"flex",gap:16,alignItems:"flex-start",flexWrap:"wrap",
+        }}>
+          <div style={{flex:1,minWidth:200}}>
+            <div style={{fontSize:10,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",
+              letterSpacing:"0.06em",marginBottom:8,fontFamily:"DM Mono, monospace"}}>
+              Sistemas involucrados
+            </div>
+            <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+              {["usuario","weweb","redsys","supabase","n8n","hubspot","moodle","bc"].map(function(s){
+                return <SystemTag key={s} sys={s}/>;
+              })}
+            </div>
           </div>
-          <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-            {["usuario","weweb","redsys","supabase","hubspot","moodle","bc"].map(function(s){
-              return <SystemTag key={s} sys={s}/>;
-            })}
-          </div>
-          <div style={{marginTop:12,fontSize:12,color:"#94a3b8",lineHeight:1.6}}>
-            Haz clic en cualquier paso para ver más detalle.
-            Activa <strong style={{color:"#1e293b"}}>modo técnico</strong> para ver los sistemas y procesos de automatización involucrados en cada paso.
+          <div style={{
+            fontSize:12,color:"#94a3b8",lineHeight:1.6,
+            borderLeft:"1px solid #f1f5f9",paddingLeft:16,
+            maxWidth:340,
+          }}>
+            La columna izquierda describe <strong style={{color:"#475569"}}>lo que ocurre</strong> desde el punto de vista del usuario o del administrador.
+            La columna derecha muestra <strong style={{color:"#475569"}}>los sistemas y las operaciones técnicas</strong> que se ejecutan en paralelo.
           </div>
         </div>
 

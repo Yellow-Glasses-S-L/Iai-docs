@@ -88,17 +88,35 @@
 
     @media(max-width:580px){.summary{grid-template-columns:1fr}}
   </style>
+  <script>
+  document.addEventListener('DOMContentLoaded',function(){
+    var cur=window.location.pathname.split('/').pop()||'index.html';
+    document.querySelectorAll('.iai-nav-links a').forEach(function(a){
+      if(a.getAttribute('href')===cur)a.classList.add('active');
+    });
+  });
+  </script>
 </head>
 <body>
 <nav class="iai-nav">
   <div class="iai-nav-inner">
-    <a class="iai-nav-logo" href="index.html"><span class="iai-nav-dot"></span><span>IAI</span></a>
+    <a class="iai-nav-logo" href="index.html"><span class="iai-nav-dot"></span><span>IAI · Documentación</span></a>
     <div class="iai-nav-links">
       <a href="index.html">Inicio</a>
-      <a href="issues.html" class="active">Incidentes</a>
+      <a href="alta-socios.html">Alta socios</a>
+      <a href="acceso-portal.html">Acceso portal</a>
+      <a href="gestion-socios.html">Gestión socios</a>
+      <a href="ciclo-producto.html">Productos</a>
+      <a href="inscripciones-aforo-diplomas.html">Inscripciones</a>
+      <a href="administracion-pagos.html">Pagos</a>
+      <a href="consultas-reportes-notificaciones.html">Consultas</a>
+      <a href="privacidad-etica.html">Privacidad</a>
+      <a href="renovacion-cuota.html">Renovación</a>
       <a href="estado-proyecto.html">Estado</a>
       <a href="inventario.html">Inventario</a>
+      <a href="issues.html">Incidentes</a>
     </div>
+
   </div>
 </nav>
 
