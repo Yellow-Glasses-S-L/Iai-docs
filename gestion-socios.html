@@ -342,8 +342,8 @@ const ALL_STEPS = [
 
   { scenario:"baja_corporativa", sys:"iai_admin", fase:"confirmacion", wip:false,
     who:"IAI admin (baja de empresa) o representante (baja de miembro)",
-    what:"Confirma la baja y elige si es inmediata o al vencimiento",
-    why:"Para bajas de empresa, IAI decide la fecha efectiva. Para bajas de miembros concretos, el representante puede ejecutarla directamente.",
+    what:"Confirma la baja de forma inmediata",
+    why:"Para bajas de empresa, IAI confirma y la baja se ejecuta de inmediato. Para bajas de miembros concretos, el representante puede ejecutarla directamente.",
     tech:"companies: membership_status, membership_end_date. company_member_removal_requests: status = approved, effective_date.",
     techSystems:["iai_admin","supabase"] },
 
