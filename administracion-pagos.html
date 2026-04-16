@@ -13,14 +13,76 @@
     html,body{min-height:100%;background:#f8fafc;font-family:'DM Sans',system-ui,sans-serif}
     #root{min-height:100%}
     @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-    .step-card{cursor:pointer;transition:box-shadow .15s,transform .15s}
-    .step-card:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
     .btn{cursor:pointer;transition:all .15s;border:none;font-family:'DM Sans',sans-serif}
     .btn:hover{opacity:.85}
     ::-webkit-scrollbar{width:4px}
     ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:2px}
     .back-link{text-decoration:none;color:#64748b;font-size:13px;display:inline-flex;align-items:center;gap:5px}
     .back-link:hover{color:#334155}
+
+    /* ── DUAL-COLUMN LAYOUT ── */
+    .flow-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:0;
+      position:relative;
+    }
+    @media(max-width:767px){
+      .flow-grid{grid-template-columns:1fr;}
+    }
+
+    /* Column headers */
+    .col-header{
+      padding:10px 16px;
+      font-size:10px;
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:0.07em;
+      font-family:'DM Mono',monospace;
+      color:#94a3b8;
+      background:#f8fafc;
+      border-bottom:1px solid #e2e8f0;
+    }
+    .col-header-left{border-right:1px solid #e2e8f0;}
+    .col-header-right{color:#64748b;}
+
+    /* Phase header row */
+    .phase-cell{
+      padding:8px 16px 6px;
+      background:#f8fafc;
+      border-bottom:1px solid #e2e8f0;
+    }
+    .phase-cell-left{border-right:1px solid #e2e8f0;}
+
+    /* Step row cells */
+    .step-row-left,.step-row-right{
+      padding:16px;
+      border-bottom:1px solid #f1f5f9;
+      position:relative;
+      background:white;
+      transition:background .15s;
+    }
+    .step-row-left{
+      border-right:1px solid #e2e8f0;
+    }
+
+    /* Step number badge */
+    .step-num{
+      width:22px;height:22px;border-radius:99px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:10px;font-weight:600;
+      flex-shrink:0;
+      position:relative;z-index:1;
+    }
+
+    /* System tags */
+    .sys-tag{
+      display:inline-flex;align-items:center;gap:3px;
+      border-radius:99px;padding:2px 8px;
+      font-size:10px;font-weight:500;
+      font-family:'DM Mono',monospace;
+      letter-spacing:0.02em;white-space:nowrap;
+    }
   </style>
 
 <style>
@@ -71,15 +133,26 @@ document.addEventListener('DOMContentLoaded',function(){
 <script type="text/babel">
 const { useState } = React;
 
+// ─── COLOUR PALETTE ──────────────────────────────────────────────────────────
 const SYS_COLOR = {
-  usuario:"#64748b", weweb:"#8b5cf6", supabase:"#10b981",
-  redsys:"#f59e0b", n8n:"#ef4444", hubspot:"#f97316",
-  bc:"#6366f1", iai_admin:"#f43f5e",
+  usuario:   "#64748b",
+  weweb:     "#8b5cf6",
+  supabase:  "#10b981",
+  redsys:    "#f59e0b",
+  n8n:       "#ef4444",
+  hubspot:   "#f97316",
+  bc:        "#6366f1",
+  iai_admin: "#f43f5e",
 };
 const SYS_LABEL = {
-  usuario:"Usuario / Socio", weweb:"Portal del socio", supabase:"Base de datos",
-  redsys:"Pasarela de pago", n8n:"Automatización", hubspot:"CRM",
-  bc:"Facturación (BC)", iai_admin:"IAI (gestión interna)",
+  usuario:   "Usuario / Socio",
+  weweb:     "Portal del socio",
+  supabase:  "Base de datos",
+  redsys:    "Pasarela de pago",
+  n8n:       "Automatización",
+  hubspot:   "CRM",
+  bc:        "Facturación (BC)",
+  iai_admin: "IAI (gestión interna)",
 };
 
 const FASE_STYLES = {
@@ -127,235 +200,364 @@ const SCENARIOS = {
   },
 };
 
+// ─── STEPS (with techSystems array per step) ─────────────────────────────────
 const ALL_STEPS = [
 
   // ── CRÉDITO INDIVIDUAL ──
-  {scenario:"credito_individual", sys:"weweb", fase:"compra",
+  { scenario:"credito_individual", sys:"weweb", fase:"compra",
     who:"El socio (individual o empresa)",
     what:"Compra el crédito formativo, habitualmente junto con la cuota anual",
     why:"El crédito formativo tiene un precio preferencial y está pensado para comprarse una vez al año, normalmente en el momento del alta o renovación. Tanto socios individuales como empresas pueden adquirirlo.",
-    tech:"Productos con credit_type='credito_formativo' en deal_items. credits_granted = horas del paquete. credits_expires_at = fecha de caducidad (normalmente 1 año)."},
+    tech:"Productos con credit_type='credito_formativo' en deal_items. credits_granted = horas del paquete. credits_expires_at = fecha de caducidad (normalmente 1 año).",
+    techSystems:["weweb","supabase"] },
 
-  {scenario:"credito_individual", sys:"redsys", fase:"pago",
+  { scenario:"credito_individual", sys:"redsys", fase:"pago",
     who:"El socio",
     what:"Paga el crédito con tarjeta o transferencia",
     why:"La compra del crédito se paga igual que cualquier otro producto. Si se compra junto con la cuota anual, se gestiona en la misma operación.",
-    tech:"Flujo estándar de checkout. deal_items.credit_type='credito_formativo', credits_granted=horas compradas."},
+    tech:"Flujo estándar de checkout. deal_items.credit_type='credito_formativo', credits_granted=horas compradas.",
+    techSystems:["redsys","supabase"] },
 
-  {scenario:"credito_individual", sys:"supabase", fase:"activacion",
+  { scenario:"credito_individual", sys:"supabase", fase:"activacion",
     who:"El sistema",
     what:"Activa el saldo de crédito en la cuenta del socio o empresa",
     why:"Una vez confirmado el pago, el crédito queda disponible de forma inmediata. El saldo se puede consultar en cualquier momento desde el portal.",
-    tech:"deal_items con credits_granted > 0 y credits_used = 0. Saldo disponible = SUM(credits_granted) - SUM(credits_used) de los deal_items activos no caducados."},
+    tech:"deal_items con credits_granted > 0 y credits_used = 0. Saldo disponible = SUM(credits_granted) - SUM(credits_used) de los deal_items activos no caducados.",
+    techSystems:["supabase"] },
 
-  {scenario:"credito_individual", sys:"weweb", fase:"uso",
+  { scenario:"credito_individual", sys:"weweb", fase:"uso",
     who:"El socio o empleado de empresa",
     what:"Usa el crédito para pagar una inscripción a un curso",
     why:"Al inscribirse en cualquier formación, el socio puede elegir 'Pagar con crédito formativo' si tiene saldo suficiente. Se descuenta automáticamente.",
-    tech:"Checkout verifica credits_granted disponibles. credit_allocations registra el consumo. credits_used actualizado en los deal_items correspondientes."},
+    tech:"Checkout verifica credits_granted disponibles. credit_allocations registra el consumo. credits_used actualizado en los deal_items correspondientes.",
+    techSystems:["weweb","supabase"] },
 
-  {scenario:"credito_individual", sys:"supabase", fase:"uso",
+  { scenario:"credito_individual", sys:"supabase", fase:"uso",
     who:"El sistema",
     what:"Descuenta el crédito usando el método FIFO por caducidad",
     why:"Si hay varios paquetes de crédito con distintas fechas de caducidad, el sistema descuenta primero del que caduca antes para evitar perder saldo.",
-    tech:"credit_allocations: grant_deal_item_id (crédito de origen), consumption_deal_item_id (inscripción que consume), hours_allocated, status=approved."},
+    tech:"credit_allocations: grant_deal_item_id (crédito de origen), consumption_deal_item_id (inscripción que consume), hours_allocated, status=approved.",
+    techSystems:["supabase"] },
 
   // ── HORAS CORPORATIVAS ──
-  {scenario:"horas_corporativas", sys:"weweb", fase:"compra",
+  { scenario:"horas_corporativas", sys:"weweb", fase:"compra",
     who:"El socio (individual o empresa)",
     what:"Compra una bolsa de horas formativas cuando las necesita",
     why:"La bolsa de horas no tiene restricción de frecuencia — se puede comprar en cualquier momento durante el año. Es la opción flexible para formarse más allá del crédito anual. Las empresas la usan para gestionar horas entre sus empleados.",
-    tech:"Productos con credit_type='hora_formativa'. deal_items.credits_granted = horas compradas. Sin límite de compras por año."},
+    tech:"Productos con credit_type='hora_formativa'. deal_items.credits_granted = horas compradas. Sin límite de compras por año.",
+    techSystems:["weweb","supabase"] },
 
-  {scenario:"horas_corporativas", sys:"weweb", fase:"uso",
+  { scenario:"horas_corporativas", sys:"weweb", fase:"uso",
     who:"El socio o empleado de empresa",
     what:"Usa las horas para inscribirse en una formación",
     why:"Al inscribirse, puede elegir 'Pagar con bolsa de horas'. Si es un empleado de empresa, la solicitud requiere aprobación del representante. Si es individual, el descuento es inmediato.",
-    tech:"Individual: descuento inmediato igual que crédito formativo. Empresa: credit_allocation_participants status='pending' hasta aprobación del representante."},
+    tech:"Individual: descuento inmediato igual que crédito formativo. Empresa: credit_allocation_participants status='pending' hasta aprobación del representante.",
+    techSystems:["weweb","supabase"] },
 
-  {scenario:"horas_corporativas", sys:"weweb", fase:"aprobacion",
+  { scenario:"horas_corporativas", sys:"weweb", fase:"aprobacion",
     who:"El representante de empresa",
     what:"Recibe la solicitud y la aprueba o rechaza",
     why:"El representante controla qué formaciones se cubren con el presupuesto formativo de la empresa. Tiene 3 días hábiles para decidir.",
-    tech:"Panel corporativo WeWeb muestra solicitudes pendientes. Si no se aprueba/rechaza en 3 días hábiles Madrid → aprobación automática (expires_at en credit_allocation_participants)."},
+    tech:"Panel corporativo WeWeb muestra solicitudes pendientes. Si no se aprueba/rechaza en 3 días hábiles Madrid → aprobación automática (expires_at en credit_allocation_participants).",
+    techSystems:["weweb","supabase"] },
 
-  {scenario:"horas_corporativas", sys:"supabase", fase:"aprobacion",
+  { scenario:"horas_corporativas", sys:"supabase", fase:"aprobacion",
     who:"El sistema",
     what:"Procesa la aprobación y descuenta las horas",
     why:"Al aprobar, el sistema descuenta las horas del saldo de la empresa y confirma la inscripción del empleado.",
-    tech:"approve-credit-allocation Edge Fn: actualiza credit_allocation_participants status='approved' → n8n webhook → crea deal en HubSpot → inscripción confirmada en product_registrations."},
+    tech:"approve-credit-allocation Edge Fn: actualiza credit_allocation_participants status='approved' → n8n webhook → crea deal en HubSpot → inscripción confirmada en product_registrations.",
+    techSystems:["supabase","n8n","hubspot"] },
 
-  {scenario:"horas_corporativas", sys:"n8n", fase:"aprobacion",
+  { scenario:"horas_corporativas", sys:"n8n", fase:"aprobacion",
     who:"El sistema",
     what:"Registra la operación en HubSpot y notifica al empleado",
     why:"La aprobación queda registrada en el CRM. El empleado recibe confirmación de su inscripción.",
-    tech:"n8n webhook /creditos/aprobacion-confirmada: crea deal en HubSpot con line items, asocia contacto, mueve a closedwon. Notificación al empleado."},
+    tech:"n8n webhook /creditos/aprobacion-confirmada: crea deal en HubSpot con line items, asocia contacto, mueve a closedwon. Notificación al empleado.",
+    techSystems:["n8n","hubspot"] },
 
   // ── FACTURACIÓN CUOTAS ──
-  {scenario:"facturacion_cuotas", sys:"iai_admin", fase:"facturacion",
+  { scenario:"facturacion_cuotas", sys:"iai_admin", fase:"facturacion",
     who:"IAI (administración)",
     what:"Confirma el pago de la cuota anual recibido por transferencia",
     why:"Las cuotas de socio solo se pagan por transferencia. IAI verifica el ingreso en el banco y lo marca como recibido en el portal.",
-    tech:"Admin panel → deal actualizado a status=pagado en Supabase. HubSpot deal → closedwon vía n8n."},
+    tech:"Admin panel → deal actualizado a status=pagado en Supabase. HubSpot deal → closedwon vía n8n.",
+    techSystems:["iai_admin","supabase","n8n"] },
 
-  {scenario:"facturacion_cuotas", sys:"n8n", fase:"facturacion",
+  { scenario:"facturacion_cuotas", sys:"n8n", fase:"facturacion",
     who:"El sistema",
     what:"Crea el pedido en Business Central con el IVA correcto",
     why:"Una vez confirmado el pago, el sistema genera el pedido en el sistema contable de IAI con el IVA que corresponde según la ubicación y tipología del socio.",
-    tech:"n8n consulta iai_reglas_iva en Supabase por tipología. Crea pedido en BC. Registro en prefactura_queue para seguimiento."},
+    tech:"n8n consulta iai_reglas_iva en Supabase por tipología. Crea pedido en BC. Registro en prefactura_queue para seguimiento.",
+    techSystems:["n8n","supabase","bc"] },
 
-  {scenario:"facturacion_cuotas", sys:"bc", fase:"facturacion",
+  { scenario:"facturacion_cuotas", sys:"bc", fase:"facturacion",
     who:"El sistema",
     what:"Business Central genera la factura definitiva",
     why:"Una vez registrado el pedido, BC procesa la operación y emite la factura oficial con todos los datos fiscales.",
-    tech:"BC genera factura. n8n workflow cron vigila prefactura_queue periódicamente. Cuando BC confirma la factura → n8n la recupera."},
+    tech:"BC genera factura. n8n workflow cron vigila prefactura_queue periódicamente. Cuando BC confirma la factura → n8n la recupera.",
+    techSystems:["bc","n8n"] },
 
-  {scenario:"facturacion_cuotas", sys:"n8n", fase:"entrega",
+  { scenario:"facturacion_cuotas", sys:"n8n", fase:"entrega",
     who:"El sistema",
     what:"Envía la factura al socio por email y la publica en el portal",
     why:"El socio recibe la factura en su correo y también puede descargarla desde su área de facturación en el portal cuando quiera.",
-    tech:"n8n cron detecta factura generada en BC → email al socio con PDF adjunto → actualiza invoices en Supabase → portal refleja disponibilidad."},
+    tech:"n8n cron detecta factura generada en BC → email al socio con PDF adjunto → actualiza invoices en Supabase → portal refleja disponibilidad.",
+    techSystems:["n8n","supabase","weweb"] },
 
   // ── FACTURACIÓN INSCRIPCIONES ──
-  {scenario:"facturacion_inscripciones", sys:"supabase", fase:"facturacion",
+  { scenario:"facturacion_inscripciones", sys:"supabase", fase:"facturacion",
     who:"El sistema",
     what:"Registra la compra y prepara la prefactura al confirmar el pago",
     why:"En cuanto se confirma el pago de una inscripción (por cualquier vía), el sistema prepara todos los datos necesarios para generar la factura.",
-    tech:"deals + deal_items creados. Supabase consulta iai_reglas_iva por línea de producto. prefactura_queue registra la operación pendiente de BC."},
+    tech:"deals + deal_items creados. Supabase consulta iai_reglas_iva por línea de producto. prefactura_queue registra la operación pendiente de BC.",
+    techSystems:["supabase","n8n"] },
 
-  {scenario:"facturacion_inscripciones", sys:"n8n", fase:"facturacion",
+  { scenario:"facturacion_inscripciones", sys:"n8n", fase:"facturacion",
     who:"El sistema",
     what:"Crea la prefactura en Business Central",
     why:"n8n envía los datos del pedido a BC con el IVA ya calculado por línea de producto. El sistema contable de IAI queda actualizado.",
-    tech:"n8n workflow HubSpot→BC: consulta iai_reglas_iva por tipo de producto, modalidad y ubicación del cliente. PATCH a BC con líneas y tipos impositivos correctos."},
+    tech:"n8n workflow HubSpot→BC: consulta iai_reglas_iva por tipo de producto, modalidad y ubicación del cliente. PATCH a BC con líneas y tipos impositivos correctos.",
+    techSystems:["n8n","supabase","bc"] },
 
-  {scenario:"facturacion_inscripciones", sys:"bc", fase:"facturacion",
+  { scenario:"facturacion_inscripciones", sys:"bc", fase:"facturacion",
     who:"El sistema",
     what:"Business Central genera la factura definitiva",
     why:"BC emite la factura oficial. El proceso puede tardar minutos u horas según la carga del sistema contable.",
-    tech:"n8n cron vigila periódicamente los pedidos en prefactura_queue. Cuando BC confirma la generación → marca como completado."},
+    tech:"n8n cron vigila periódicamente los pedidos en prefactura_queue. Cuando BC confirma la generación → marca como completado.",
+    techSystems:["bc","n8n"] },
 
-  {scenario:"facturacion_inscripciones", sys:"n8n", fase:"entrega",
+  { scenario:"facturacion_inscripciones", sys:"n8n", fase:"entrega",
     who:"El sistema",
     what:"Entrega la factura al alumno por email y la publica en el portal",
     why:"El alumno recibe la factura en su correo. También puede descargarla desde 'Mis inscripciones' en el portal.",
-    tech:"Email con PDF adjunto. invoices actualizado en Supabase. Portal WeWeb muestra la factura disponible en la sección de inscripciones."},
+    tech:"Email con PDF adjunto. invoices actualizado en Supabase. Portal WeWeb muestra la factura disponible en la sección de inscripciones.",
+    techSystems:["n8n","supabase","weweb"] },
 
   // ── CHECKOUT ──
-  {scenario:"checkout", sys:"weweb", fase:"checkout",
+  { scenario:"checkout", sys:"weweb", fase:"checkout",
     who:"El usuario",
     what:"Revisa el carrito y elige la vía de pago",
     why:"El portal ofrece tres formas de pago. El sistema muestra solo las opciones disponibles para cada usuario según su perfil y el tipo de producto.",
-    tech:"shopping_carts + shopping_cart_items creados. Se consulta user_profiles para crédito disponible. Se verifica aforo antes de proceder."},
+    tech:"shopping_carts + shopping_cart_items creados. Se consulta user_profiles para crédito disponible. Se verifica aforo antes de proceder.",
+    techSystems:["weweb","supabase"] },
 
-  {scenario:"checkout", sys:"redsys", fase:"pago",
+  { scenario:"checkout", sys:"redsys", fase:"pago",
     who:"El usuario",
     what:"Opción 1 — Paga con tarjeta (confirmación inmediata)",
     why:"El pago con tarjeta a través de Redsys es instantáneo. En cuanto el banco confirma el cargo, la inscripción o compra queda activa automáticamente.",
-    tech:"redsys-initiate-payment genera firma. TPV Redsys procesa el pago. redsys-webhook verifica firma y actualiza cart → deals + deal_items creados."},
+    tech:"redsys-initiate-payment genera firma. TPV Redsys procesa el pago. redsys-webhook verifica firma y actualiza cart → deals + deal_items creados.",
+    techSystems:["redsys","supabase"] },
 
-  {scenario:"checkout", sys:"supabase", fase:"pago",
+  { scenario:"checkout", sys:"supabase", fase:"pago",
     who:"El usuario",
     what:"Opción 2 — Paga por transferencia bancaria",
     why:"El usuario recibe los datos bancarios de IAI y realiza la transferencia. La inscripción queda en estado 'pendiente' hasta que IAI confirme el ingreso.",
-    tech:"transfer-initiate-payment crea cart en estado pendiente_transferencia. Email con datos bancarios y número de pedido. IAI confirma manualmente → confirm-transfer activa el pedido."},
+    tech:"transfer-initiate-payment crea cart en estado pendiente_transferencia. Email con datos bancarios y número de pedido. IAI confirma manualmente → confirm-transfer activa el pedido.",
+    techSystems:["supabase","n8n","iai_admin"] },
 
-  {scenario:"checkout", sys:"supabase", fase:"pago",
+  { scenario:"checkout", sys:"supabase", fase:"pago",
     who:"El usuario",
     what:"Opción 3 — Paga con crédito formativo o horas de empresa",
     why:"Si el usuario tiene saldo de crédito formativo o la empresa tiene horas disponibles, puede usarlos directamente sin necesidad de pago externo.",
-    tech:"Verificación FIFO de credit_allocations por caducidad. Si horas corporativas → credit_allocation_participants en pending esperando aprobación del representante."},
+    tech:"Verificación FIFO de credit_allocations por caducidad. Si horas corporativas → credit_allocation_participants en pending esperando aprobación del representante.",
+    techSystems:["supabase"] },
 
-  {scenario:"checkout", sys:"n8n", fase:"confirmacion",
+  { scenario:"checkout", sys:"n8n", fase:"confirmacion",
     who:"El sistema",
     what:"Registra la venta en el CRM y lanza los procesos de entrega",
     why:"Una vez confirmado el pago por cualquier vía, el sistema crea el registro en HubSpot, activa el acceso al curso en Moodle si aplica, y pone en marcha la facturación.",
-    tech:"n8n workflow Post-Pago: crea Deal HubSpot → closedwon → Moodle enrollment si es formación → prefactura en BC → email de confirmación al usuario."},
+    tech:"n8n workflow Post-Pago: crea Deal HubSpot → closedwon → Moodle enrollment si es formación → prefactura en BC → email de confirmación al usuario.",
+    techSystems:["n8n","hubspot","bc"] },
 ];
 
-function SystemTag({sys}) {
-  var c=SYS_COLOR[sys]||"#94a3b8"; var l=SYS_LABEL[sys]||sys;
-  return <span style={{display:"inline-flex",alignItems:"center",gap:3,background:c+"18",border:"1px solid "+c+"44",borderRadius:99,padding:"1px 8px",fontSize:10,color:c,fontWeight:500,fontFamily:"DM Mono,monospace",whiteSpace:"nowrap"}}>{l}</span>;
-}
-
-function FaseBadge({fase}) {
-  var c=FASE_STYLES[fase]||FASE_STYLES.compra;
-  return <span style={{display:"inline-block",padding:"2px 8px",borderRadius:99,fontSize:10,fontWeight:500,whiteSpace:"nowrap",background:c.bg,color:c.text,border:"1px solid "+c.border}}>{c.label}</span>;
-}
-
-function PhaseHeader({fase,isFirst}) {
-  var c=FASE_STYLES[fase]||FASE_STYLES.compra;
+// ─── COMPONENTS ───────────────────────────────────────────────────────────────
+function SystemTag({ sys }) {
+  var color = SYS_COLOR[sys] || "#94a3b8";
+  var label = SYS_LABEL[sys] || sys;
   return (
-    <div style={{display:"flex",alignItems:"center",gap:10,margin:isFirst?"0 0 12px":"22px 0 12px"}}>
-      <div style={{width:8,height:8,borderRadius:99,background:c.text,flexShrink:0}}/>
-      <span style={{fontSize:11,fontWeight:600,color:c.text,fontFamily:"DM Mono,monospace",textTransform:"uppercase",letterSpacing:"0.07em"}}>{c.label}</span>
-      <div style={{flex:1,height:1,background:"#e2e8f0"}}/>
-    </div>
+    <span className="sys-tag" style={{
+      background: color+"18",
+      border: "1px solid "+color+"44",
+      color: color,
+    }}>
+      {label}
+    </span>
   );
 }
 
-function Step({step,idx,techMode,isActive,onToggle}) {
-  var sc=SYS_COLOR[step.sys]||"#94a3b8";
+function FaseBadge({ fase }) {
+  var c = FASE_STYLES[fase] || FASE_STYLES.compra;
   return (
-    <div style={{position:"relative"}}>
-      {idx>0&&<div style={{height:18,marginLeft:20}}><div style={{width:2,height:"100%",background:"#e2e8f0",borderRadius:1}}/></div>}
-      <div className="step-card" onClick={function(){onToggle(idx);}}
-        style={{background:"white",border:"1px solid "+(isActive?sc+"60":"#e2e8f0"),
-          borderLeft:"3px solid "+sc,borderRadius:12,padding:"14px 16px",
-          display:"flex",gap:12,alignItems:"flex-start",
-          boxShadow:isActive?"0 2px 12px rgba(0,0,0,.08)":"0 1px 3px rgba(0,0,0,.04)"}}>
-        <div style={{width:32,height:32,borderRadius:99,flexShrink:0,
-          background:isActive?sc:"#f1f5f9",border:"2px solid "+(isActive?sc:"#e2e8f0"),
-          display:"flex",alignItems:"center",justifyContent:"center",
-          fontSize:12,fontWeight:600,color:isActive?"white":"#94a3b8",transition:"all .2s",marginTop:1}}>
-          {idx+1}
+    <span style={{display:"inline-block",padding:"2px 8px",borderRadius:99,
+      fontSize:10,fontWeight:500,letterSpacing:"0.03em",whiteSpace:"nowrap",
+      background:c.bg,color:c.text,border:"1px solid "+c.border}}>
+      {c.label}
+    </span>
+  );
+}
+
+// Phase header spanning both columns
+function PhaseHeaderRow({ fase }) {
+  var c = FASE_STYLES[fase] || FASE_STYLES.compra;
+  return (
+    <React.Fragment>
+      <div className="phase-cell phase-cell-left">
+        <div style={{display:"flex",alignItems:"center",gap:8}}>
+          <div style={{width:7,height:7,borderRadius:99,background:c.text,flexShrink:0}}/>
+          <span style={{fontSize:10,fontWeight:600,color:c.text,
+            fontFamily:"DM Mono, monospace",textTransform:"uppercase",letterSpacing:"0.07em"}}>
+            {c.label}
+          </span>
+          <div style={{flex:1,height:1,background:c.border}}/>
         </div>
-        <div style={{flex:1,minWidth:0}}>
-          <div style={{display:"flex",alignItems:"flex-start",gap:8,flexWrap:"wrap",marginBottom:5}}>
-            <span style={{fontSize:13,fontWeight:600,color:"#1e293b",lineHeight:1.35,flex:1,minWidth:100}}>
-              <span style={{color:"#94a3b8",fontWeight:400,marginRight:4}}>{step.who} —</span>
-              {step.what}
-            </span>
-            <FaseBadge fase={step.fase}/>
-          </div>
-          <p style={{fontSize:13,color:"#475569",lineHeight:1.6,marginBottom:6}}>{step.why}</p>
-          <SystemTag sys={step.sys}/>
-          {(techMode||isActive)&&step.tech&&(
-            <div style={{marginTop:10,padding:"8px 12px",background:"#f8fafc",borderRadius:8,border:"1px solid #e2e8f0",animation:"fadeIn .2s ease"}}>
-              <div style={{fontSize:10,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:3,fontFamily:"DM Mono,monospace"}}>Detalle técnico</div>
-              <p style={{fontSize:12,color:"#64748b",lineHeight:1.55,fontFamily:"DM Mono,monospace"}}>{step.tech}</p>
-            </div>
-          )}
-        </div>
-        <div style={{color:"#cbd5e1",fontSize:14,flexShrink:0,marginTop:6,transform:isActive?"rotate(180deg)":"none",transition:"transform .2s"}}>▾</div>
       </div>
-    </div>
+      <div className="phase-cell">
+        <div style={{height:7}}/>
+      </div>
+    </React.Fragment>
   );
 }
 
+function StepRow({ step, idx, hoveredRow, setHoveredRow, accentColor }) {
+  var sc = SYS_COLOR[step.sys] || "#94a3b8";
+  var leftAccent = accentColor || sc;
+  var isHovered = hoveredRow === idx;
+  var rowBg = isHovered ? "#f8fafc" : "white";
+
+  return (
+    <React.Fragment>
+      {/* LEFT: functional / process */}
+      <div
+        className="step-row-left"
+        style={{background:rowBg, borderLeft:"3px solid "+leftAccent+"55"}}
+        onMouseEnter={function(){ setHoveredRow(idx); }}
+        onMouseLeave={function(){ setHoveredRow(null); }}>
+
+        {/* Timeline line */}
+        <div style={{
+          position:"absolute",left:27,top:0,bottom:0,
+          width:2,background:"#e2e8f0",zIndex:0,
+        }}/>
+
+        <div style={{display:"flex",gap:10,alignItems:"flex-start",position:"relative",zIndex:1}}>
+          {/* Step number */}
+          <div className="step-num" style={{
+            background: isHovered ? sc : "#f1f5f9",
+            border: "2px solid "+(isHovered ? sc : "#e2e8f0"),
+            color: isHovered ? "white" : "#94a3b8",
+            transition:"all .2s",
+            marginTop:1,
+          }}>
+            {idx+1}
+          </div>
+
+          <div style={{flex:1,minWidth:0}}>
+            <p style={{fontSize:12,color:"#94a3b8",fontWeight:400,marginBottom:2,lineHeight:1.3}}>
+              {step.who}
+            </p>
+            <p style={{fontSize:13,fontWeight:600,color:"#1e293b",lineHeight:1.4,marginBottom:6}}>
+              {step.what}
+            </p>
+            <p style={{fontSize:12,color:"#64748b",lineHeight:1.6}}>
+              {step.why}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* RIGHT: system / technical */}
+      <div
+        className="step-row-right"
+        style={{background:rowBg}}
+        onMouseEnter={function(){ setHoveredRow(idx); }}
+        onMouseLeave={function(){ setHoveredRow(null); }}>
+
+        <div style={{paddingLeft:4}}>
+          {/* System tags */}
+          <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:8}}>
+            {(step.techSystems || [step.sys]).map(function(s){
+              return <SystemTag key={s} sys={s}/>;
+            })}
+          </div>
+
+          {/* Tech description */}
+          <p style={{
+            fontSize:12,color:"#64748b",lineHeight:1.6,
+            fontFamily:"DM Mono, monospace",
+            padding:"8px 10px",
+            background:"#f8fafc",
+            borderRadius:7,
+            border:"1px solid #e2e8f0",
+          }}>
+            {step.tech}
+          </p>
+        </div>
+      </div>
+    </React.Fragment>
+  );
+}
+
+// ─── APP ─────────────────────────────────────────────────────────────────────
 function App() {
-  var sa=useState("credito_individual"); var scenario=sa[0]; var setScenario=sa[1];
-  var ta=useState(false); var techMode=ta[0]; var setTechMode=ta[1];
-  var aa=useState(null); var activeStep=aa[0]; var setActiveStep=aa[1];
+  var sa = useState("credito_individual"); var scenario = sa[0]; var setScenario = sa[1];
+  var ha = useState(null); var hoveredRow = ha[0]; var setHoveredRow = ha[1];
 
-  function toggle(idx){setActiveStep(activeStep===idx?null:idx);}
+  var steps = ALL_STEPS.filter(function(s){ return s.scenario === scenario; });
+  var sc = SCENARIOS[scenario];
 
-  var steps=ALL_STEPS.filter(function(s){return s.scenario===scenario;});
-  var sc=SCENARIOS[scenario];
-  var lastFase=null;
-
-  var groups=[
-    {label:"Créditos formativos", keys:["credito_individual","horas_corporativas"]},
-    {label:"Facturación", keys:["facturacion_cuotas","facturacion_inscripciones"]},
-    {label:"Checkout", keys:["checkout"]},
+  var groups = [
+    { label:"Créditos formativos", keys:["credito_individual","horas_corporativas"] },
+    { label:"Facturación",         keys:["facturacion_cuotas","facturacion_inscripciones"] },
+    { label:"Checkout",            keys:["checkout"] },
   ];
+
+  // Build rows: insert phase headers when fase changes
+  var lastFase = null;
+  var rows = [];
+  steps.forEach(function(step, idx){
+    var showHeader = step.fase !== lastFase;
+    lastFase = step.fase;
+    if(showHeader){
+      rows.push({ type:"phase", fase:step.fase, key:"phase-"+step.fase+"-"+idx });
+    }
+    rows.push({ type:"step", step:step, idx:idx, key:"step-"+idx });
+  });
+
+  // Note boxes per scenario
+  var noteBox = null;
+  if(scenario === "credito_individual"){
+    noteBox = (
+      <div style={{marginTop:20,padding:"12px 14px",background:"#f5f3ff",borderRadius:10,border:"1px solid #ddd6fe"}}>
+        <div style={{fontSize:12,color:"#5b21b6",lineHeight:1.6}}>
+          <strong>Crédito formativo vs bolsa de horas:</strong> el crédito formativo se compra normalmente una vez al año junto con la cuota, a precio preferencial. La bolsa de horas se puede comprar en cualquier momento sin restricción. Ambas opciones están disponibles para socios individuales y empresas. El sistema descuenta siempre primero el crédito que caduca antes (FIFO).
+        </div>
+      </div>
+    );
+  } else if(scenario === "horas_corporativas"){
+    noteBox = (
+      <div style={{marginTop:20,padding:"12px 14px",background:"#ecfeff",borderRadius:10,border:"1px solid #a5f3fc"}}>
+        <div style={{fontSize:12,color:"#155e75",lineHeight:1.6}}>
+          <strong>Aprobación automática:</strong> si el representante no aprueba ni rechaza en 3 días hábiles (contando festivos de Madrid), la solicitud se aprueba automáticamente para no bloquear al empleado.
+        </div>
+      </div>
+    );
+  } else if(scenario === "facturacion_cuotas" || scenario === "facturacion_inscripciones"){
+    noteBox = (
+      <div style={{marginTop:20,padding:"12px 14px",background:"#eef2ff",borderRadius:10,border:"1px solid #c7d2fe"}}>
+        <div style={{fontSize:12,color:"#3730a3",lineHeight:1.6}}>
+          <strong>IVA por tipología:</strong> el IVA se calcula de forma diferente para cada tipo de producto y según la ubicación del comprador (Nacional 21%, Canarias 0%, UE variable, Internacional 0%). Las reglas están centralizadas en la tabla de configuración del sistema.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{background:"#f8fafc",minHeight:"100vh",color:"#1e293b"}}>
 
-      <div style={{background:"white",borderBottom:"1px solid #e2e8f0",padding:"16px 20px",position:"sticky",top:0,zIndex:10}}>
-        <div style={{maxWidth:720,margin:"0 auto"}}>
-          <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}>
+      {/* ── HEADER ── */}
+      <div style={{background:"white",borderBottom:"1px solid #e2e8f0",padding:"16px 20px"}}>
+        <div style={{maxWidth:1100,margin:"0 auto"}}>
+          <div style={{display:"flex",alignItems:"flex-start",gap:12,flexWrap:"wrap",marginBottom:14}}>
             <div>
               <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4,flexWrap:"wrap"}}>
                 <a href="index.html" className="back-link">← Todos los procesos</a>
@@ -365,25 +567,23 @@ function App() {
               <h1 style={{fontSize:20,fontWeight:600,color:"#0f172a",letterSpacing:"-0.02em"}}>🧾 Administración y Pagos</h1>
               <p style={{fontSize:13,color:"#64748b",marginTop:2}}>Créditos formativos, facturación y proceso de checkout</p>
             </div>
-            <button className="btn" onClick={function(){setTechMode(!techMode);}}
-              style={{padding:"7px 14px",borderRadius:8,fontSize:12,fontWeight:500,
-                background:techMode?"#1e293b":"#f1f5f9",color:techMode?"white":"#64748b",
-                border:"1px solid "+(techMode?"#1e293b":"#e2e8f0"),flexShrink:0,marginTop:2}}>
-              {techMode?"⚙️ Técnico":"👁 Funcional"}
-            </button>
           </div>
 
-          <div style={{marginTop:12,display:"flex",flexDirection:"column",gap:8}}>
+          {/* Scenario selectors */}
+          <div style={{display:"flex",flexDirection:"column",gap:8}}>
             {groups.map(function(g){
               return (
                 <div key={g.label}>
-                  <div style={{fontSize:10,color:"#94a3b8",fontFamily:"DM Mono,monospace",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:5}}>{g.label}</div>
+                  <div style={{fontSize:10,color:"#94a3b8",fontFamily:"DM Mono,monospace",
+                    textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:5}}>
+                    {g.label}
+                  </div>
                   <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
                     {g.keys.map(function(key){
-                      var s=SCENARIOS[key]; var active=scenario===key;
+                      var s = SCENARIOS[key]; var active = scenario === key;
                       return (
                         <button key={key} className="btn"
-                          onClick={function(){setScenario(key);setActiveStep(null);}}
+                          onClick={function(){ setScenario(key); setHoveredRow(null); }}
                           style={{padding:"6px 13px",borderRadius:8,fontSize:12,fontWeight:active?600:400,
                             background:active?s.color:"white",color:active?"white":"#64748b",
                             border:"1px solid "+(active?s.color:"#e2e8f0")}}>
@@ -398,7 +598,8 @@ function App() {
             })}
           </div>
 
-          <div style={{marginTop:10,padding:"7px 12px",background:sc.color+"0f",
+          {/* Scenario description */}
+          <div style={{marginTop:12,padding:"7px 12px",background:sc.color+"0f",
             border:"1px solid "+sc.color+"30",borderRadius:8,
             display:"flex",alignItems:"center",gap:8}}>
             <div style={{width:5,height:5,borderRadius:99,background:sc.color,flexShrink:0}}/>
@@ -408,63 +609,104 @@ function App() {
         </div>
       </div>
 
-      <div style={{maxWidth:720,margin:"0 auto",padding:"24px 16px"}}>
+      {/* ── FLOW ── */}
+      <div style={{maxWidth:1100,margin:"0 auto",padding:"24px 16px"}}>
 
-        {steps.map(function(step,idx){
-          var showHeader=step.fase!==lastFase;
-          lastFase=step.fase;
-          return (
-            <div key={idx}>
-              {showHeader&&<PhaseHeader fase={step.fase} isFirst={idx===0}/>}
-              <Step step={step} idx={idx} techMode={techMode} isActive={activeStep===idx} onToggle={toggle}/>
+        {/* Grid container */}
+        <div style={{
+          background:"white",
+          border:"1px solid #e2e8f0",
+          borderRadius:12,
+          overflow:"hidden",
+          boxShadow:"0 1px 4px rgba(0,0,0,.05)",
+        }}>
+          {/* Column headers */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr"}}>
+            <div className="col-header col-header-left" style={{
+              display:"flex",alignItems:"center",gap:7,
+              borderRight:"1px solid #e2e8f0",
+            }}>
+              <span style={{width:6,height:6,borderRadius:99,background:"#64748b",display:"inline-block",flexShrink:0}}/>
+              Qué ocurre (proceso)
             </div>
-          );
-        })}
+            <div className="col-header col-header-right" style={{
+              display:"flex",alignItems:"center",gap:7,
+            }}>
+              <span style={{width:6,height:6,borderRadius:99,background:"#10b981",display:"inline-block",flexShrink:0}}/>
+              Qué hace el sistema
+            </div>
+          </div>
 
-        <div style={{height:18,marginLeft:20}}><div style={{width:2,height:"100%",background:"#e2e8f0"}}/></div>
-        <div style={{display:"flex",gap:12,alignItems:"center",background:"white",
-          border:"1px solid #a7f3d0",borderLeft:"3px solid #10b981",
-          borderRadius:12,padding:"14px 16px",boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
-          <div style={{width:32,height:32,borderRadius:99,background:"#10b981",color:"white",
-            display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>✓</div>
-          <div>
-            <div style={{fontSize:13,fontWeight:600,color:"#065f46"}}>Proceso completado</div>
-            <div style={{fontSize:12,color:"#6b7280",marginTop:1}}>{sc.end}</div>
+          {/* Rows */}
+          <div className="flow-grid">
+            {rows.map(function(row){
+              if(row.type === "phase"){
+                return <PhaseHeaderRow key={row.key} fase={row.fase}/>;
+              }
+              return (
+                <StepRow
+                  key={row.key}
+                  step={row.step}
+                  idx={row.idx}
+                  hoveredRow={hoveredRow}
+                  setHoveredRow={setHoveredRow}
+                  accentColor={sc.color}
+                />
+              );
+            })}
+          </div>
+
+          {/* End row */}
+          <div style={{
+            padding:"14px 16px",
+            borderTop:"1px solid #f1f5f9",
+            background:"#f0fdf4",
+            display:"flex",alignItems:"center",gap:10,
+          }}>
+            <div style={{
+              width:28,height:28,borderRadius:99,
+              background:"#10b981",
+              display:"flex",alignItems:"center",justifyContent:"center",
+              fontSize:13,flexShrink:0,color:"white",fontWeight:700,
+            }}>✓</div>
+            <div>
+              <div style={{fontSize:13,fontWeight:600,color:"#065f46"}}>Proceso completado</div>
+              <div style={{fontSize:12,color:"#6b7280",marginTop:1}}>{sc.end}</div>
+            </div>
           </div>
         </div>
 
-        {/* Info boxes por escenario */}
-        {scenario==="credito_individual"&&(
-          <div style={{marginTop:20,padding:"12px 14px",background:"#f5f3ff",borderRadius:10,border:"1px solid #ddd6fe"}}>
-            <div style={{fontSize:12,color:"#5b21b6",lineHeight:1.6}}>
-              <strong>Crédito formativo vs bolsa de horas:</strong> el crédito formativo se compra normalmente una vez al año junto con la cuota, a precio preferencial. La bolsa de horas se puede comprar en cualquier momento sin restricción. Ambas opciones están disponibles para socios individuales y empresas. El sistema descuenta siempre primero el crédito que caduca antes (FIFO).
-            </div>
-          </div>
-        )}
-        {scenario==="horas_corporativas"&&(
-          <div style={{marginTop:20,padding:"12px 14px",background:"#ecfeff",borderRadius:10,border:"1px solid #a5f3fc"}}>
-            <div style={{fontSize:12,color:"#155e75",lineHeight:1.6}}>
-              <strong>Aprobación automática:</strong> si el representante no aprueba ni rechaza en 3 días hábiles (contando festivos de Madrid), la solicitud se aprueba automáticamente para no bloquear al empleado.
-            </div>
-          </div>
-        )}
-        {(scenario==="facturacion_cuotas"||scenario==="facturacion_inscripciones")&&(
-          <div style={{marginTop:20,padding:"12px 14px",background:"#eef2ff",borderRadius:10,border:"1px solid #c7d2fe"}}>
-            <div style={{fontSize:12,color:"#3730a3",lineHeight:1.6}}>
-              <strong>IVA por tipología:</strong> el IVA se calcula de forma diferente para cada tipo de producto y según la ubicación del comprador (Nacional 21%, Canarias 0%, UE variable, Internacional 0%). Las reglas están centralizadas en la tabla de configuración del sistema.
-            </div>
-          </div>
-        )}
+        {/* Note box */}
+        {noteBox}
 
-        <div style={{marginTop:24,padding:"16px",background:"white",borderRadius:12,border:"1px solid #e2e8f0"}}>
-          <div style={{fontSize:11,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:10,fontFamily:"DM Mono,monospace"}}>Sistemas involucrados</div>
-          <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-            {Object.keys(SYS_COLOR).map(function(s){return <SystemTag key={s} sys={s}/>;})}
+        {/* Legend */}
+        <div style={{
+          marginTop:20,padding:"14px 16px",
+          background:"white",borderRadius:10,
+          border:"1px solid #e2e8f0",
+          display:"flex",gap:16,alignItems:"flex-start",flexWrap:"wrap",
+        }}>
+          <div style={{flex:1,minWidth:200}}>
+            <div style={{fontSize:10,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",
+              letterSpacing:"0.06em",marginBottom:8,fontFamily:"DM Mono, monospace"}}>
+              Sistemas involucrados
+            </div>
+            <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+              {Object.keys(SYS_COLOR).map(function(s){
+                return <SystemTag key={s} sys={s}/>;
+              })}
+            </div>
           </div>
-          <div style={{marginTop:10,fontSize:12,color:"#94a3b8",lineHeight:1.6}}>
-            Haz clic en cualquier paso para más detalle. Activa <strong style={{color:"#1e293b"}}>modo técnico</strong> para ver los sistemas y automatizaciones implicadas.
+          <div style={{
+            fontSize:12,color:"#94a3b8",lineHeight:1.6,
+            borderLeft:"1px solid #f1f5f9",paddingLeft:16,
+            maxWidth:340,
+          }}>
+            La columna izquierda describe <strong style={{color:"#475569"}}>lo que ocurre</strong> desde el punto de vista del usuario o del administrador.
+            La columna derecha muestra <strong style={{color:"#475569"}}>los sistemas y las operaciones técnicas</strong> que se ejecutan en paralelo.
           </div>
         </div>
+
         <div style={{height:40}}/>
       </div>
     </div>

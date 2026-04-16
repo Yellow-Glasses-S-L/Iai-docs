@@ -13,14 +13,78 @@
     html,body{min-height:100%;background:#f8fafc;font-family:'DM Sans',system-ui,sans-serif}
     #root{min-height:100%}
     @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-    .step-card{cursor:pointer;transition:box-shadow .15s,transform .15s}
-    .step-card:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
     .btn{cursor:pointer;transition:all .15s;border:none;font-family:'DM Sans',sans-serif}
     .btn:hover{opacity:.85}
     ::-webkit-scrollbar{width:4px}
     ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:2px}
     .back-link{text-decoration:none;color:#64748b;font-size:13px;display:inline-flex;align-items:center;gap:5px}
     .back-link:hover{color:#334155}
+    @media(max-width:767px){.desktop-only{display:none!important}}
+    @media(min-width:768px){.mobile-only{display:none!important}}
+
+    /* ── DUAL-COLUMN LAYOUT ── */
+    .flow-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:0;
+      position:relative;
+    }
+    @media(max-width:767px){
+      .flow-grid{grid-template-columns:1fr;}
+    }
+
+    /* Column headers */
+    .col-header{
+      padding:10px 16px;
+      font-size:10px;
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:0.07em;
+      font-family:'DM Mono',monospace;
+      color:#94a3b8;
+      background:#f8fafc;
+      border-bottom:1px solid #e2e8f0;
+    }
+    .col-header-left{border-right:1px solid #e2e8f0;}
+    .col-header-right{color:#64748b;}
+
+    /* Phase header row */
+    .phase-cell{
+      padding:8px 16px 6px;
+      background:#f8fafc;
+      border-bottom:1px solid #e2e8f0;
+    }
+    .phase-cell-left{border-right:1px solid #e2e8f0;}
+
+    /* Step rows */
+    .step-row-left,.step-row-right{
+      padding:16px;
+      border-bottom:1px solid #f1f5f9;
+      position:relative;
+      background:white;
+      transition:background .15s;
+    }
+    .step-row-left{
+      border-right:1px solid #e2e8f0;
+    }
+
+    /* Step number badge */
+    .step-num{
+      width:22px;height:22px;border-radius:99px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:10px;font-weight:600;
+      flex-shrink:0;
+      position:relative;z-index:1;
+    }
+
+    /* System tags */
+    .sys-tag{
+      display:inline-flex;align-items:center;gap:3px;
+      border-radius:99px;padding:2px 8px;
+      font-size:10px;font-weight:500;
+      font-family:'DM Mono',monospace;
+      letter-spacing:0.02em;white-space:nowrap;
+    }
   </style>
 
 <style>
@@ -71,13 +135,24 @@ document.addEventListener('DOMContentLoaded',function(){
 <script type="text/babel">
 const { useState } = React;
 
+// ─── COLOUR PALETTE ───────────────────────────────────────────────────────────
 const SYS_COLOR = {
-  usuario:"#64748b", wordpress:"#3b82f6", weweb:"#8b5cf6",
-  supabase:"#10b981", moodle:"#06b6d4", hubspot:"#f97316", n8n:"#ef4444",
+  usuario:   "#64748b",
+  wordpress: "#3b82f6",
+  weweb:     "#8b5cf6",
+  supabase:  "#10b981",
+  moodle:    "#06b6d4",
+  hubspot:   "#f97316",
+  n8n:       "#ef4444",
 };
 const SYS_LABEL = {
-  usuario:"Usuario", wordpress:"Web pública", weweb:"Portal del socio",
-  supabase:"Base de datos", moodle:"Campus virtual", hubspot:"CRM", n8n:"Automatización",
+  usuario:   "Usuario",
+  wordpress: "Web pública",
+  weweb:     "Portal del socio",
+  supabase:  "Base de datos",
+  moodle:    "Campus virtual",
+  hubspot:   "CRM",
+  n8n:       "Automatización",
 };
 
 const FASE_STYLES = {
@@ -119,204 +194,297 @@ const ALL_STEPS = [
     who:"El futuro usuario",
     what:"Llega al portal desde la web de IAI",
     why:"Cualquier persona que quiera acceder al portal — para inscribirse en cursos, hacerse socio o consultar contenido exclusivo — parte desde la web pública de IAI.",
-    tech:"auditoresinternos.es → botón 'Iniciar sesión' → redirección a portal.auditoresinternos.es/login."},
+    tech:"auditoresinternos.es → botón 'Iniciar sesión' → redirección a portal.auditoresinternos.es/login.",
+    techSystems:["wordpress","weweb"]},
 
   {scenario:"registro", sys:"weweb", fase:"acceso",
     who:"El futuro usuario",
     what:"Elige crear una cuenta nueva",
     why:"Si es la primera vez, puede registrarse con su email. No necesita ser socio para tener cuenta.",
-    tech:"Formulario de registro en WeWeb. Llama a Supabase Auth signUp()."},
+    tech:"Formulario de registro en WeWeb. Llama a Supabase Auth signUp().",
+    techSystems:["weweb","supabase"]},
 
   {scenario:"registro", sys:"supabase", fase:"identidad",
     who:"El sistema",
     what:"Envía un email de confirmación",
     why:"Para verificar que el email es real, el sistema envía un enlace de confirmación que el usuario debe clicar.",
-    tech:"Supabase Auth envía magic link de confirmación. Hasta confirmar, el usuario no puede iniciar sesión."},
+    tech:"Supabase Auth envía magic link de confirmación. Hasta confirmar, el usuario no puede iniciar sesión.",
+    techSystems:["supabase"]},
 
   {scenario:"registro", sys:"supabase", fase:"cuenta",
     who:"El sistema",
     what:"Crea la cuenta y el perfil del usuario",
     why:"Una vez confirmado el email, se crea el perfil completo del usuario en el sistema con sus datos básicos.",
-    tech:"Edge Fn signup-or-notify: crea user_profiles con membership_status vacío, onboarding_completed=false."},
+    tech:"Edge Fn signup-or-notify: crea user_profiles con membership_status vacío, onboarding_completed=false.",
+    techSystems:["supabase"]},
 
   {scenario:"registro", sys:"hubspot", fase:"cuenta",
     who:"El sistema",
     what:"Registra al nuevo usuario en el CRM",
     why:"IAI tiene constancia del nuevo usuario desde el primer momento para poder hacer seguimiento.",
-    tech:"n8n detecta nuevo user_profile → crea Contacto en HubSpot con email y datos básicos."},
+    tech:"n8n detecta nuevo user_profile → crea Contacto en HubSpot con email y datos básicos.",
+    techSystems:["n8n","hubspot"]},
 
   {scenario:"registro", sys:"weweb", fase:"perfil",
     who:"El usuario",
     what:"Completa su perfil con sus datos personales",
     why:"Para poder inscribirse en cursos o solicitar membresía, el sistema necesita datos como nombre, DNI, dirección y datos de facturación.",
-    tech:"Campos en user_profiles: first_name, last_name_1, dni_nie, address_*, billing_*, job_title_id. onboarding_completed → true."},
+    tech:"Campos en user_profiles: first_name, last_name_1, dni_nie, address_*, billing_*, job_title_id. onboarding_completed → true.",
+    techSystems:["weweb","supabase"]},
 
   // ── LOGIN ──
   {scenario:"login", sys:"weweb", fase:"acceso",
     who:"El usuario",
     what:"Introduce su email y contraseña en el portal",
     why:"El acceso al portal requiere identificarse. Todas las funcionalidades de socio, inscripciones y compras requieren estar autenticado.",
-    tech:"WeWeb llama a Supabase Auth signInWithPassword(). Retorna access_token + refresh_token."},
+    tech:"WeWeb llama a Supabase Auth signInWithPassword(). Retorna access_token + refresh_token.",
+    techSystems:["weweb","supabase"]},
 
   {scenario:"login", sys:"supabase", fase:"identidad",
     who:"El sistema",
     what:"Verifica las credenciales y abre la sesión",
     why:"El sistema comprueba que el email y contraseña son correctos y genera una sesión segura.",
-    tech:"Supabase Auth JWT válido 1h. Refresh token para renovar. Sesión almacenada en el cliente (WeWeb)."},
+    tech:"Supabase Auth JWT válido 1h. Refresh token para renovar. Sesión almacenada en el cliente (WeWeb).",
+    techSystems:["supabase"]},
 
   {scenario:"login", sys:"weweb", fase:"listo",
     who:"El usuario",
     what:"Accede al portal con su perfil y permisos",
     why:"El portal carga el perfil del usuario y muestra las opciones según su tipo: usuario registrado, socio individual o representante corporativo.",
-    tech:"WeWeb lee user_profiles: membership_status, is_consejero, has_premium_service, company_representatives para determinar menú y permisos."},
+    tech:"WeWeb lee user_profiles: membership_status, is_consejero, has_premium_service, company_representatives para determinar menú y permisos.",
+    techSystems:["weweb","supabase"]},
 
   // ── SSO ──
   {scenario:"sso", sys:"moodle", fase:"acceso",
     who:"El usuario",
     what:"Hace clic en 'Iniciar sesión' en el campus virtual o en la web",
     why:"El campus virtual (Moodle) y la web (WordPress) no tienen su propio sistema de login — delegan la autenticación al portal, que es el sistema central de identidad de IAI.",
-    tech:"Moodle/WordPress redirigen a oauth-authorize Edge Fn con client_id, redirect_uri, response_type=code, state y code_challenge (PKCE)."},
+    tech:"Moodle/WordPress redirigen a oauth-authorize Edge Fn con client_id, redirect_uri, response_type=code, state y code_challenge (PKCE).",
+    techSystems:["moodle","wordpress","supabase"]},
 
   {scenario:"sso", sys:"supabase", fase:"identidad",
     who:"El sistema",
     what:"Comprueba si el usuario ya tiene sesión activa en el portal",
     why:"Si el usuario ya estaba autenticado en el portal, no necesita volver a introducir sus credenciales. El acceso es inmediato.",
-    tech:"oauth-authorize verifica el Bearer token del request. Si válido → genera código de autorización directamente. Si no → redirige a /login con parámetros OAuth preservados en la URL."},
+    tech:"oauth-authorize verifica el Bearer token del request. Si válido → genera código de autorización directamente. Si no → redirige a /login con parámetros OAuth preservados en la URL.",
+    techSystems:["supabase"]},
 
   {scenario:"sso", sys:"weweb", fase:"identidad",
     who:"El usuario",
     what:"Si no tiene sesión, inicia sesión en el portal",
     why:"El portal actúa como pantalla de login central. Una vez autenticado aquí, el acceso se propaga automáticamente a Moodle y WordPress.",
-    tech:"Login en portal.auditoresinternos.es/login?oauth_redirect=true&client_id=...&redirect_uri=... Tras login, WeWeb llama de nuevo a oauth-authorize con el token."},
+    tech:"Login en portal.auditoresinternos.es/login?oauth_redirect=true&client_id=...&redirect_uri=... Tras login, WeWeb llama de nuevo a oauth-authorize con el token.",
+    techSystems:["weweb","supabase"]},
 
   {scenario:"sso", sys:"supabase", fase:"sso",
     who:"El sistema",
     what:"Genera un código de autorización temporal",
     why:"El portal genera un código de un solo uso (válido 10 minutos) que Moodle o WordPress intercambiarán por las credenciales del usuario.",
-    tech:"oauth-authorize inserta en oauth2_authorization_codes: code, client_id, user_id, scope, expires_at (10 min), PKCE challenge."},
+    tech:"oauth-authorize inserta en oauth2_authorization_codes: code, client_id, user_id, scope, expires_at (10 min), PKCE challenge.",
+    techSystems:["supabase"]},
 
   {scenario:"sso", sys:"moodle", fase:"sso",
     who:"El sistema",
     what:"Intercambia el código por los datos del usuario y abre la sesión",
     why:"Moodle o WordPress reciben el código, lo verifican con el portal y obtienen la identidad del usuario para crear su sesión local.",
-    tech:"oauth-token: valida code + PKCE, genera access_token (oauth2_access_tokens) + refresh_token. oauth-userinfo: retorna id, email, name, roles del user_profile."},
+    tech:"oauth-token: valida code + PKCE, genera access_token (oauth2_access_tokens) + refresh_token. oauth-userinfo: retorna id, email, name, roles del user_profile.",
+    techSystems:["moodle","wordpress","supabase"]},
 
   {scenario:"sso", sys:"moodle", fase:"listo",
     who:"El usuario",
     what:"Queda identificado en Moodle o WordPress automáticamente",
     why:"El usuario llega directamente a su destino — el campus o la web — ya autenticado, sin fricciones.",
-    tech:"Moodle crea o actualiza el usuario local con los datos del userinfo. WordPress idem. Sesión local creada en cada sistema."},
+    tech:"Moodle crea o actualiza el usuario local con los datos del userinfo. WordPress idem. Sesión local creada en cada sistema.",
+    techSystems:["moodle","wordpress"]},
 
   // ── RECOVERY ──
   {scenario:"recovery", sys:"weweb", fase:"acceso",
     who:"El usuario",
     what:"Hace clic en '¿Olvidaste tu contraseña?' en el portal",
     why:"Permite recuperar el acceso sin necesidad de contactar con IAI.",
-    tech:"Formulario en portal.auditoresinternos.es/login. Introduce su email y solicita el enlace de recuperación."},
+    tech:"Formulario en portal.auditoresinternos.es/login. Introduce su email y solicita el enlace de recuperación.",
+    techSystems:["weweb"]},
 
   {scenario:"recovery", sys:"supabase", fase:"recuperacion",
     who:"El sistema",
     what:"Envía un email con un enlace seguro de recuperación",
     why:"El enlace lleva al usuario directamente a la página para establecer su nueva contraseña. Es de un solo uso y caduca en poco tiempo.",
-    tech:"Edge Fn generate-recovery-link genera el token. Email enviado con enlace a api.auditoresinternos.es/functions/v1/recovery-gate?token_hash=..."},
+    tech:"Edge Fn generate-recovery-link genera el token. Email enviado con enlace a api.auditoresinternos.es/functions/v1/recovery-gate?token_hash=...",
+    techSystems:["supabase","n8n"]},
 
   {scenario:"recovery", sys:"supabase", fase:"recuperacion",
     who:"El sistema",
     what:"Protege el enlace contra escáneres de email",
     why:"Algunos clientes de email escanean los enlaces automáticamente al recibir el mensaje, lo que podría 'quemar' el token antes de que el usuario lo use. El sistema lo evita.",
-    tech:"recovery-gate devuelve HTML con redirect JS. Los escáneres hacen GET pero no ejecutan JS → token intacto. El usuario con navegador → JS redirige inmediatamente a Supabase Auth verify."},
+    tech:"recovery-gate devuelve HTML con redirect JS. Los escáneres hacen GET pero no ejecutan JS → token intacto. El usuario con navegador → JS redirige inmediatamente a Supabase Auth verify.",
+    techSystems:["supabase"]},
 
   {scenario:"recovery", sys:"weweb", fase:"recuperacion",
     who:"El usuario",
     what:"Establece su nueva contraseña",
     why:"El usuario llega a la página de restablecimiento ya autenticado por el token, solo tiene que introducir su nueva contraseña.",
-    tech:"Supabase Auth verifica token_hash → sesión temporal. WeWeb /reset-password llama a updateUser({password: newPassword})."},
+    tech:"Supabase Auth verifica token_hash → sesión temporal. WeWeb /reset-password llama a updateUser({password: newPassword}).",
+    techSystems:["weweb","supabase"]},
 
   {scenario:"recovery", sys:"weweb", fase:"listo",
     who:"El usuario",
     what:"Accede al portal con su nueva contraseña",
     why:"El proceso de recuperación ha terminado. El usuario tiene acceso completo de nuevo.",
-    tech:"Sesión activa post-reset. Refresh tokens anteriores invalidados automáticamente por Supabase Auth."},
+    tech:"Sesión activa post-reset. Refresh tokens anteriores invalidados automáticamente por Supabase Auth.",
+    techSystems:["weweb","supabase"]},
 ];
 
+// ─── COMPONENTS ───────────────────────────────────────────────────────────────
 function SystemTag({ sys }) {
-  var c=SYS_COLOR[sys]||"#94a3b8"; var l=SYS_LABEL[sys]||sys;
-  return <span style={{display:"inline-flex",alignItems:"center",gap:3,background:c+"18",border:"1px solid "+c+"44",borderRadius:99,padding:"1px 8px",fontSize:10,color:c,fontWeight:500,fontFamily:"DM Mono,monospace",whiteSpace:"nowrap"}}>{l}</span>;
+  var c = SYS_COLOR[sys] || "#94a3b8";
+  var l = SYS_LABEL[sys] || sys;
+  return (
+    <span className="sys-tag" style={{
+      background:c+"18",
+      border:"1px solid "+c+"44",
+      color:c,
+    }}>
+      {l}
+    </span>
+  );
 }
 
 function FaseBadge({ fase }) {
-  var c=FASE_STYLES[fase]||FASE_STYLES.acceso;
-  return <span style={{display:"inline-block",padding:"2px 8px",borderRadius:99,fontSize:10,fontWeight:500,whiteSpace:"nowrap",background:c.bg,color:c.text,border:"1px solid "+c.border}}>{c.label}</span>;
-}
-
-function PhaseHeader({ fase, isFirst }) {
-  var c=FASE_STYLES[fase]||FASE_STYLES.acceso;
+  var c = FASE_STYLES[fase] || FASE_STYLES.acceso;
   return (
-    <div style={{display:"flex",alignItems:"center",gap:10,margin:isFirst?"0 0 12px":"22px 0 12px"}}>
-      <div style={{width:8,height:8,borderRadius:99,background:c.text,flexShrink:0}}/>
-      <span style={{fontSize:11,fontWeight:600,color:c.text,fontFamily:"DM Mono,monospace",textTransform:"uppercase",letterSpacing:"0.07em"}}>{c.label}</span>
-      <div style={{flex:1,height:1,background:"#e2e8f0"}}/>
-    </div>
+    <span style={{display:"inline-block",padding:"2px 8px",borderRadius:99,
+      fontSize:10,fontWeight:500,whiteSpace:"nowrap",
+      background:c.bg,color:c.text,border:"1px solid "+c.border}}>
+      {c.label}
+    </span>
   );
 }
 
-function Step({ step, idx, techMode, isActive, onToggle }) {
-  var sc=SYS_COLOR[step.sys]||"#94a3b8";
+function PhaseHeaderRow({ fase }) {
+  var c = FASE_STYLES[fase] || FASE_STYLES.acceso;
   return (
-    <div style={{position:"relative"}}>
-      {idx>0&&<div style={{height:18,marginLeft:20}}><div style={{width:2,height:"100%",background:"#e2e8f0",borderRadius:1}}/></div>}
-      <div className="step-card" onClick={function(){onToggle(idx);}}
-        style={{background:"white",border:"1px solid "+(isActive?sc+"60":"#e2e8f0"),
-          borderLeft:"3px solid "+sc,borderRadius:12,padding:"14px 16px",
-          display:"flex",gap:12,alignItems:"flex-start",
-          boxShadow:isActive?"0 2px 12px rgba(0,0,0,.08)":"0 1px 3px rgba(0,0,0,.04)"}}>
-        <div style={{width:32,height:32,borderRadius:99,flexShrink:0,
-          background:isActive?sc:"#f1f5f9",border:"2px solid "+(isActive?sc:"#e2e8f0"),
-          display:"flex",alignItems:"center",justifyContent:"center",
-          fontSize:12,fontWeight:600,color:isActive?"white":"#94a3b8",transition:"all .2s",marginTop:1}}>
-          {idx+1}
+    <React.Fragment>
+      <div className="phase-cell phase-cell-left">
+        <div style={{display:"flex",alignItems:"center",gap:8}}>
+          <div style={{width:7,height:7,borderRadius:99,background:c.text,flexShrink:0}}/>
+          <span style={{fontSize:10,fontWeight:600,color:c.text,
+            fontFamily:"DM Mono, monospace",textTransform:"uppercase",letterSpacing:"0.07em"}}>
+            {c.label}
+          </span>
+          <div style={{flex:1,height:1,background:c.border}}/>
         </div>
-        <div style={{flex:1,minWidth:0}}>
-          <div style={{display:"flex",alignItems:"flex-start",gap:8,flexWrap:"wrap",marginBottom:5}}>
-            <span style={{fontSize:13,fontWeight:600,color:"#1e293b",lineHeight:1.35,flex:1,minWidth:100}}>
-              <span style={{color:"#94a3b8",fontWeight:400,marginRight:4}}>{step.who} —</span>
-              {step.what}
-            </span>
-            <FaseBadge fase={step.fase}/>
-          </div>
-          <p style={{fontSize:13,color:"#475569",lineHeight:1.6,marginBottom:6}}>{step.why}</p>
-          <SystemTag sys={step.sys}/>
-          {(techMode||isActive)&&step.tech&&(
-            <div style={{marginTop:10,padding:"8px 12px",background:"#f8fafc",borderRadius:8,border:"1px solid #e2e8f0",animation:"fadeIn .2s ease"}}>
-              <div style={{fontSize:10,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:3,fontFamily:"DM Mono,monospace"}}>Detalle técnico</div>
-              <p style={{fontSize:12,color:"#64748b",lineHeight:1.55,fontFamily:"DM Mono,monospace"}}>{step.tech}</p>
-            </div>
-          )}
-        </div>
-        <div style={{color:"#cbd5e1",fontSize:14,flexShrink:0,marginTop:6,transform:isActive?"rotate(180deg)":"none",transition:"transform .2s"}}>▾</div>
       </div>
-    </div>
+      <div className="phase-cell">
+        <div style={{height:7}}/>
+      </div>
+    </React.Fragment>
   );
 }
 
+function StepRow({ step, idx, hoveredRow, setHoveredRow }) {
+  var sc = SYS_COLOR[step.sys] || "#94a3b8";
+  var isHovered = hoveredRow === idx;
+  var rowBg = isHovered ? "#f8fafc" : "white";
+
+  return (
+    <React.Fragment>
+      {/* LEFT: process / functional */}
+      <div
+        className="step-row-left"
+        style={{background:rowBg, borderLeft:"3px solid "+sc+"55"}}
+        onMouseEnter={function(){setHoveredRow(idx);}}
+        onMouseLeave={function(){setHoveredRow(null);}}>
+
+        {/* Timeline line */}
+        <div style={{
+          position:"absolute",left:27,top:0,bottom:0,
+          width:2,background:"#e2e8f0",zIndex:0,
+        }}/>
+
+        <div style={{display:"flex",gap:10,alignItems:"flex-start",position:"relative",zIndex:1}}>
+          {/* Step number */}
+          <div className="step-num" style={{
+            background:isHovered?sc:"#f1f5f9",
+            border:"2px solid "+(isHovered?sc:"#e2e8f0"),
+            color:isHovered?"white":"#94a3b8",
+            transition:"all .2s",
+            marginTop:1,
+          }}>
+            {idx+1}
+          </div>
+
+          <div style={{flex:1,minWidth:0}}>
+            <p style={{fontSize:12,color:"#94a3b8",fontWeight:400,marginBottom:2,lineHeight:1.3}}>
+              {step.who}
+            </p>
+            <p style={{fontSize:13,fontWeight:600,color:"#1e293b",lineHeight:1.4,marginBottom:6}}>
+              {step.what}
+            </p>
+            <p style={{fontSize:12,color:"#64748b",lineHeight:1.6}}>
+              {step.why}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* RIGHT: system / technical */}
+      <div
+        className="step-row-right"
+        style={{background:rowBg}}
+        onMouseEnter={function(){setHoveredRow(idx);}}
+        onMouseLeave={function(){setHoveredRow(null);}}>
+
+        <div style={{paddingLeft:4}}>
+          {/* System tags */}
+          <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:8}}>
+            {(step.techSystems||[step.sys]).map(function(s){
+              return <SystemTag key={s} sys={s}/>;
+            })}
+          </div>
+
+          {/* Tech description */}
+          <p style={{
+            fontSize:12,color:"#64748b",lineHeight:1.6,
+            fontFamily:"DM Mono, monospace",
+            padding:"8px 10px",
+            background:"#f8fafc",
+            borderRadius:7,
+            border:"1px solid #e2e8f0",
+          }}>
+            {step.tech}
+          </p>
+        </div>
+      </div>
+    </React.Fragment>
+  );
+}
+
+// ─── APP ──────────────────────────────────────────────────────────────────────
 function App() {
-  var sa=useState("registro"); var scenario=sa[0]; var setScenario=sa[1];
-  var ta=useState(false); var techMode=ta[0]; var setTechMode=ta[1];
-  var aa=useState(null); var activeStep=aa[0]; var setActiveStep=aa[1];
+  var sa = useState("registro"); var scenario = sa[0]; var setScenario = sa[1];
+  var ha = useState(null);       var hoveredRow = ha[0]; var setHoveredRow = ha[1];
 
-  function toggle(idx){setActiveStep(activeStep===idx?null:idx);}
+  var steps = ALL_STEPS.filter(function(s){ return s.scenario === scenario; });
+  var sc = SCENARIOS[scenario];
 
-  var steps=ALL_STEPS.filter(function(s){return s.scenario===scenario;});
-  var sc=SCENARIOS[scenario];
-  var lastFase=null;
+  // Build rows: phase headers + steps
+  var rows = [];
+  var lastFase = null;
+  steps.forEach(function(step, idx){
+    if(step.fase !== lastFase){
+      rows.push({ type:"phase", fase:step.fase, key:"phase-"+step.fase+"-"+idx });
+      lastFase = step.fase;
+    }
+    rows.push({ type:"step", step:step, idx:idx, key:"step-"+idx });
+  });
 
   return (
     <div style={{background:"#f8fafc",minHeight:"100vh",color:"#1e293b"}}>
 
-      {/* HEADER */}
-      <div style={{background:"white",borderBottom:"1px solid #e2e8f0",padding:"16px 20px",position:"sticky",top:0,zIndex:10}}>
-        <div style={{maxWidth:720,margin:"0 auto"}}>
-          <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}>
+      {/* ── HEADER ── */}
+      <div style={{background:"white",borderBottom:"1px solid #e2e8f0",padding:"16px 20px"}}>
+        <div style={{maxWidth:1100,margin:"0 auto"}}>
+          <div style={{display:"flex",alignItems:"flex-start",gap:12,flexWrap:"wrap",marginBottom:14}}>
             <div>
               <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4,flexWrap:"wrap"}}>
                 <a href="index.html" className="back-link">← Todos los procesos</a>
@@ -326,82 +494,135 @@ function App() {
               <h1 style={{fontSize:20,fontWeight:600,color:"#0f172a",letterSpacing:"-0.02em"}}>🔐 Acceso al Portal</h1>
               <p style={{fontSize:13,color:"#64748b",marginTop:2}}>Registro, login, acceso desde Moodle y web, y recuperación de contraseña</p>
             </div>
-            <button className="btn" onClick={function(){setTechMode(!techMode);}}
-              style={{padding:"7px 14px",borderRadius:8,fontSize:12,fontWeight:500,
-                background:techMode?"#1e293b":"#f1f5f9",color:techMode?"white":"#64748b",
-                border:"1px solid "+(techMode?"#1e293b":"#e2e8f0"),flexShrink:0,marginTop:2}}>
-              {techMode?"⚙️ Técnico":"👁 Funcional"}
-            </button>
           </div>
 
           {/* Scenario selector */}
-          <div style={{display:"flex",gap:6,marginTop:12,flexWrap:"wrap"}}>
-            {Object.entries(SCENARIOS).map(function(e){
-              var key=e[0]; var s=e[1]; var active=scenario===key;
-              return (
-                <button key={key} className="btn"
-                  onClick={function(){setScenario(key);setActiveStep(null);}}
-                  style={{padding:"6px 13px",borderRadius:8,fontSize:12,fontWeight:active?600:400,
-                    background:active?s.color:"white",color:active?"white":"#64748b",
-                    border:"1px solid "+(active?s.color:"#e2e8f0")}}>
-                  {s.icon} {s.label}
-                </button>
-              );
-            })}
+          <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+            <span style={{fontSize:12,color:"#94a3b8",flexShrink:0}}>Escenario:</span>
+            <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+              {Object.entries(SCENARIOS).map(function(e){
+                var key = e[0]; var s = e[1]; var active = scenario === key;
+                return (
+                  <button key={key} className="btn"
+                    onClick={function(){setScenario(key);setHoveredRow(null);}}
+                    style={{padding:"5px 12px",borderRadius:8,fontSize:12,fontWeight:active?600:400,
+                      background:active?s.color:"white",color:active?"white":"#64748b",
+                      border:"1px solid "+(active?s.color:"#e2e8f0")}}>
+                    {s.icon} {s.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          {/* Active scenario description */}
-          <div style={{marginTop:10,padding:"8px 12px",background:sc.color+"0f",
+          {/* Scenario description */}
+          <div style={{marginTop:10,padding:"7px 12px",background:sc.color+"0f",
             border:"1px solid "+sc.color+"30",borderRadius:8,
-            fontSize:12,color:sc.color,display:"flex",alignItems:"center",gap:6}}>
-            <div style={{width:5,height:5,borderRadius:99,background:sc.color,flexShrink:0,animation:"fadeIn .3s"}}/>
+            fontSize:12,color:sc.color,display:"flex",alignItems:"center",gap:6,animation:"fadeIn .2s ease"}}>
+            <div style={{width:5,height:5,borderRadius:99,background:sc.color,flexShrink:0}}/>
             {sc.desc}
             <span style={{color:"#94a3b8",marginLeft:4}}>· {steps.length} pasos</span>
           </div>
         </div>
       </div>
 
-      {/* FLOW */}
-      <div style={{maxWidth:720,margin:"0 auto",padding:"24px 16px"}}>
-        {steps.map(function(step,idx){
-          var showHeader=step.fase!==lastFase;
-          lastFase=step.fase;
-          return (
-            <div key={idx}>
-              {showHeader&&<PhaseHeader fase={step.fase} isFirst={idx===0}/>}
-              <Step step={step} idx={idx} techMode={techMode} isActive={activeStep===idx} onToggle={toggle}/>
-            </div>
-          );
-        })}
+      {/* ── FLOW ── */}
+      <div style={{maxWidth:1100,margin:"0 auto",padding:"24px 16px"}}>
 
-        {/* End */}
-        <div style={{height:18,marginLeft:20}}><div style={{width:2,height:"100%",background:"#e2e8f0"}}/></div>
-        <div style={{display:"flex",gap:12,alignItems:"center",background:"white",
-          border:"1px solid #a7f3d0",borderLeft:"3px solid #10b981",borderRadius:12,padding:"14px 16px",
-          boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
-          <div style={{width:32,height:32,borderRadius:99,background:"#10b981",color:"white",
-            display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>✓</div>
-          <div>
-            <div style={{fontSize:13,fontWeight:600,color:"#065f46"}}>Proceso completado</div>
-            <div style={{fontSize:12,color:"#6b7280",marginTop:1}}>{sc.end}</div>
+        <div style={{
+          background:"white",
+          border:"1px solid #e2e8f0",
+          borderRadius:12,
+          overflow:"hidden",
+          boxShadow:"0 1px 4px rgba(0,0,0,.05)",
+        }}>
+          {/* Column headers */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr"}}>
+            <div className="col-header col-header-left" style={{
+              display:"flex",alignItems:"center",gap:7,
+              borderRight:"1px solid #e2e8f0",
+            }}>
+              <span style={{width:6,height:6,borderRadius:99,background:"#64748b",display:"inline-block",flexShrink:0}}/>
+              Qué ocurre (proceso)
+            </div>
+            <div className="col-header col-header-right" style={{
+              display:"flex",alignItems:"center",gap:7,
+            }}>
+              <span style={{width:6,height:6,borderRadius:99,background:"#10b981",display:"inline-block",flexShrink:0}}/>
+              Qué hace el sistema
+            </div>
+          </div>
+
+          {/* Rows */}
+          <div className="flow-grid">
+            {rows.map(function(row){
+              if(row.type === "phase"){
+                return <PhaseHeaderRow key={row.key} fase={row.fase}/>;
+              }
+              return (
+                <StepRow
+                  key={row.key}
+                  step={row.step}
+                  idx={row.idx}
+                  hoveredRow={hoveredRow}
+                  setHoveredRow={setHoveredRow}
+                />
+              );
+            })}
+          </div>
+
+          {/* End row */}
+          <div style={{
+            padding:"14px 16px",
+            borderTop:"1px solid #f1f5f9",
+            background:"#f0fdf4",
+            display:"flex",alignItems:"center",gap:10,
+          }}>
+            <div style={{
+              width:28,height:28,borderRadius:99,
+              background:"#10b981",
+              display:"flex",alignItems:"center",justifyContent:"center",
+              fontSize:13,flexShrink:0,color:"white",fontWeight:700,
+            }}>✓</div>
+            <div>
+              <div style={{fontSize:13,fontWeight:600,color:"#065f46"}}>Proceso completado</div>
+              <div style={{fontSize:12,color:"#6b7280",marginTop:1}}>{sc.end}</div>
+            </div>
           </div>
         </div>
 
-        {/* Info panel */}
-        <div style={{marginTop:32,padding:"16px",background:"white",borderRadius:12,border:"1px solid #e2e8f0"}}>
-          <div style={{fontSize:11,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:12,fontFamily:"DM Mono,monospace"}}>Sobre el sistema de identidad</div>
-          <div style={{padding:"10px 12px",background:"#eff6ff",borderRadius:8,border:"1px solid #bfdbfe",marginBottom:10}}>
-            <div style={{fontSize:12,color:"#1d4ed8",lineHeight:1.6}}>
-              <strong>El portal es el sistema central de identidad.</strong> Moodle y WordPress no tienen su propio login — cuando el usuario hace clic en "Iniciar sesión" en cualquiera de los dos, el portal se encarga de identificarle. Si ya tiene sesión abierta en el portal, el acceso es instantáneo y transparente.
+        {/* Legend */}
+        <div style={{
+          marginTop:20,padding:"14px 16px",
+          background:"white",borderRadius:10,
+          border:"1px solid #e2e8f0",
+          display:"flex",gap:16,alignItems:"flex-start",flexWrap:"wrap",
+        }}>
+          <div style={{flex:1,minWidth:200}}>
+            <div style={{fontSize:10,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",
+              letterSpacing:"0.06em",marginBottom:8,fontFamily:"DM Mono, monospace"}}>
+              Sistemas involucrados
+            </div>
+            <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+              {Object.keys(SYS_COLOR).map(function(s){
+                return <SystemTag key={s} sys={s}/>;
+              })}
             </div>
           </div>
-          <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:10}}>
-            {Object.keys(SYS_COLOR).map(function(s){return <SystemTag key={s} sys={s}/>;})}
-          </div>
-          <div style={{fontSize:12,color:"#94a3b8",lineHeight:1.6}}>
-            Haz clic en cualquier paso para más detalle. Activa <strong style={{color:"#1e293b"}}>modo técnico</strong> para ver los sistemas y automatizaciones implicadas.
+          <div style={{
+            fontSize:12,color:"#94a3b8",lineHeight:1.6,
+            borderLeft:"1px solid #f1f5f9",paddingLeft:16,
+            maxWidth:380,
+          }}>
+            La columna izquierda describe <strong style={{color:"#475569"}}>lo que ocurre</strong> desde el punto de vista del usuario.
+            La columna derecha muestra <strong style={{color:"#475569"}}>los sistemas y las operaciones técnicas</strong> que se ejecutan en paralelo.
+            <br/>
+            <span style={{marginTop:4,display:"block"}}>
+              <strong style={{color:"#1e293b"}}>El portal es el sistema central de identidad.</strong> Moodle y WordPress delegan el login al portal — si el usuario ya tiene sesión abierta, el acceso es transparente.
+            </span>
           </div>
         </div>
+
         <div style={{height:40}}/>
       </div>
     </div>

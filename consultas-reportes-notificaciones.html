@@ -13,14 +13,85 @@
     html,body{min-height:100%;background:#f8fafc;font-family:'DM Sans',system-ui,sans-serif}
     #root{min-height:100%}
     @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-    .step-card{cursor:pointer;transition:box-shadow .15s,transform .15s}
-    .step-card:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
     .btn{cursor:pointer;transition:all .15s;border:none;font-family:'DM Sans',sans-serif}
     .btn:hover{opacity:.85}
     ::-webkit-scrollbar{width:4px}
     ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:2px}
     .back-link{text-decoration:none;color:#64748b;font-size:13px;display:inline-flex;align-items:center;gap:5px}
     .back-link:hover{color:#334155}
+
+    /* ── DUAL-COLUMN LAYOUT ── */
+    .flow-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:0;
+      position:relative;
+    }
+    @media(max-width:767px){
+      .flow-grid{grid-template-columns:1fr;}
+    }
+
+    /* Column headers */
+    .col-header{
+      padding:10px 16px;
+      font-size:10px;
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:0.07em;
+      font-family:'DM Mono',monospace;
+      color:#94a3b8;
+      background:#f8fafc;
+      border-bottom:1px solid #e2e8f0;
+    }
+    .col-header-left{border-right:1px solid #e2e8f0;}
+    .col-header-right{color:#64748b;}
+
+    /* Phase header row */
+    .phase-cell{
+      padding:8px 16px 6px;
+      background:#f8fafc;
+      border-bottom:1px solid #e2e8f0;
+    }
+    .phase-cell-left{border-right:1px solid #e2e8f0;}
+
+    /* Step row cells */
+    .step-row-left,.step-row-right{
+      padding:16px;
+      border-bottom:1px solid #f1f5f9;
+      position:relative;
+      background:white;
+      transition:background .15s;
+    }
+    .step-row-left{
+      border-right:1px solid #e2e8f0;
+    }
+    .step-row-left:hover,.step-row-right:hover{
+      background:#fafbfc;
+    }
+
+    /* Step number badge */
+    .step-num{
+      width:22px;height:22px;border-radius:99px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:10px;font-weight:600;
+      flex-shrink:0;
+      position:relative;z-index:1;
+    }
+
+    /* System tags */
+    .sys-tag{
+      display:inline-flex;align-items:center;gap:3px;
+      border-radius:99px;padding:2px 8px;
+      font-size:10px;font-weight:500;
+      font-family:'DM Mono',monospace;
+      letter-spacing:0.02em;white-space:nowrap;
+    }
+
+    /* mobile: hide right col label in phase header */
+    @media(max-width:767px){
+      .col-header-right-wrap{display:none!important}
+      .phase-cell-right-empty{display:none!important}
+    }
   </style>
 
 <style>
@@ -71,17 +142,27 @@ document.addEventListener('DOMContentLoaded',function(){
 <script type="text/babel">
 const { useState } = React;
 
+// ── SYSTEM PALETTE ────────────────────────────────────────────────────────────
 const SYS_COLOR = {
-  usuario:"#64748b", weweb:"#8b5cf6", supabase:"#10b981",
-  n8n:"#ef4444", hubspot:"#f97316", moodle:"#06b6d4",
-  iai_admin:"#f43f5e",
+  usuario:    "#64748b",
+  weweb:      "#8b5cf6",
+  supabase:   "#10b981",
+  n8n:        "#ef4444",
+  hubspot:    "#f97316",
+  moodle:     "#06b6d4",
+  iai_admin:  "#f43f5e",
 };
 const SYS_LABEL = {
-  usuario:"Usuario / Socio", weweb:"Portal del socio", supabase:"Base de datos",
-  n8n:"Automatización", hubspot:"CRM", moodle:"Campus virtual",
-  iai_admin:"IAI (gestión interna)",
+  usuario:    "Usuario / Socio",
+  weweb:      "Portal del socio",
+  supabase:   "Base de datos",
+  n8n:        "Automatización",
+  hubspot:    "CRM",
+  moodle:     "Campus virtual",
+  iai_admin:  "IAI (gestión interna)",
 };
 
+// ── FASE STYLES ───────────────────────────────────────────────────────────────
 const FASE_STYLES = {
   acceso:       {bg:"#eff6ff", text:"#1d4ed8", border:"#bfdbfe", label:"Acceso"},
   consulta:     {bg:"#f5f3ff", text:"#5b21b6", border:"#ddd6fe", label:"Consulta"},
@@ -93,6 +174,7 @@ const FASE_STYLES = {
   construccion: {bg:"#f8fafc", text:"#475569", border:"#cbd5e1", label:"En construcción"},
 };
 
+// ── SCENARIOS ─────────────────────────────────────────────────────────────────
 const SCENARIOS = {
   historico: {
     icon:"📚", label:"Histórico de cursos del socio",
@@ -121,6 +203,7 @@ const SCENARIOS = {
   },
 };
 
+// ── STEPS ─────────────────────────────────────────────────────────────────────
 const ALL_STEPS = [
 
   // ── HISTÓRICO ──
@@ -128,197 +211,296 @@ const ALL_STEPS = [
     who:"El socio",
     what:"Accede a 'Mis formaciones' en el portal",
     why:"El socio puede consultar en cualquier momento el historial completo de todas las formaciones en las que ha participado, con sus horas CPE acumuladas y el estado de cada una.",
-    tech:"Portal WeWeb → sección /mis-inscripciones o /mis-formaciones. Lee product_registrations del usuario autenticado."},
+    tech:"Portal WeWeb → sección /mis-inscripciones o /mis-formaciones. Lee product_registrations del usuario autenticado.",
+    techSystems:["weweb","supabase"]},
 
   {scenario:"historico", sys:"supabase", fase:"consulta", wip:false,
     who:"El sistema",
     what:"Recupera el historial de inscripciones del socio",
     why:"El sistema muestra todas las formaciones: en curso, completadas y canceladas, ordenadas por fecha.",
-    tech:"product_registrations JOIN products: title, start_date, end_date, total_cpe_hours, status, certificate_issued, completion_date. Filtrado por user_id."},
+    tech:"product_registrations JOIN products: title, start_date, end_date, total_cpe_hours, status, certificate_issued, completion_date. Filtrado por user_id.",
+    techSystems:["supabase"]},
 
   {scenario:"historico", sys:"weweb", fase:"resultado", wip:false,
     who:"El socio",
     what:"Ve el listado con el estado de cada formación",
     why:"Para cada formación aparece: nombre, fechas, horas CPE reconocidas, estado de asistencia y si el diploma está disponible para descargar.",
-    tech:"Estados posibles en product_registrations: registered, attended, completed, cancelled, waitlist. certificate_issued=true habilita el botón de diploma."},
+    tech:"Estados posibles en product_registrations: registered, attended, completed, cancelled, waitlist. certificate_issued=true habilita el botón de diploma.",
+    techSystems:["weweb","supabase"]},
 
   {scenario:"historico", sys:"moodle", fase:"consulta", wip:true,
     who:"El sistema",
     what:"Muestra el progreso del alumno en el campus virtual",
     why:"Para formaciones e-learning o blended, el portal puede mostrar el porcentaje de avance del alumno dentro del curso en Moodle — cuántos módulos ha completado, qué le queda por hacer.",
-    tech:"🚧 EN CONSTRUCCIÓN — Flujo n8n identificado y desarrollado, pendiente de pruebas y puesta en producción. product_registrations.moodle_enrollment_id vincula con Moodle. API: core_completion_get_course_completion_status."},
+    tech:"🚧 EN CONSTRUCCIÓN — Flujo n8n identificado y desarrollado, pendiente de pruebas y puesta en producción. product_registrations.moodle_enrollment_id vincula con Moodle. API: core_completion_get_course_completion_status.",
+    techSystems:["moodle","n8n","supabase"]},
 
   {scenario:"historico", sys:"weweb", fase:"resultado", wip:false,
     who:"El socio",
     what:"Descarga los diplomas de las formaciones completadas",
     why:"Desde el historial el socio puede descargar directamente cualquier diploma disponible, sin tener que buscarlo en su email.",
-    tech:"Botón diploma visible si certificate_issued=true. Llama a generate-certificate Edge Fn con el registration_id. Retorna PDF base64."},
+    tech:"Botón diploma visible si certificate_issued=true. Llama a generate-certificate Edge Fn con el registration_id. Retorna PDF base64.",
+    techSystems:["weweb","supabase"]},
 
   // ── LISTADOS ADMIN ──
   {scenario:"listados_admin", sys:"iai_admin", fase:"acceso", wip:false,
     who:"El equipo de IAI",
     what:"Accede al panel de administración del portal",
     why:"El panel de admin permite a IAI consultar las inscripciones de cualquier curso o evento: quién está apuntado, cuántas plazas quedan y qué ingresos ha generado.",
-    tech:"Panel admin WeWeb con rol admin. Lee product_registrations, deals, deal_items, user_profiles con filtros por product_id."},
+    tech:"Panel admin WeWeb con rol admin. Lee product_registrations, deals, deal_items, user_profiles con filtros por product_id.",
+    techSystems:["weweb","supabase"]},
 
   {scenario:"listados_admin", sys:"supabase", fase:"consulta", wip:false,
     who:"El sistema",
     what:"Filtra y agrupa los datos de inscripciones",
     why:"El admin puede filtrar por curso, fecha, estado de inscripción o tipo de pago para obtener exactamente la vista que necesita.",
-    tech:"product_registrations JOIN user_profiles JOIN deals JOIN deal_items. Filtros: product_id, status, date range, payment_method. Conteo de plazas: max_capacity vs activos."},
+    tech:"product_registrations JOIN user_profiles JOIN deals JOIN deal_items. Filtros: product_id, status, date range, payment_method. Conteo de plazas: max_capacity vs activos.",
+    techSystems:["supabase"]},
 
   {scenario:"listados_admin", sys:"weweb", fase:"resultado", wip:false,
     who:"El equipo de IAI",
     what:"Ve el listado de inscritos con todos los datos relevantes",
     why:"Para cada inscrito aparece: nombre, email, tipo de socio, método de pago, importe, estado y si ha sido confirmada la asistencia.",
-    tech:"Vista admin en WeWeb: tabla con user_profiles.full_name, email, membership_type, deals.payment_method_id, deal_items.total_with_taxes, product_registrations.status, attendance_status."},
+    tech:"Vista admin en WeWeb: tabla con user_profiles.full_name, email, membership_type, deals.payment_method_id, deal_items.total_with_taxes, product_registrations.status, attendance_status.",
+    techSystems:["weweb","supabase"]},
 
   {scenario:"listados_admin", sys:"hubspot", fase:"reporte", wip:false,
     who:"El equipo de IAI",
     what:"Consulta reportes de ingresos y conversión en HubSpot",
     why:"Para análisis más avanzados — comparativa por periodos, tasa de conversión, ingresos por tipo de socio — IAI usa los dashboards de HubSpot donde todos los deals están sincronizados.",
-    tech:"HubSpot Reports: deals por producto, ingresos por pipeline stage, conversión por membership_type. Datos sincronizados desde Supabase vía n8n SYNC workflows."},
+    tech:"HubSpot Reports: deals por producto, ingresos por pipeline stage, conversión por membership_type. Datos sincronizados desde Supabase vía n8n SYNC workflows.",
+    techSystems:["hubspot","n8n","supabase"]},
 
   {scenario:"listados_admin", sys:"weweb", fase:"reporte", wip:false,
     who:"El equipo de IAI",
     what:"Exporta el listado para gestión presencial o comunicaciones",
     why:"Antes de un curso presencial, IAI puede exportar la lista de asistentes para el control de acceso o para preparar el material.",
-    tech:"Export CSV/Excel desde panel admin WeWeb con los campos seleccionados de product_registrations + user_profiles."},
+    tech:"Export CSV/Excel desde panel admin WeWeb con los campos seleccionados de product_registrations + user_profiles.",
+    techSystems:["weweb","supabase"]},
 
   // ── RECORDATORIOS HUBSPOT ──
   {scenario:"recordatorios_hs", sys:"hubspot", fase:"confirmacion", wip:false,
     who:"El sistema",
     what:"Envía confirmación de inscripción al alumno por email",
     why:"En cuanto se confirma el pago y el deal queda cerrado en HubSpot, el alumno recibe un email de confirmación con los detalles del curso: fecha, lugar, acceso al campus si aplica.",
-    tech:"HubSpot workflow disparado por deal.stage = closedwon. Email template con propiedades del deal y del producto: nombre curso, fecha, dirección o URL de acceso."},
+    tech:"HubSpot workflow disparado por deal.stage = closedwon. Email template con propiedades del deal y del producto: nombre curso, fecha, dirección o URL de acceso.",
+    techSystems:["hubspot"]},
 
   {scenario:"recordatorios_hs", sys:"hubspot", fase:"recordatorio", wip:false,
     who:"El sistema",
     what:"Envía un recordatorio unos días antes del inicio del curso",
     why:"El alumno recibe un recordatorio con toda la información necesaria para el día del curso: hora, lugar, materiales descargables, cómo acceder al campus o la URL de streaming.",
-    tech:"HubSpot workflow con criterio temporal: X días antes de fecha_de_inicio del producto asociado al deal. Email con detalles logísticos del curso."},
+    tech:"HubSpot workflow con criterio temporal: X días antes de fecha_de_inicio del producto asociado al deal. Email con detalles logísticos del curso.",
+    techSystems:["hubspot"]},
 
   {scenario:"recordatorios_hs", sys:"hubspot", fase:"envio", wip:false,
     who:"El sistema",
     what:"Envía email post-formación con el enlace al diploma",
     why:"Una vez finalizado el curso y marcada la asistencia, el alumno recibe un email con su diploma adjunto o el enlace para descargarlo desde el portal.",
-    tech:"HubSpot workflow o n8n post-completion: cuando certificate_issued=true en product_registrations → email al alumno con diploma PDF generado por generate-certificate."},
+    tech:"HubSpot workflow o n8n post-completion: cuando certificate_issued=true en product_registrations → email al alumno con diploma PDF generado por generate-certificate.",
+    techSystems:["hubspot","n8n","supabase"]},
 
   // ── NOTIFICACIONES PORTAL ──
   {scenario:"notificaciones_portal", sys:"weweb", fase:"construccion", wip:true,
     who:"El socio",
     what:"Recibe notificaciones dentro del propio portal",
     why:"El módulo de notificaciones in-app permitirá al socio ver avisos importantes directamente en el portal sin depender solo del email: inscripciones próximas, diplomas disponibles, vencimiento de membresía, aprobaciones pendientes...",
-    tech:"🚧 EN CONSTRUCCIÓN — tabla notifications en Supabase ya creada (0 rows). Pendiente de implementar el módulo de notificaciones en WeWeb y los workflows n8n que las generen."},
+    tech:"🚧 EN CONSTRUCCIÓN — tabla notifications en Supabase ya creada (0 rows). Pendiente de implementar el módulo de notificaciones en WeWeb y los workflows n8n que las generen.",
+    techSystems:["weweb","supabase"]},
 
   {scenario:"notificaciones_portal", sys:"supabase", fase:"construccion", wip:true,
     who:"El sistema",
     what:"Almacena y gestiona las notificaciones de cada usuario",
     why:"Cada notificación quedará guardada para que el socio pueda verla cuando entre al portal, aunque no esté conectado en el momento en que se genera.",
-    tech:"🚧 EN CONSTRUCCIÓN — tabla notifications: user_id, type, title, body, read_at, action_url, created_at. Tipos previstos: diploma_ready, course_reminder, membership_expiry, credit_approval_pending."},
+    tech:"🚧 EN CONSTRUCCIÓN — tabla notifications: user_id, type, title, body, read_at, action_url, created_at. Tipos previstos: diploma_ready, course_reminder, membership_expiry, credit_approval_pending.",
+    techSystems:["supabase"]},
 
   {scenario:"notificaciones_portal", sys:"n8n", fase:"construccion", wip:true,
     who:"El sistema",
     what:"Genera notificaciones automáticamente según los eventos del sistema",
     why:"Los mismos eventos que hoy solo generan emails (inscripción, diploma, recordatorio) también crearán notificaciones en el portal para los socios que prefieran gestionarlo desde allí.",
-    tech:"🚧 EN CONSTRUCCIÓN — n8n workflows insertan en tabla notifications tras cada evento relevante: pago confirmado, diploma generado, curso próximo, hora formativa pendiente de aprobación."},
+    tech:"🚧 EN CONSTRUCCIÓN — n8n workflows insertan en tabla notifications tras cada evento relevante: pago confirmado, diploma generado, curso próximo, hora formativa pendiente de aprobación.",
+    techSystems:["n8n","supabase"]},
 ];
 
+// ── COMPONENTS ────────────────────────────────────────────────────────────────
 function SystemTag({sys}) {
-  var c=SYS_COLOR[sys]||"#94a3b8"; var l=SYS_LABEL[sys]||sys;
-  return <span style={{display:"inline-flex",alignItems:"center",gap:3,background:c+"18",border:"1px solid "+c+"44",borderRadius:99,padding:"1px 8px",fontSize:10,color:c,fontWeight:500,fontFamily:"DM Mono,monospace",whiteSpace:"nowrap"}}>{l}</span>;
+  var c = SYS_COLOR[sys] || "#94a3b8";
+  var l = SYS_LABEL[sys] || sys;
+  return (
+    <span className="sys-tag" style={{
+      background:c+"18",
+      border:"1px solid "+c+"44",
+      color:c,
+    }}>{l}</span>
+  );
 }
 
 function FaseBadge({fase}) {
-  var c=FASE_STYLES[fase]||FASE_STYLES.acceso;
-  return <span style={{display:"inline-block",padding:"2px 8px",borderRadius:99,fontSize:10,fontWeight:500,whiteSpace:"nowrap",background:c.bg,color:c.text,border:"1px solid "+c.border}}>{c.label}</span>;
-}
-
-function PhaseHeader({fase,isFirst}) {
-  var c=FASE_STYLES[fase]||FASE_STYLES.acceso;
+  var c = FASE_STYLES[fase] || FASE_STYLES.acceso;
   return (
-    <div style={{display:"flex",alignItems:"center",gap:10,margin:isFirst?"0 0 12px":"22px 0 12px"}}>
-      <div style={{width:8,height:8,borderRadius:99,background:c.text,flexShrink:0}}/>
-      <span style={{fontSize:11,fontWeight:600,color:c.text,fontFamily:"DM Mono,monospace",textTransform:"uppercase",letterSpacing:"0.07em"}}>{c.label}</span>
-      <div style={{flex:1,height:1,background:"#e2e8f0"}}/>
-    </div>
+    <span style={{display:"inline-block",padding:"2px 8px",borderRadius:99,
+      fontSize:10,fontWeight:500,whiteSpace:"nowrap",
+      background:c.bg,color:c.text,border:"1px solid "+c.border}}>
+      {c.label}
+    </span>
   );
 }
 
-function Step({step,idx,techMode,isActive,onToggle}) {
-  var sc=SYS_COLOR[step.sys]||"#94a3b8";
-  var wipBorder=step.wip?"#fbbf24":null;
+function PhaseHeaderRow({fase}) {
+  var c = FASE_STYLES[fase] || FASE_STYLES.acceso;
   return (
-    <div style={{position:"relative"}}>
-      {idx>0&&<div style={{height:18,marginLeft:20}}><div style={{width:2,height:"100%",background:"#e2e8f0",borderRadius:1}}/></div>}
-      <div className="step-card" onClick={function(){onToggle(idx);}}
-        style={{background:step.wip?"#fffbeb":"white",
-          border:"1px solid "+(isActive?sc+"60":(wipBorder||"#e2e8f0")),
-          borderLeft:"3px solid "+(wipBorder||sc),
-          borderRadius:12,padding:"14px 16px",
-          display:"flex",gap:12,alignItems:"flex-start",
-          boxShadow:isActive?"0 2px 12px rgba(0,0,0,.08)":"0 1px 3px rgba(0,0,0,.04)"}}>
-        <div style={{width:32,height:32,borderRadius:99,flexShrink:0,
-          background:isActive?sc:(step.wip?"#fef3c7":"#f1f5f9"),
-          border:"2px solid "+(isActive?sc:(step.wip?"#fbbf24":"#e2e8f0")),
-          display:"flex",alignItems:"center",justifyContent:"center",
-          fontSize:step.wip?14:12,fontWeight:600,
-          color:isActive?"white":(step.wip?"#92400e":"#94a3b8"),
-          transition:"all .2s",marginTop:1}}>
-          {step.wip?"🚧":idx+1}
+    <React.Fragment>
+      <div className="phase-cell phase-cell-left">
+        <div style={{display:"flex",alignItems:"center",gap:8}}>
+          <div style={{width:7,height:7,borderRadius:99,background:c.text,flexShrink:0}}/>
+          <span style={{fontSize:10,fontWeight:600,color:c.text,
+            fontFamily:"DM Mono, monospace",textTransform:"uppercase",letterSpacing:"0.07em"}}>
+            {c.label}
+          </span>
+          <div style={{flex:1,height:1,background:c.border}}/>
         </div>
-        <div style={{flex:1,minWidth:0}}>
-          <div style={{display:"flex",alignItems:"flex-start",gap:8,flexWrap:"wrap",marginBottom:5}}>
-            <span style={{fontSize:13,fontWeight:600,color:"#1e293b",lineHeight:1.35,flex:1,minWidth:100}}>
-              <span style={{color:"#94a3b8",fontWeight:400,marginRight:4}}>{step.who} —</span>
-              {step.what}
-            </span>
-            <FaseBadge fase={step.fase}/>
-            {step.wip&&<span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"2px 8px",borderRadius:99,fontSize:10,fontWeight:500,background:"#fef3c7",color:"#92400e",border:"1px solid #fde68a",whiteSpace:"nowrap"}}>🚧 En construcción</span>}
-          </div>
-          <p style={{fontSize:13,color:"#475569",lineHeight:1.6,marginBottom:6}}>{step.why}</p>
-          <SystemTag sys={step.sys}/>
-          {(techMode||isActive)&&step.tech&&(
-            <div style={{marginTop:10,padding:"8px 12px",
-              background:step.wip?"#fef9c3":"#f8fafc",
-              borderRadius:8,border:"1px solid "+(step.wip?"#fde68a":"#e2e8f0"),
-              animation:"fadeIn .2s ease"}}>
-              <div style={{fontSize:10,fontWeight:600,color:step.wip?"#92400e":"#94a3b8",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:3,fontFamily:"DM Mono,monospace"}}>
-                {step.wip?"Estado técnico":"Detalle técnico"}
-              </div>
-              <p style={{fontSize:12,color:step.wip?"#78350f":"#64748b",lineHeight:1.55,fontFamily:"DM Mono,monospace"}}>{step.tech}</p>
-            </div>
-          )}
-        </div>
-        <div style={{color:"#cbd5e1",fontSize:14,flexShrink:0,marginTop:6,transform:isActive?"rotate(180deg)":"none",transition:"transform .2s"}}>▾</div>
       </div>
-    </div>
+      <div className="phase-cell phase-cell-right-empty">
+        <div style={{height:7}}/>
+      </div>
+    </React.Fragment>
   );
 }
 
+function StepRow({step, idx, hoveredRow, setHoveredRow}) {
+  var sc = SYS_COLOR[step.sys] || "#94a3b8";
+  var isHovered = hoveredRow === idx;
+  var rowBg = step.wip ? "#fffbeb" : (isHovered ? "#fafbfc" : "white");
+  var borderAccent = step.wip ? "#fbbf24" : sc;
+
+  return (
+    <React.Fragment>
+      {/* LEFT: process / functional */}
+      <div
+        className="step-row-left"
+        style={{
+          background:rowBg,
+          borderLeft:"3px solid "+borderAccent+"55",
+        }}
+        onMouseEnter={function(){setHoveredRow(idx);}}
+        onMouseLeave={function(){setHoveredRow(null);}}>
+
+        {/* Timeline line */}
+        <div style={{
+          position:"absolute",left:27,top:0,bottom:0,
+          width:2,background:"#e2e8f0",zIndex:0,
+        }}/>
+
+        <div style={{display:"flex",gap:10,alignItems:"flex-start",position:"relative",zIndex:1}}>
+          {/* Step number */}
+          <div className="step-num" style={{
+            background:isHovered ? sc : (step.wip ? "#fef3c7" : "#f1f5f9"),
+            border:"2px solid "+(isHovered ? sc : (step.wip ? "#fbbf24" : "#e2e8f0")),
+            color:isHovered ? "white" : (step.wip ? "#92400e" : "#94a3b8"),
+            fontSize:step.wip ? 11 : 10,
+            transition:"all .2s",
+            marginTop:1,
+          }}>
+            {step.wip ? "🚧" : idx+1}
+          </div>
+
+          <div style={{flex:1,minWidth:0}}>
+            {/* WIP badge */}
+            {step.wip && (
+              <div style={{marginBottom:5}}>
+                <span style={{display:"inline-flex",alignItems:"center",gap:4,
+                  padding:"2px 8px",borderRadius:99,fontSize:10,fontWeight:500,
+                  background:"#fef3c7",color:"#92400e",border:"1px solid #fde68a",
+                  whiteSpace:"nowrap"}}>
+                  🚧 En construcción
+                </span>
+              </div>
+            )}
+            {/* Who */}
+            <p style={{fontSize:12,color:"#94a3b8",fontWeight:400,marginBottom:2,lineHeight:1.3}}>
+              {step.who}
+            </p>
+            {/* What */}
+            <p style={{fontSize:13,fontWeight:600,color:"#1e293b",lineHeight:1.4,marginBottom:6}}>
+              {step.what}
+            </p>
+            {/* Why */}
+            <p style={{fontSize:12,color:"#64748b",lineHeight:1.6}}>
+              {step.why}
+            </p>
+            {/* Fase badge (bottom) */}
+            <div style={{marginTop:8}}>
+              <FaseBadge fase={step.fase}/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* RIGHT: system / technical */}
+      <div
+        className="step-row-right"
+        style={{background:rowBg}}
+        onMouseEnter={function(){setHoveredRow(idx);}}
+        onMouseLeave={function(){setHoveredRow(null);}}>
+
+        <div style={{paddingLeft:4}}>
+          {/* System tags */}
+          <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:8}}>
+            {(step.techSystems || [step.sys]).map(function(s){
+              return <SystemTag key={s} sys={s}/>;
+            })}
+          </div>
+
+          {/* Tech description */}
+          <p style={{
+            fontSize:12,color:step.wip?"#78350f":"#64748b",lineHeight:1.6,
+            fontFamily:"DM Mono, monospace",
+            padding:"8px 10px",
+            background:step.wip?"#fef9c3":"#f8fafc",
+            borderRadius:7,
+            border:"1px solid "+(step.wip?"#fde68a":"#e2e8f0"),
+          }}>
+            {step.tech}
+          </p>
+        </div>
+      </div>
+    </React.Fragment>
+  );
+}
+
+// ── APP ───────────────────────────────────────────────────────────────────────
 function App() {
-  var sa=useState("historico"); var scenario=sa[0]; var setScenario=sa[1];
-  var ta=useState(false); var techMode=ta[0]; var setTechMode=ta[1];
-  var aa=useState(null); var activeStep=aa[0]; var setActiveStep=aa[1];
+  var sa = useState("historico"); var scenario = sa[0]; var setScenario = sa[1];
+  var ha = useState(null); var hoveredRow = ha[0]; var setHoveredRow = ha[1];
 
-  function toggle(idx){setActiveStep(activeStep===idx?null:idx);}
+  var steps = ALL_STEPS.filter(function(s){ return s.scenario === scenario; });
+  var sc = SCENARIOS[scenario];
+  var wipCount = steps.filter(function(s){ return s.wip; }).length;
 
-  var steps=ALL_STEPS.filter(function(s){return s.scenario===scenario;});
-  var sc=SCENARIOS[scenario];
-  var lastFase=null;
-  var wipCount=steps.filter(function(s){return s.wip;}).length;
-
-  var groups=[
-    {label:"AC-15 · Consultas del socio", keys:["historico"]},
-    {label:"AC-16 · Reportes para IAI", keys:["listados_admin"]},
-    {label:"AC-17 · Comunicaciones y notificaciones", keys:["recordatorios_hs","notificaciones_portal"]},
+  var groups = [
+    {label:"AC-15 · Consultas del socio",                  keys:["historico"]},
+    {label:"AC-16 · Reportes para IAI",                    keys:["listados_admin"]},
+    {label:"AC-17 · Comunicaciones y notificaciones",       keys:["recordatorios_hs","notificaciones_portal"]},
   ];
+
+  // Build rows with phase headers
+  var lastFase = null;
+  var rows = [];
+  steps.forEach(function(step, idx){
+    if(step.fase !== lastFase){
+      rows.push({type:"phase", fase:step.fase, key:"phase-"+step.fase+"-"+idx});
+      lastFase = step.fase;
+    }
+    rows.push({type:"step", step:step, idx:idx, key:"step-"+idx});
+  });
 
   return (
     <div style={{background:"#f8fafc",minHeight:"100vh",color:"#1e293b"}}>
 
-      <div style={{background:"white",borderBottom:"1px solid #e2e8f0",padding:"16px 20px",position:"sticky",top:0,zIndex:10}}>
-        <div style={{maxWidth:720,margin:"0 auto"}}>
+      {/* ── HEADER ── */}
+      <div style={{background:"white",borderBottom:"1px solid #e2e8f0",padding:"16px 20px"}}>
+        <div style={{maxWidth:1100,margin:"0 auto"}}>
           <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}>
             <div>
               <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4,flexWrap:"wrap"}}>
@@ -333,31 +515,30 @@ function App() {
                 Histórico de formaciones, listados para administración y comunicaciones con el alumno
               </p>
             </div>
-            <button className="btn" onClick={function(){setTechMode(!techMode);}}
-              style={{padding:"7px 14px",borderRadius:8,fontSize:12,fontWeight:500,
-                background:techMode?"#1e293b":"#f1f5f9",color:techMode?"white":"#64748b",
-                border:"1px solid "+(techMode?"#1e293b":"#e2e8f0"),flexShrink:0,marginTop:2}}>
-              {techMode?"⚙️ Técnico":"👁 Funcional"}
-            </button>
           </div>
 
-          <div style={{marginTop:12,display:"flex",flexDirection:"column",gap:8}}>
+          {/* Scenario selectors */}
+          <div style={{marginTop:14,display:"flex",flexDirection:"column",gap:8}}>
             {groups.map(function(g){
               return (
                 <div key={g.label}>
-                  <div style={{fontSize:10,color:"#94a3b8",fontFamily:"DM Mono,monospace",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:5}}>{g.label}</div>
+                  <div style={{fontSize:10,color:"#94a3b8",fontFamily:"DM Mono,monospace",
+                    textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:5}}>
+                    {g.label}
+                  </div>
                   <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
                     {g.keys.map(function(key){
-                      var s=SCENARIOS[key]; var active=scenario===key;
-                      var hasWip=s.wip||ALL_STEPS.filter(function(x){return x.scenario===key&&x.wip;}).length>0;
+                      var s = SCENARIOS[key]; var active = scenario === key;
+                      var hasWip = s.wip || ALL_STEPS.filter(function(x){return x.scenario===key&&x.wip;}).length>0;
                       return (
                         <button key={key} className="btn"
-                          onClick={function(){setScenario(key);setActiveStep(null);}}
+                          onClick={function(){setScenario(key);setHoveredRow(null);}}
                           style={{padding:"6px 13px",borderRadius:8,fontSize:12,fontWeight:active?600:400,
                             background:active?s.color:"white",color:active?"white":"#64748b",
                             border:"1px solid "+(active?s.color:"#e2e8f0"),position:"relative"}}>
                           {s.icon} {s.label}
-                          {hasWip&&<span style={{position:"absolute",top:-4,right:-4,width:8,height:8,borderRadius:99,background:"#f59e0b",border:"2px solid white"}}/>}
+                          {hasWip&&<span style={{position:"absolute",top:-4,right:-4,width:8,height:8,
+                            borderRadius:99,background:"#f59e0b",border:"2px solid white"}}/>}
                         </button>
                       );
                     })}
@@ -367,66 +548,126 @@ function App() {
             })}
           </div>
 
-          <div style={{marginTop:10,padding:"7px 12px",background:sc.color+"0f",
+          {/* Scenario description strip */}
+          <div style={{marginTop:12,padding:"7px 12px",background:sc.color+"0f",
             border:"1px solid "+sc.color+"30",borderRadius:8,
             display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
             <div style={{width:5,height:5,borderRadius:99,background:sc.color,flexShrink:0}}/>
             <span style={{fontSize:12,color:sc.color}}>{sc.desc}</span>
             <span style={{fontSize:12,color:"#94a3b8"}}>· {steps.length} pasos</span>
-            {wipCount>0&&<span style={{fontSize:11,color:"#92400e",background:"#fef3c7",padding:"1px 8px",borderRadius:99,border:"1px solid #fde68a"}}>🚧 {wipCount} en construcción</span>}
+            {wipCount>0&&<span style={{fontSize:11,color:"#92400e",background:"#fef3c7",
+              padding:"1px 8px",borderRadius:99,border:"1px solid #fde68a"}}>🚧 {wipCount} en construcción</span>}
           </div>
         </div>
       </div>
 
-      <div style={{maxWidth:720,margin:"0 auto",padding:"24px 16px"}}>
+      {/* ── FLOW ── */}
+      <div style={{maxWidth:1100,margin:"0 auto",padding:"24px 16px"}}>
 
-        {steps.map(function(step,idx){
-          var showHeader=step.fase!==lastFase;
-          lastFase=step.fase;
-          return (
-            <div key={idx}>
-              {showHeader&&<PhaseHeader fase={step.fase} isFirst={idx===0}/>}
-              <Step step={step} idx={idx} techMode={techMode} isActive={activeStep===idx} onToggle={toggle}/>
+        <div style={{
+          background:"white",
+          border:"1px solid #e2e8f0",
+          borderRadius:12,
+          overflow:"hidden",
+          boxShadow:"0 1px 4px rgba(0,0,0,.05)",
+        }}>
+          {/* Column headers */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr"}}
+            className="col-headers-grid">
+            <div className="col-header col-header-left" style={{
+              display:"flex",alignItems:"center",gap:7,
+              borderRight:"1px solid #e2e8f0",
+            }}>
+              <span style={{width:6,height:6,borderRadius:99,background:"#64748b",
+                display:"inline-block",flexShrink:0}}/>
+              Qué ocurre (proceso)
             </div>
-          );
-        })}
-
-        <div style={{height:18,marginLeft:20}}><div style={{width:2,height:"100%",background:"#e2e8f0"}}/></div>
-        <div style={{display:"flex",gap:12,alignItems:"center",background:"white",
-          border:"1px solid "+(wipCount>0?"#fde68a":"#a7f3d0"),
-          borderLeft:"3px solid "+(wipCount>0?"#f59e0b":"#10b981"),
-          borderRadius:12,padding:"14px 16px",boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
-          <div style={{width:32,height:32,borderRadius:99,
-            background:wipCount>0?"#f59e0b":"#10b981",color:"white",
-            display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>
-            {wipCount>0?"🚧":"✓"}
+            <div className="col-header col-header-right col-header-right-wrap" style={{
+              display:"flex",alignItems:"center",gap:7,
+            }}>
+              <span style={{width:6,height:6,borderRadius:99,background:"#10b981",
+                display:"inline-block",flexShrink:0}}/>
+              Qué hace el sistema
+            </div>
           </div>
-          <div>
-            <div style={{fontSize:13,fontWeight:600,color:wipCount>0?"#92400e":"#065f46"}}>
-              {wipCount>0?"Proceso parcialmente implementado":"Proceso completado"}
+
+          {/* Rows */}
+          <div className="flow-grid">
+            {rows.map(function(row){
+              if(row.type === "phase"){
+                return <PhaseHeaderRow key={row.key} fase={row.fase}/>;
+              }
+              return (
+                <StepRow
+                  key={row.key}
+                  step={row.step}
+                  idx={row.idx}
+                  hoveredRow={hoveredRow}
+                  setHoveredRow={setHoveredRow}
+                />
+              );
+            })}
+          </div>
+
+          {/* End row */}
+          <div style={{
+            padding:"14px 16px",
+            borderTop:"1px solid #f1f5f9",
+            background:wipCount>0?"#fffbeb":"#f0fdf4",
+            display:"flex",alignItems:"center",gap:10,
+          }}>
+            <div style={{
+              width:28,height:28,borderRadius:99,
+              background:wipCount>0?"#f59e0b":"#10b981",
+              display:"flex",alignItems:"center",justifyContent:"center",
+              fontSize:13,flexShrink:0,color:"white",fontWeight:700,
+            }}>
+              {wipCount>0?"🚧":"✓"}
             </div>
-            <div style={{fontSize:12,color:"#6b7280",marginTop:1}}>{sc.end}</div>
+            <div>
+              <div style={{fontSize:13,fontWeight:600,color:wipCount>0?"#92400e":"#065f46"}}>
+                {wipCount>0?"Proceso parcialmente implementado":"Proceso completado"}
+              </div>
+              <div style={{fontSize:12,color:"#6b7280",marginTop:1}}>{sc.end}</div>
+            </div>
           </div>
         </div>
 
-        {/* Info AC-14 */}
+        {/* AC-14 note */}
         {(scenario==="recordatorios_hs"||scenario==="notificaciones_portal")&&(
-          <div style={{marginTop:20,padding:"12px 14px",background:"#fffbeb",borderRadius:10,border:"1px solid #fde68a"}}>
+          <div style={{marginTop:16,padding:"12px 14px",background:"#fffbeb",borderRadius:10,border:"1px solid #fde68a"}}>
             <div style={{fontSize:12,color:"#92400e",lineHeight:1.6}}>
               <strong>AC-14 — Encuestas de valoración:</strong> actualmente se gestionan de forma manual por fuera del sistema. Está prevista su integración con HubSpot a través de Vexco para automatizar el envío post-formación y centralizar los resultados en el CRM.
             </div>
           </div>
         )}
 
-        <div style={{marginTop:24,padding:"16px",background:"white",borderRadius:12,border:"1px solid #e2e8f0"}}>
-          <div style={{fontSize:11,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:10,fontFamily:"DM Mono,monospace"}}>Sistemas involucrados</div>
-          <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-            {Object.keys(SYS_COLOR).map(function(s){return <SystemTag key={s} sys={s}/>;})}
+        {/* Legend */}
+        <div style={{
+          marginTop:20,padding:"14px 16px",
+          background:"white",borderRadius:10,
+          border:"1px solid #e2e8f0",
+          display:"flex",gap:16,alignItems:"flex-start",flexWrap:"wrap",
+        }}>
+          <div style={{flex:1,minWidth:200}}>
+            <div style={{fontSize:10,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",
+              letterSpacing:"0.06em",marginBottom:8,fontFamily:"DM Mono, monospace"}}>
+              Sistemas involucrados
+            </div>
+            <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+              {Object.keys(SYS_COLOR).map(function(s){return <SystemTag key={s} sys={s}/>;})}
+            </div>
           </div>
-          <div style={{marginTop:10,fontSize:12,color:"#94a3b8",lineHeight:1.6}}>
-            Haz clic en cualquier paso para más detalle. Activa <strong style={{color:"#1e293b"}}>modo técnico</strong> para ver los sistemas y automatizaciones implicadas.
+          <div style={{
+            fontSize:12,color:"#94a3b8",lineHeight:1.6,
+            borderLeft:"1px solid #f1f5f9",paddingLeft:16,
+            maxWidth:340,
+          }}>
+            La columna izquierda describe <strong style={{color:"#475569"}}>lo que ocurre</strong> desde el punto de vista del usuario o del administrador.
+            La columna derecha muestra <strong style={{color:"#475569"}}>los sistemas y operaciones técnicas</strong> que se ejecutan en paralelo.
           </div>
         </div>
+
         <div style={{height:40}}/>
       </div>
     </div>
