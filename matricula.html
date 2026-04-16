@@ -282,20 +282,12 @@ const STEPS = [
     techSystems:["supabase","n8n"],
     paths:["transferencia"] },
 
-  { sys:"weweb", fase:"pago",
-    who:"El usuario",
-    what:"Realiza la transferencia bancaria con el número de pedido como referencia",
-    why:"El número de pedido permite a IAI identificar el pago cuando llegue al banco.",
-    tech:"Estado del cart queda en pendiente_transferencia hasta confirmación manual.",
-    techSystems:["weweb","supabase"],
-    paths:["transferencia"] },
-
   { sys:"supabase", fase:"confirmacion",
-    who:"IAI (administración)",
-    what:"Confirma el ingreso bancario y activa la inscripción",
-    why:"Una persona de IAI verifica el extracto bancario y marca el pago como recibido en el portal.",
-    tech:"Edge Function confirm-transfer actualiza cart a 'pagado', crea deals + deal_items en Supabase.",
-    techSystems:["supabase","weweb"],
+    who:"El sistema",
+    what:"Registra la inscripción como confirmada automáticamente",
+    why:"Al elegir transferencia, la inscripción se confirma de inmediato. Se asume que el usuario realizará el pago. Si no se recibe, se gestiona como cancelación.",
+    tech:"Edge Function transfer-initiate-payment crea deals + deal_items directamente con status confirmed. No requiere confirmación manual.",
+    techSystems:["supabase","n8n"],
     paths:["transferencia"] },
 
   // CRÉDITO
@@ -351,7 +343,7 @@ const STEPS = [
 
 const PATH_INFO = {
   tarjeta:       { icon:"💳", label:"Tarjeta",       color:"#f59e0b", desc:"Pago inmediato — confirmación automática" },
-  transferencia: { icon:"🏦", label:"Transferencia", color:"#3b82f6", desc:"Pago diferido — IAI confirma el ingreso" },
+  transferencia: { icon:"🏦", label:"Transferencia", color:"#3b82f6", desc:"Inscripción inmediata — pago pendiente de recibir" },
   credito:       { icon:"🎟️", label:"Crédito formativo", color:"#10b981", desc:"Descuento de saldo — sin pasarela de pago" },
 };
 
