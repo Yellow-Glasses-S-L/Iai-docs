@@ -268,8 +268,8 @@ const ALL_STEPS = [
   // ── FACTURACIÓN CUOTAS ──
   { scenario:"facturacion_cuotas", sys:"iai_admin", fase:"facturacion",
     who:"IAI (administración)",
-    what:"Confirma el pago de la cuota anual recibido por transferencia",
-    why:"Las cuotas de socio solo se pagan por transferencia. IAI verifica el ingreso en el banco y lo marca como recibido en el portal.",
+    what:"La cuota anual se registra automáticamente al elegir transferencia",
+    why:"Las cuotas de socio se pagan por transferencia. La inscripción se confirma de inmediato — se asume el pago. Si no se recibe, se gestiona como cancelación.",
     tech:"Admin panel → deal actualizado a status=pagado en Supabase. HubSpot deal → closedwon vía n8n.",
     techSystems:["iai_admin","supabase","n8n"] },
 
@@ -341,8 +341,8 @@ const ALL_STEPS = [
   { scenario:"checkout", sys:"supabase", fase:"pago",
     who:"El usuario",
     what:"Opción 2 — Paga por transferencia bancaria",
-    why:"El usuario recibe los datos bancarios de IAI y realiza la transferencia. La inscripción queda en estado 'pendiente' hasta que IAI confirme el ingreso.",
-    tech:"transfer-initiate-payment crea cart en estado pendiente_transferencia. Email con datos bancarios y número de pedido. IAI confirma manualmente → confirm-transfer activa el pedido.",
+    why:"El usuario recibe los datos bancarios de IAI por email. La inscripción se confirma de inmediato — se asume el pago. Si no se recibe, se gestiona como cancelación.",
+    tech:"transfer-initiate-payment crea deals + deal_items con status confirmed directamente. Email con datos bancarios y número de pedido.",
     techSystems:["supabase","n8n","iai_admin"] },
 
   { scenario:"checkout", sys:"supabase", fase:"pago",

@@ -294,19 +294,11 @@ const STEPS = [
 
   // PAGO
   { sys:"usuario", fase:"pago",
-    who:"El socio",
-    what:"Realiza la transferencia bancaria con el número de pedido como referencia",
-    why:"Las cuotas de socio solo se pueden pagar por transferencia. El número de pedido es imprescindible para que IAI identifique el pago.",
-    tech:"No hay pasarela de pago. El cart permanece en estado pendiente_transferencia hasta confirmación.",
-    techSystems:["usuario","supabase"],
-    paths:["individual","corporativo"] },
-
-  { sys:"iai_admin", fase:"pago",
-    who:"El equipo de IAI",
-    what:"Confirma el ingreso y cierra el pedido",
-    why:"Una vez verificado el pago en el banco, IAI lo marca como recibido en el sistema.",
-    tech:"Admin actualiza el deal en Supabase y HubSpot a closedwon. BC registra la operación como pagada.",
-    techSystems:["iai_admin","supabase","hubspot","bc"],
+    who:"El sistema",
+    what:"Confirma la inscripción automáticamente al elegir transferencia",
+    why:"La inscripción se confirma de inmediato — se asume que el socio realizará el pago. Se envían los datos bancarios por email. Si no se recibe el pago, se gestiona como cancelación.",
+    tech:"transfer-initiate-payment crea deals + deal_items con status confirmed directamente. Email con datos bancarios y número de pedido.",
+    techSystems:["supabase","n8n"],
     paths:["individual","corporativo"] },
 
   // FACTURACIÓN

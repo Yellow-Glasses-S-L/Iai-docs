@@ -428,7 +428,7 @@ const ALL_STEPS = [
   { scenario:"evento_pago", sys:"supabase", fase:"pago",
     who:"El sistema",
     what:"Procesa el pago por tarjeta o transferencia",
-    why:"Los eventos de pago admiten tarjeta (inmediato) o transferencia (con confirmación de IAI). No se puede pagar con crédito formativo.",
+    why:"Los eventos de pago admiten tarjeta (inmediato) o transferencia (confirmación automática, se asume el pago). No se puede pagar con crédito formativo.",
     tech:"Flujo idéntico a matrícula de cursos. redsys-initiate-payment o transfer-initiate-payment. No aplica credit_type — los eventos no consumen crédito formativo.",
     techSystems:["supabase","redsys"] },
 
