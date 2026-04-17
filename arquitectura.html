@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IAI · Arquitectura del Sistema</title>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{min-height:100%;background:#f8fafc;font-family:'DM Sans',system-ui,sans-serif;color:#0f172a}
+    #root{min-height:100%}
+
+    .iai-nav{position:sticky;top:0;z-index:999;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+    .iai-nav-inner{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:24px;height:44px;overflow-x:auto}
+    .iai-nav-logo{display:flex;align-items:center;gap:7px;text-decoration:none;font-size:12px;font-weight:600;color:#0f172a;white-space:nowrap;flex-shrink:0;font-family:'DM Mono',monospace}
+    .iai-nav-dot{width:8px;height:8px;border-radius:99px;background:#f97316;flex-shrink:0}
+    .iai-nav-links{display:flex;gap:2px;align-items:center}
+    .iai-nav-links a{text-decoration:none;font-size:12px;color:#64748b;padding:4px 10px;border-radius:6px;white-space:nowrap;transition:background .15s,color .15s}
+    .iai-nav-links a:hover{background:#f1f5f9;color:#0f172a}
+    .iai-nav-links a.active{background:#fff7ed;color:#f97316;font-weight:500}
+
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+  </style>
+  <script>
+  document.addEventListener('DOMContentLoaded',function(){
+    var cur=window.location.pathname.split('/').pop()||'index.html';
+    document.querySelectorAll('.iai-nav-links a').forEach(function(a){
+      if(a.getAttribute('href')===cur)a.classList.add('active');
+    });
+  });
+  </script>
+</head>
+<body>
+<nav class="iai-nav">
+  <div class="iai-nav-inner">
+    <a class="iai-nav-logo" href="index.html">
+      <span class="iai-nav-dot"></span>
+      <span>IAI · Documentación</span>
+    </a>
+    <div class="iai-nav-links">
+      <a href="index.html">Inicio</a>
+      <a href="inventario.html">Procesos</a>
+      <a href="issues.html">Incidentes</a>
+      <a href="arquitectura.html">Arquitectura</a>
+    </div>
+  </div>
+</nav>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useRef, useEffect } = React;
+
+const SYSTEMS = {
+  usuario:   { label:"Usuario / Socio",       icon:"👤", color:"#64748b", desc:"Socios individuales y corporativos que interactúan con el ecosistema IAI.", cap:["Registro y login","Gestión de perfil","Inscripción a eventos","Consulta de facturas","Descarga de diplomas"] },
+  wordpress: { label:"Web pública",            icon:"🌐", color:"#3b82f6", desc:"Sitio web público de IAI. Publica eventos, formaciones y contenido institucional.", cap:["Publicación de eventos y cursos","Páginas institucionales","SEO y contenido público","Formularios de contacto"], tech:"WordPress · REST API · /wp-json/ai/v1/*" },
+  weweb:     { label:"Portal del socio",       icon:"🟣", color:"#8b5cf6", desc:"Portal privado donde los socios gestionan su membresía, inscripciones y perfil.", cap:["Mi perfil y datos","Inscripción/cancelación de eventos","Panel corporativo (empresas)","Carrito de compras","Admin panel (IAI)"], tech:"WeWeb · Supabase Auth · RLS" },
+  supabase:  { label:"Base de datos",          icon:"🟢", color:"#10b981", desc:"Core del sistema. Almacena todos los datos, gestiona autenticación y ejecuta lógica de negocio via Edge Functions.", cap:["PostgreSQL con RLS","Auth (email + OAuth)","Edge Functions (pagos, diplomas, cancelaciones)","Storage (PDFs, certificados)","Realtime subscriptions"], tech:"Supabase · PostgreSQL · Edge Functions · Storage" },
+  n8n:       { label:"Automatización",         icon:"🔴", color:"#ef4444", desc:"Orquestador central. Conecta todos los sistemas mediante workflows automáticos y webhooks.", cap:["Sync bidireccional HubSpot ↔ Supabase","Publicación a WordPress y Moodle","Workflows de pago y facturación","Cron jobs (renovaciones, recordatorios)","Webhooks de entrada y salida"], tech:"n8n · Webhooks · REST · Cron" },
+  hubspot:   { label:"CRM",                    icon:"🟠", color:"#f97316", desc:"Sistema de gestión de relaciones. IAI trabaja aquí día a día para gestionar socios y productos.", cap:["Ficha de contactos y empresas","Gestión de productos/cursos","Pipeline de deals","Propiedades custom sincronizadas","Reporting y dashboards"], tech:"HubSpot CRM · API v3 · Webhooks" },
+  moodle:    { label:"Campus virtual",         icon:"🔵", color:"#06b6d4", desc:"Plataforma de aprendizaje online. Los cursos se crean automáticamente desde HubSpot.", cap:["Cursos y materiales","Matriculación automática","Seguimiento de progreso","Certificados de completación"], tech:"Moodle LMS · REST API" },
+  bc:        { label:"Facturación",            icon:"🟤", color:"#6366f1", desc:"Sistema de facturación oficial. Genera facturas con validez fiscal.", cap:["Facturación de cuotas","Facturación de inscripciones","Series de facturación","Integración contable"], tech:"Business Central · API" },
+  redsys:    { label:"Pasarela de pago",       icon:"💳", color:"#f59e0b", desc:"Procesador de pagos con tarjeta. Gestiona transacciones seguras con firma HMAC.", cap:["Pago con tarjeta (TPV virtual)","Verificación de firma HMAC-SHA256","Notificación de resultado","3D Secure"], tech:"Redsys TPV · Webhooks" },
+  iai_admin: { label:"IAI (gestión interna)",  icon:"🏛️", color:"#f43f5e", desc:"El equipo de IAI que gestiona el día a día: altas, bajas, productos, facturación.", cap:["Alta y baja de socios","Gestión de productos en HubSpot","Aprobación de pagos por transferencia","Asignación de créditos formativos","Configuración de tramos"], tech:"HubSpot + Admin Panel WeWeb" },
+};
+
+const LAYERS = [
+  { id:"frontend", label:"Interfaces", systems:["usuario","wordpress","weweb"], bg:"#eff6ff", border:"#bfdbfe" },
+  { id:"core",     label:"Core",       systems:["supabase","n8n"],              bg:"#ecfdf5", border:"#a7f3d0" },
+  { id:"external", label:"Servicios",  systems:["hubspot","moodle","bc","redsys"], bg:"#fff7ed", border:"#fed7aa" },
+  { id:"ops",      label:"Operación",  systems:["iai_admin"],                   bg:"#fff1f2", border:"#fecdd3" },
+];
+
+const CONNECTIONS = [
+  { from:"usuario",   to:"weweb",    label:"Login, perfil, inscripciones",  dir:"right" },
+  { from:"usuario",   to:"wordpress",label:"Consulta cursos y eventos",     dir:"right" },
+  { from:"weweb",     to:"supabase", label:"CRUD + Auth + Edge Functions",  dir:"right" },
+  { from:"supabase",  to:"n8n",      label:"Webhooks de cambios",           dir:"right" },
+  { from:"n8n",       to:"supabase", label:"UPDATE datos sincronizados",    dir:"left"  },
+  { from:"n8n",       to:"hubspot",  label:"PATCH contactos, deals",        dir:"right" },
+  { from:"hubspot",   to:"n8n",      label:"Webhooks de productos y contactos", dir:"left" },
+  { from:"n8n",       to:"wordpress",label:"POST eventos y formaciones",    dir:"left"  },
+  { from:"n8n",       to:"moodle",   label:"Crear cursos, matricular",      dir:"right" },
+  { from:"n8n",       to:"bc",       label:"Crear facturas",                dir:"right" },
+  { from:"weweb",     to:"redsys",   label:"Pago con tarjeta",              dir:"right" },
+  { from:"redsys",    to:"supabase", label:"Webhook confirmación pago",     dir:"left"  },
+  { from:"iai_admin", to:"hubspot",  label:"Gestión diaria",                dir:"right" },
+  { from:"iai_admin", to:"weweb",    label:"Admin panel",                   dir:"left"  },
+];
+
+const PROCESSES = [
+  { id:"all",            label:"Vista general",      icon:"🏗️", systems:null },
+  { id:"alta",           label:"Alta de socios",     icon:"📋", systems:["usuario","weweb","supabase","n8n","hubspot","wordpress","iai_admin"] },
+  { id:"gestion",        label:"Gestión de socios",  icon:"✏️", systems:["usuario","weweb","supabase","n8n","hubspot","iai_admin"] },
+  { id:"producto",       label:"Ciclo de producto",  icon:"📦", systems:["iai_admin","hubspot","n8n","wordpress","moodle","supabase"] },
+  { id:"inscripciones",  label:"Inscripciones",      icon:"🎟️", systems:["usuario","weweb","supabase","n8n","hubspot","moodle"] },
+  { id:"pagos",          label:"Pagos",              icon:"💰", systems:["usuario","weweb","supabase","redsys","n8n","bc","iai_admin"] },
+  { id:"renovacion",     label:"Renovación",         icon:"🔄", systems:["supabase","n8n","hubspot","bc","weweb","iai_admin"] },
+];
+
+function SystemNode({ sysId, sys, isActive, isDimmed, isSelected, onClick }) {
+  return (
+    <div onClick={function(){ onClick(sysId); }}
+      style={{
+        display:"flex", flexDirection:"column", alignItems:"center", gap:6,
+        padding:"12px 10px", borderRadius:14, cursor:"pointer",
+        background: isSelected ? sys.color+"15" : (isDimmed ? "#f8fafc" : "white"),
+        border: "2px solid " + (isSelected ? sys.color : (isDimmed ? "#e2e8f0" : sys.color+"40")),
+        opacity: isDimmed ? 0.35 : 1,
+        transition: "all .25s ease",
+        transform: isSelected ? "scale(1.04)" : "scale(1)",
+        boxShadow: isSelected ? "0 4px 20px "+sys.color+"25" : (isDimmed ? "none" : "0 2px 8px rgba(0,0,0,.04)"),
+        minWidth: 90, maxWidth: 110, flex:"0 0 auto",
+        position:"relative",
+      }}>
+      {isActive && !isDimmed && (
+        <div style={{position:"absolute",top:-3,right:-3,width:10,height:10,borderRadius:99,background:sys.color,border:"2px solid white",animation:"pulse 2s infinite"}}/>
+      )}
+      <div style={{fontSize:24,lineHeight:1}}>{sys.icon}</div>
+      <div style={{fontSize:11,fontWeight:600,color:isDimmed?"#cbd5e1":sys.color,textAlign:"center",lineHeight:1.2,fontFamily:"'DM Mono',monospace"}}>{sys.label}</div>
+    </div>
+  );
+}
+
+function DetailPanel({ sysId, sys, onClose }) {
+  return (
+    <div style={{animation:"fadeIn .2s ease",background:"white",border:"2px solid "+sys.color+"40",borderRadius:16,padding:"20px",marginTop:16,position:"relative"}}>
+      <button onClick={onClose} style={{position:"absolute",top:12,right:14,background:"none",border:"none",fontSize:18,color:"#94a3b8",cursor:"pointer",lineHeight:1}}>×</button>
+      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+        <span style={{fontSize:28}}>{sys.icon}</span>
+        <div>
+          <div style={{fontSize:16,fontWeight:700,color:sys.color}}>{sys.label}</div>
+          {sys.tech && <div style={{fontSize:10,color:"#94a3b8",fontFamily:"'DM Mono',monospace",marginTop:1}}>{sys.tech}</div>}
+        </div>
+      </div>
+      <p style={{fontSize:13,color:"#475569",lineHeight:1.6,marginBottom:12}}>{sys.desc}</p>
+      <div style={{fontSize:10,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:8,fontFamily:"'DM Mono',monospace"}}>Capacidades</div>
+      <div style={{display:"flex",flexDirection:"column",gap:4}}>
+        {sys.cap.map(function(c,i){
+          return (
+            <div key={i} style={{display:"flex",alignItems:"flex-start",gap:6}}>
+              <div style={{width:5,height:5,borderRadius:99,background:sys.color,flexShrink:0,marginTop:5}}/>
+              <span style={{fontSize:12,color:"#334155",lineHeight:1.5}}>{c}</span>
+            </div>
+          );
+        })}
+      </div>
+      {/* Connections */}
+      <div style={{marginTop:14,paddingTop:12,borderTop:"1px solid #f1f5f9"}}>
+        <div style={{fontSize:10,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:8,fontFamily:"'DM Mono',monospace"}}>Conexiones</div>
+        <div style={{display:"flex",flexDirection:"column",gap:4}}>
+          {CONNECTIONS.filter(function(c){ return c.from===sysId||c.to===sysId; }).map(function(c,i){
+            var otherId = c.from===sysId ? c.to : c.from;
+            var other = SYSTEMS[otherId];
+            var isOutgoing = c.from===sysId;
+            return (
+              <div key={i} style={{display:"flex",alignItems:"center",gap:6,fontSize:11,color:"#64748b"}}>
+                <span style={{color:isOutgoing?"#10b981":"#3b82f6",fontFamily:"'DM Mono',monospace",fontSize:10,fontWeight:600}}>{isOutgoing?"→":"←"}</span>
+                <span style={{fontWeight:600,color:other.color}}>{other.label}</span>
+                <span style={{color:"#94a3b8"}}>·</span>
+                <span>{c.label}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ConnectionsList({ activeSystems }) {
+  var conns = CONNECTIONS.filter(function(c){
+    if (!activeSystems) return true;
+    return activeSystems.indexOf(c.from)!==-1 && activeSystems.indexOf(c.to)!==-1;
+  });
+  if (conns.length===0) return null;
+  return (
+    <div style={{marginTop:20}}>
+      <div style={{fontSize:10,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:10,fontFamily:"'DM Mono',monospace"}}>
+        Flujo de datos
+      </div>
+      <div style={{display:"grid",gap:6}}>
+        {conns.map(function(c,i){
+          var fromSys=SYSTEMS[c.from]; var toSys=SYSTEMS[c.to];
+          return (
+            <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",background:"white",borderRadius:10,border:"1px solid #f1f5f9",fontSize:12}}>
+              <span style={{fontWeight:600,color:fromSys.color,fontSize:11,fontFamily:"'DM Mono',monospace",minWidth:0,whiteSpace:"nowrap"}}>{fromSys.label}</span>
+              <span style={{color:"#10b981",fontFamily:"'DM Mono',monospace",flexShrink:0}}>→</span>
+              <span style={{fontWeight:600,color:toSys.color,fontSize:11,fontFamily:"'DM Mono',monospace",minWidth:0,whiteSpace:"nowrap"}}>{toSys.label}</span>
+              <span style={{color:"#94a3b8",flexShrink:0}}>·</span>
+              <span style={{color:"#64748b",fontSize:11}}>{c.label}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  var ps = useState("all");    var process = ps[0];  var setProcess = ps[1];
+  var ss = useState(null);     var selected = ss[0];  var setSelected = ss[1];
+
+  var activeProcess = PROCESSES.filter(function(p){ return p.id===process; })[0];
+  var activeSystems = activeProcess ? activeProcess.systems : null;
+
+  function isSystemActive(sysId) {
+    if (!activeSystems) return true;
+    return activeSystems.indexOf(sysId) !== -1;
+  }
+
+  return (
+    <div style={{background:"#f8fafc",minHeight:"100vh"}}>
+      {/* Header */}
+      <div style={{background:"white",borderBottom:"1px solid #e2e8f0",padding:"16px 20px"}}>
+        <div style={{maxWidth:800,margin:"0 auto"}}>
+          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
+            <a href="index.html" style={{textDecoration:"none",color:"#64748b",fontSize:13}}>← Inicio</a>
+            <span style={{color:"#e2e8f0"}}>·</span>
+            <span style={{fontSize:11,color:"#94a3b8",fontFamily:"'DM Mono',monospace"}}>v1.0</span>
+          </div>
+          <h1 style={{fontSize:20,fontWeight:700,letterSpacing:"-0.02em"}}>🏗️ Arquitectura del Sistema</h1>
+          <p style={{fontSize:13,color:"#64748b",marginTop:2}}>10 sistemas integrados · Vista general y por proceso</p>
+        </div>
+      </div>
+
+      <div style={{maxWidth:800,margin:"0 auto",padding:"20px 16px"}}>
+
+        {/* Process selector */}
+        <div style={{marginBottom:20}}>
+          <div style={{fontSize:10,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:8,fontFamily:"'DM Mono',monospace"}}>Filtrar por proceso</div>
+          <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+            {PROCESSES.map(function(p){
+              var active = process===p.id;
+              return (
+                <button key={p.id}
+                  onClick={function(){ setProcess(p.id); setSelected(null); }}
+                  style={{
+                    padding:"6px 12px",borderRadius:8,fontSize:12,fontWeight:active?600:400,
+                    background:active?"#1e293b":"white",color:active?"white":"#64748b",
+                    border:"1px solid "+(active?"#1e293b":"#e2e8f0"),
+                    cursor:"pointer",transition:"all .15s",fontFamily:"'DM Sans',sans-serif",
+                  }}>
+                  {p.icon} {p.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Architecture layers */}
+        <div style={{display:"flex",flexDirection:"column",gap:12}}>
+          {LAYERS.map(function(layer){
+            return (
+              <div key={layer.id} style={{
+                background:layer.bg,border:"1px solid "+layer.border,borderRadius:16,padding:"14px 16px",
+                transition:"opacity .25s",
+                opacity: activeSystems && layer.systems.every(function(s){ return !isSystemActive(s); }) ? 0.3 : 1,
+              }}>
+                <div style={{fontSize:10,fontWeight:600,color:"#64748b",textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:10,fontFamily:"'DM Mono',monospace"}}>{layer.label}</div>
+                <div style={{display:"flex",gap:10,flexWrap:"wrap",justifyContent:"center"}}>
+                  {layer.systems.map(function(sysId){
+                    var sys = SYSTEMS[sysId];
+                    var active = isSystemActive(sysId);
+                    var dimmed = !active;
+                    var sel = selected===sysId;
+                    return (
+                      <SystemNode key={sysId} sysId={sysId} sys={sys}
+                        isActive={active} isDimmed={dimmed} isSelected={sel}
+                        onClick={function(id){ setSelected(selected===id?null:id); }}
+                      />
+                    );
+                  })}
+                </div>
+                {/* Detail panel inside layer */}
+                {selected && layer.systems.indexOf(selected)!==-1 && (
+                  <DetailPanel sysId={selected} sys={SYSTEMS[selected]} onClose={function(){ setSelected(null); }} />
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Connection list */}
+        <ConnectionsList activeSystems={activeSystems} />
+
+        {/* Legend */}
+        <div style={{marginTop:24,padding:"16px",background:"white",borderRadius:14,border:"1px solid #e2e8f0"}}>
+          <div style={{fontSize:10,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:10,fontFamily:"'DM Mono',monospace"}}>Cómo leer este diagrama</div>
+          <div style={{display:"grid",gap:8,fontSize:12,color:"#475569",lineHeight:1.6}}>
+            <div><strong>Capas:</strong> Los sistemas están organizados en 4 capas — Interfaces (lo que toca el usuario), Core (datos y orquestación), Servicios (sistemas externos) y Operación (equipo IAI).</div>
+            <div><strong>Interacción:</strong> Toca cualquier sistema para ver su rol, capacidades y conexiones con otros sistemas.</div>
+            <div><strong>Filtro por proceso:</strong> Selecciona un proceso arriba para ver solo los sistemas involucrados en ese flujo. Los demás se atenúan.</div>
+          </div>
+        </div>
+
+        <div style={{height:40}}/>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+</script>
+</body>
+</html>
