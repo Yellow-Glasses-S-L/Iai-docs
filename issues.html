@@ -119,14 +119,14 @@
         <h1>Incidentes Post-migración</h1>
         <p class="subtitle">Seguimiento de incidencias desde la salida a producción (23/03/2026)</p>
       </div>
-      <span class="date-pill">16 abr 2026</span>
+      <span class="date-pill">17 abr 2026</span>
     </div>
   </div>
 
   <div class="summary">
-    <div class="sum-card sum-green"><div class="sum-n">52</div><div class="sum-l">Resueltos</div></div>
-    <div class="sum-card sum-orange"><div class="sum-n">9</div><div class="sum-l">Pendientes</div></div>
-    <div class="sum-card sum-total"><div class="sum-n">61</div><div class="sum-l">Total</div></div>
+    <div class="sum-card sum-green"><div class="sum-n">55</div><div class="sum-l">Resueltos</div></div>
+    <div class="sum-card sum-orange"><div class="sum-n">12</div><div class="sum-l">Pendientes</div></div>
+    <div class="sum-card sum-total"><div class="sum-n">67</div><div class="sum-l">Total</div></div>
   </div>
 
   <div class="proc-grid" id="processes"></div>
@@ -139,11 +139,15 @@
     <div class="mejora"><div class="mejora-title">⚠️ M1 · Imprimir credenciales/carteles para cursos presenciales</div><div class="mejora-where">Portal / HubSpot</div></div>
     <div class="mejora"><div class="mejora-title">⚠️ M3 · Mostrar IIA Global y email en listado asistentes</div><div class="mejora-where">Portal / HubSpot</div></div>
     <div class="mejora"><div class="mejora-title">⚠️ M6 · Integración Nirestream (streaming eventos)</div><div class="mejora-where">Portal / n8n</div></div>
+    <div class="mejora" style="background:var(--green-l);border-color:var(--green-b)"><div class="mejora-title" style="color:#065f46">✅ M7 · Detalle de uso de créditos/bolsa de horas por curso y participante</div><div class="mejora-where">Portal admin</div></div>
+    <div class="mejora" style="background:var(--green-l);border-color:var(--green-b)"><div class="mejora-title" style="color:#065f46">✅ M8 · Autocomplete datos empresa en inscripción admin por transferencia</div><div class="mejora-where">Portal admin</div></div>
+    <div class="mejora"><div class="mejora-title">⚠️ M9 · Formato interlineado contenido cursos (WordPress)</div><div class="mejora-where">WordPress · Ej: Normas Globales de Auditoría Interna — sin interlineado pese a ajustes</div></div>
+<div class="mejora"><div class="mejora-title">⚠️ M11 · Correo alternativo para comunicaciones no transaccionales</div><div class="mejora-where">Portal · user_profiles.alternative_email → enviar notificaciones a este si está relleno</div></div>
   </div>
 
   <div class="footer">
     <span class="footer-text">Yellow Glasses S.L. — IAI</span>
-    <span class="footer-text">Actualizado 16 abr 2026</span>
+    <span class="footer-text">Actualizado 17 abr 2026</span>
   </div>
 </div>
 
@@ -156,7 +160,7 @@ const DATA = [
       {n:"INC-02",t:"Additional Information no sincroniza a WordPress desde el portal",d:"PORTAL-01 ahora dispara SYNC-WP-01 tras el PATCH a HubSpot. Probado end-to-end — los cambios de Additional Information desde el portal se propagan a WordPress."}
     ],
     pending: [
-      {n:"INC-03",t:"Progreso de Moodle no visible en el histórico del socio",d:"Flujo n8n desarrollado, pendiente de pruebas y puesta en producción.",c:"ALTA",who:"Yellow Glasses"}
+      {n:"INC-03",t:"Progreso de Moodle no visible en el histórico del socio",d:"Flujo n8n desarrollado, pendiente de pruebas y puesta en producción. IAI reporta 2 casos específicos: paloma.ontanon@exolum.com y otro usuario con e-learnings completados no reflejados en portal.",c:"ALTA",who:"Yellow Glasses"}
     ]
   },
   {
@@ -207,12 +211,14 @@ const DATA = [
       {n:"#50",t:"Elena Saborit no en Moodle ni HubSpot",d:"Trigger fn_handle_cap_approved + webhook n8n"},
       {n:"—",t:"Auto-approve créditos no llamaba webhook n8n",d:"Trigger añadido"},
       {n:"—",t:"3 registrations fantasma (user_id null)",d:"Canceladas"},
-      {n:"—",t:"Socio Individual con créditos no puede inscribir desde admin",d:"Corregido"}
+      {n:"—",t:"Socio Individual con créditos no puede inscribir desde admin",d:"Corregido"},
+      {n:"—",t:"Créditos/bolsa de horas: roles incorrectos impedían uso",d:"Marta Fernández (Exolum) corregida a socio-corporativo, 6 socios individuales con rol corregido, Eugenia Castillo crédito 16h movido al perfil activo. Devoluciones por cancelación verificadas OK. 2.461 'descoordinados' eran falsa alarma — empleados WEB en HubSpot."}
     ],
     pending: [
       {n:"#19",t:"Jorge Figueredo: inscripción no detectada",c:"MEDIA",who:"Milagros"},
       {n:"—",t:"Inscripciones Kutxabank: 49 e-learning, 35 personas",c:"MEDIA"},
-      {n:"—",t:"Inscripciones DSV: 18 personas",c:"MEDIA"}
+      {n:"—",t:"Inscripciones DSV: 18 personas",c:"MEDIA"},
+      {n:"—",t:"Capacidad inscripciones cuenta ponentes como participantes",d:"Ejemplo: Herramientas análisis causa-raíz muestra 17/18 en vez de 16 asistentes reales. Además, al completar máximo debe bloquearse la opción inscripción en la web.",c:"MEDIA",who:"Begoña"}
     ]
   },
   {
@@ -227,7 +233,8 @@ const DATA = [
       {n:"—",t:"dimensionCode2 igual para todas las líneas",d:"Fix: lineDimCode2 por línea"},
       {n:"—",t:"Dirección facturación concatenada",d:"RPC devuelve campos separados + streets limpiados"},
       {n:"—",t:"Modalidad no viene en line item → Get IVA falla",d:"Nodo Get Product tipos como fallback"},
-      {n:"—",t:"24 deals pendientes de facturar (~22.160€)",d:"Reporte generado y enviado"}
+      {n:"—",t:"24 deals pendientes de facturar (~22.160€)",d:"Reporte generado y enviado"},
+      {n:"—",t:"Bug beneficiary_name: prefacturas con nombre del comprador en vez de participantes",d:"3 Edge Functions parcheadas para escribir beneficiary_name. 8 deals de Exolum, SAREB y Kutxabank afectados. Corregido por Jon — pendiente reenviar a BC."}
     ],
     pending: [
       {n:"#26",t:"Belinda no recibe copia de prefacturas por email",c:"ALTA",who:"Belinda"},
@@ -267,11 +274,14 @@ const DATA = [
       {n:"—",t:"geo-data error 400 sin provincia",d:"Edge function devuelve []"},
       {n:"—",t:'"Ir al campus" abre pestaña pero queda en portal',d:"Corregido"},
       {n:"—",t:"Admin: ver créditos formativos por empresa",d:"Agregado"},
-      {n:"—",t:"Checkbox Redsys términos/condiciones",d:"Agregado"}
+      {n:"—",t:"Checkbox Redsys términos/condiciones",d:"Agregado"},
+      {n:"—",t:"Bug caché resuelto",d:"Begoña confirma que el bug de caché reportado ayer ya está solucionado tras pruebas con clientes."}
     ],
     pending: [
       {n:"#8",t:"Incluir información asociación individual en enlace",c:"ALTA",who:"Milagros"},
-      {n:"#41",t:"Menú Campus Virtual texto mal alineado",c:"BAJA"}
+      {n:"#41",t:"Menú Campus Virtual texto mal alineado",c:"BAJA"},
+      {n:"—",t:"Diplomas de cursos finalizados no se visualizan",d:"Usuarios no ven diplomas de cursos completados en el portal.",c:"MEDIA",who:"Begoña"},
+      {n:"—",t:"Campus: sin detalle del curso, solo totales completados/finalizados",d:"Queja recurrente de Kutxabank y otros. Solo ven número de completados, no el desglose por curso.",c:"MEDIA",who:"Begoña"}
     ]
   }
 ];
