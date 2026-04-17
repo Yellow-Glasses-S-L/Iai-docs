@@ -21,6 +21,7 @@
     .iai-nav-links a:hover{background:#334155;color:#f1f5f9}
     .iai-nav-links a.active{background:#f97316;color:white;font-weight:500}
     @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes dashAnim{from{stroke-dashoffset:12}to{stroke-dashoffset:0}}
   </style>
   <script>
   document.addEventListener('DOMContentLoaded',function(){
@@ -50,408 +51,352 @@
 <script type="text/babel">
 const { useState } = React;
 
-/* ═══════════════════════════════════════════════════════════════
-   DATA MODEL — mirrors the People Excellence PowerPoint layout
-   but maps to the real implemented architecture
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   NODE DEFINITIONS — positions in viewBox 0 0 420 820
+   ═══════════════════════════════════════════ */
 
-var GROUPS = [
-  {
-    id:"actors", label:"Actores", color:"#64748b", position:"left",
-    desc:"Quiénes interactúan con el ecosistema",
-    items:[
-      { id:"usuarios", icon:"👤", label:"Socios", sub:"Individuales y corporativos", color:"#64748b" },
-      { id:"admin",    icon:"🏛️", label:"Equipo IAI", sub:"Gestión interna", color:"#f43f5e" },
-    ]
-  },
-  {
-    id:"interface", label:"Interfaz", color:"#8b5cf6", position:"center-left",
-    desc:"Portal del socio — punto de contacto único para usuarios y administradores",
-    tech:"WeWeb · Supabase Auth · RLS",
-    items:[
-      { id:"dashboard",  icon:"📊", label:"Dashboard de socios",     sub:"Perfil, membresía, histórico", color:"#8b5cf6" },
-      { id:"accesos",    icon:"🔐", label:"Control de accesos",      sub:"Auth, roles, permisos (RLS)", color:"#8b5cf6" },
-      { id:"carrito",    icon:"🛒", label:"Inscripciones y carrito",  sub:"Eventos, cursos, checkout", color:"#8b5cf6" },
-      { id:"corp_panel", icon:"🏢", label:"Panel corporativo",       sub:"Gestión de miembros empresa", color:"#8b5cf6" },
-      { id:"admin_panel",icon:"⚙️", label:"Panel administración",    sub:"Aprobaciones, config, soporte", color:"#f43f5e" },
-    ]
-  },
-  {
-    id:"core", label:"Herramienta Central", color:"#10b981", position:"center",
-    desc:"Motor operativo — base de datos, autenticación y lógica de negocio",
-    tech:"Supabase · PostgreSQL · Edge Functions · Storage",
-    master:["Autenticación y sesiones","Inscripciones y registros","Pagos y transacciones","Diplomas y certificados","Créditos formativos y saldos"],
-    items:[
-      { id:"db",       icon:"🗄️", label:"Base de datos",       sub:"user_profiles, companies, products, deals…", color:"#10b981" },
-      { id:"auth",     icon:"🔑", label:"Autenticación",        sub:"Email/password, OAuth, JWT, sesiones", color:"#10b981" },
-      { id:"edge_fn",  icon:"⚡", label:"Edge Functions",       sub:"Pagos, diplomas, cancelaciones, invitaciones", color:"#10b981" },
-      { id:"storage",  icon:"📁", label:"Storage",              sub:"PDFs, certificados, publicaciones", color:"#10b981" },
-      { id:"realtime", icon:"🔄", label:"Realtime",             sub:"Suscripciones a cambios en tiempo real", color:"#10b981" },
-    ]
-  },
-  {
-    id:"integrator", label:"Integrador", color:"#ef4444", position:"center",
-    desc:"Orquestador — sincroniza todos los sistemas mediante workflows automáticos",
-    tech:"n8n · Webhooks · REST · Cron",
-    master:["Lógica de sincronización","Transformación de datos","Cron jobs (renovaciones, recordatorios)"],
-    items:[
-      { id:"sync_hs",  icon:"🔁", label:"Sync HubSpot ↔ Supabase", sub:"Contactos, empresas, deals (bidireccional)", color:"#ef4444" },
-      { id:"sync_wp",  icon:"📡", label:"Publicación Web + Moodle", sub:"Productos → WordPress + campus", color:"#ef4444" },
-      { id:"sync_pay", icon:"💸", label:"Workflows de pago",        sub:"Facturación, confirmaciones, recordatorios", color:"#ef4444" },
-      { id:"cron",     icon:"⏰", label:"Cron jobs",                sub:"Renovaciones, vencimientos, alertas", color:"#ef4444" },
-    ]
-  },
-  {
-    id:"crm", label:"CRM — Cerebro de Negocio", color:"#f97316", position:"right",
-    desc:"Donde IAI trabaja día a día — fuente de verdad para datos de gestión",
-    tech:"HubSpot CRM · API v3 · Webhooks",
-    master:["Productos y cursos","Empresas y tramos","Tipo de membresía","Pipeline de deals","Datos maestros de contactos"],
-    items:[
-      { id:"contactos",  icon:"👥", label:"Contactos y Empresas",   sub:"Socios, prospectos, organizaciones", color:"#f97316" },
-      { id:"productos",  icon:"📦", label:"Productos y Servicios",  sub:"Cursos, eventos, publicaciones, cuotas", color:"#f97316" },
-      { id:"deals",      icon:"💼", label:"Deals y Pipeline",       sub:"Facturación, renovaciones, cobros", color:"#f97316" },
-      { id:"comunicaciones",icon:"📧",label:"Comunicaciones",       sub:"Mailings, campañas, seguimiento", color:"#f97316", phase2:true },
-    ]
-  },
-  {
-    id:"services", label:"Servicios", color:"#3b82f6", position:"right",
-    desc:"Plataformas especializadas que reciben datos del integrador",
-    items:[
-      { id:"wp_web",     icon:"🌐", label:"Web pública",      sub:"Landing, eventos, formaciones", color:"#3b82f6", tech:"WordPress" },
-      { id:"moodle_lms", icon:"📚", label:"Campus virtual",   sub:"Cursos online, matriculación, progreso", color:"#06b6d4", tech:"Moodle" },
-      { id:"nirestream", icon:"📺", label:"Streaming",        sub:"Los Lunes IAI, eventos en vivo", color:"#a855f7", phase2:true, tech:"Nirestream" },
-      { id:"publicaciones",icon:"📖",label:"Publicaciones",   sub:"PDFs con marca de agua, descarga protegida", color:"#3b82f6", tech:"Supabase Storage" },
-    ]
-  },
-  {
-    id:"erp", label:"ERP / Pagos", color:"#6366f1", position:"right",
-    desc:"Facturación oficial y procesamiento de cobros",
-    items:[
-      { id:"contabilidad",icon:"📄", label:"Contabilidad",       sub:"Facturas con validez fiscal, series", color:"#6366f1", tech:"Business Central" },
-      { id:"cobros_card", icon:"💳", label:"Cobros con tarjeta", sub:"TPV virtual, 3D Secure, HMAC-SHA256", color:"#f59e0b", tech:"Redsys" },
-      { id:"transferencia",icon:"🏦",label:"Transferencia bancaria",sub:"Confirmación manual por IAI admin", color:"#64748b" },
-      { id:"creditos",    icon:"🎓", label:"Crédito formativo",  sub:"Bolsa de horas, saldo FIFO", color:"#8b5cf6" },
-    ]
-  },
-  {
-    id:"interno", label:"Interno", color:"#f43f5e", position:"bottom",
-    desc:"Herramientas internas del equipo IAI",
-    items:[
-      { id:"admin_tools", icon:"🛠️", label:"Gestión operativa",     sub:"Admin panel WeWeb + HubSpot", color:"#f43f5e" },
-      { id:"reporting",   icon:"📈", label:"Reporting y analítica",  sub:"Dashboards de socios, eventos, cobros", color:"#f43f5e", pending:true },
-    ]
-  },
+var NODES = {
+  usuarios:  { x:30,  y:15,  w:130, h:46, icon:"👤", label:"Socios",       sub:"Individuales y corporativos", color:"#64748b" },
+  admin:     { x:260, y:15,  w:130, h:46, icon:"🏛️", label:"Admin IAI",    sub:"Gestión interna",             color:"#f43f5e" },
+
+  portal:    { x:30,  y:95,  w:290, h:72, icon:"🟣", label:"Portal WeWeb", sub:"Dashboard · Accesos · Carrito · Corp. · Admin", color:"#8b5cf6", big:true },
+
+  redsys:    { x:335, y:105, w:75,  h:52, icon:"💳", label:"Redsys",       sub:"TPV pago",                    color:"#f59e0b" },
+
+  supabase:  { x:30,  y:220, w:175, h:90, icon:"🟢", label:"Supabase",     sub:"BD · Auth · Edge Fn · Storage · Créditos formativos", color:"#10b981", big:true,
+    detail:"Motor operativo. Master de: autenticación, inscripciones, pagos, diplomas, créditos formativos y saldos." },
+  n8n:       { x:225, y:220, w:185, h:90, icon:"🔴", label:"n8n",          sub:"Sync · Webhooks · Cron · Workflows", color:"#ef4444", big:true,
+    detail:"Integrador. Sincroniza Supabase ↔ HubSpot bidireccionalmente. Publica a WordPress y Moodle. Gestiona cron jobs." },
+
+  hubspot:   { x:55,  y:380, w:250, h:72, icon:"🟠", label:"HubSpot CRM", sub:"Contactos · Productos · Deals · Comunicaciones", color:"#f97316", big:true,
+    detail:"Cerebro de negocio. Master de: productos, empresas, tramos, membresías, deals, datos maestros." },
+
+  wordpress: { x:10,  y:500, w:120, h:50, icon:"🌐", label:"WordPress",   sub:"Web pública",    color:"#3b82f6" },
+  moodle:    { x:148, y:500, w:120, h:50, icon:"📚", label:"Moodle",      sub:"Campus virtual",  color:"#06b6d4" },
+  bc:        { x:286, y:500, w:124, h:50, icon:"📄", label:"Bus. Central", sub:"Contabilidad",   color:"#6366f1" },
+
+  nirestream:{ x:10,  y:568, w:120, h:42, icon:"📺", label:"Nirestream",  sub:"Streaming",       color:"#a855f7", phase2:true },
+  publicac:  { x:148, y:568, w:120, h:42, icon:"📖", label:"Publicaciones",sub:"PDFs protegidos", color:"#3b82f6" },
+  interno:   { x:286, y:568, w:124, h:42, icon:"🛠️", label:"Interno",     sub:"Admin + Reporting",color:"#f43f5e" },
+};
+
+/* ═══════════════════════════════════════════
+   CONNECTIONS — [fromId, toId, path data, label, type, color]
+   Paths are hand-tuned SVG path strings
+   ═══════════════════════════════════════════ */
+
+var CONNS = [
+  // Actors → Portal
+  { from:"usuarios", to:"portal",   d:"M95,61 L95,95",         label:"",              type:"solid",  color:"#64748b" },
+  { from:"admin",    to:"portal",   d:"M325,61 L280,95",       label:"",              type:"solid",  color:"#f43f5e" },
+  // Admin → HubSpot (direct, right side)
+  { from:"admin",    to:"hubspot",  d:"M390,38 L390,405 L305,405", label:"gestión diaria", type:"solid", color:"#f43f5e" },
+
+  // Portal → Supabase (main flow)
+  { from:"portal",   to:"supabase", d:"M120,167 L120,220",     label:"CRUD · Auth",   type:"solid",  color:"#8b5cf6" },
+
+  // Portal → Redsys (redirect to pay)
+  { from:"portal",   to:"redsys",   d:"M320,131 L335,131",     label:"redirige",      type:"solid",  color:"#f59e0b" },
+  // Redsys → Supabase (webhook confirmation via Edge Fn)
+  { from:"redsys",   to:"supabase", d:"M372,157 L372,185 L180,185 L180,220", label:"webhook pago → Edge Fn", type:"dashed", color:"#f59e0b" },
+  // Redsys → Portal (redirect user back)
+  { from:"redsys",   to:"portal",   d:"M335,115 L320,115",     label:"vuelve",        type:"dotted", color:"#94a3b8" },
+
+  // Supabase ↔ n8n (bidirectional)
+  { from:"supabase", to:"n8n",      d:"M205,255 L225,255",     label:"webhooks",      type:"dashed", color:"#10b981" },
+  { from:"n8n",      to:"supabase", d:"M225,275 L205,275",     label:"UPDATE",        type:"dashed", color:"#ef4444" },
+
+  // n8n → HubSpot
+  { from:"n8n",      to:"hubspot",  d:"M290,310 L240,380",     label:"PATCH · deals", type:"dashed", color:"#ef4444" },
+  // HubSpot → n8n (webhooks back)
+  { from:"hubspot",  to:"n8n",      d:"M270,380 L330,310",     label:"webhooks",      type:"dashed", color:"#f97316" },
+
+  // n8n → Services
+  { from:"n8n",      to:"wordpress", d:"M260,310 L70,500",     label:"POST eventos",  type:"dashed", color:"#ef4444" },
+  { from:"n8n",      to:"moodle",    d:"M310,310 L208,500",    label:"cursos",        type:"dashed", color:"#ef4444" },
+  { from:"n8n",      to:"bc",        d:"M370,310 L348,500",    label:"facturas",      type:"dashed", color:"#ef4444" },
 ];
 
-var CONNECTIONS = [
-  { from:"actors",     to:"interface",   label:"Login, navegación, acciones",     type:"solid" },
-  { from:"interface",  to:"core",        label:"CRUD, Auth, Edge Functions",       type:"solid" },
-  { from:"core",       to:"integrator",  label:"Webhooks de cambios",             type:"dashed" },
-  { from:"integrator", to:"core",        label:"UPDATE datos sincronizados",      type:"dashed" },
-  { from:"integrator", to:"crm",         label:"PATCH contactos, CREATE deals",   type:"dashed" },
-  { from:"crm",        to:"integrator",  label:"Webhooks de productos y contactos",type:"dashed" },
-  { from:"integrator", to:"services",    label:"POST contenido, crear cursos",    type:"dashed" },
-  { from:"integrator", to:"erp",         label:"Crear facturas",                  type:"dashed" },
-  { from:"interface",  to:"erp",         label:"Iniciar pago (Redsys)",           type:"solid" },
-  { from:"erp",        to:"core",        label:"Webhook confirmación pago",       type:"dashed" },
-  { from:"actors",     to:"crm",         label:"IAI gestiona día a día",          type:"solid" },
-  { from:"interno",    to:"crm",         label:"Reporting desde CRM",             type:"dotted" },
-  { from:"interno",    to:"interface",   label:"Admin panel",                     type:"solid" },
+/* ═══════════════════════════════════════════
+   PROCESS FILTERS
+   ═══════════════════════════════════════════ */
+var FILTERS = [
+  { id:"all",   label:"Todo",        icon:"🏗️", nodes:null },
+  { id:"alta",  label:"Alta",        icon:"📋", nodes:["usuarios","admin","portal","supabase","n8n","hubspot","wordpress"] },
+  { id:"gest",  label:"Gestión",     icon:"✏️", nodes:["usuarios","admin","portal","supabase","n8n","hubspot"] },
+  { id:"prod",  label:"Productos",   icon:"📦", nodes:["admin","hubspot","n8n","wordpress","moodle","supabase"] },
+  { id:"insc",  label:"Inscripciones",icon:"🎟️",nodes:["usuarios","portal","supabase","n8n","hubspot","moodle"] },
+  { id:"pago",  label:"Pagos",       icon:"💰", nodes:["usuarios","portal","supabase","redsys","n8n","bc"] },
+  { id:"renov", label:"Renovación",  icon:"🔄", nodes:["supabase","n8n","hubspot","bc","portal","admin"] },
 ];
 
-var PROCESS_FILTERS = [
-  { id:"all",   label:"Todo",           icon:"🏗️", groups:null },
-  { id:"alta",  label:"Alta socios",    icon:"📋", groups:["actors","interface","core","integrator","crm","services"] },
-  { id:"gest",  label:"Gestión socios", icon:"✏️", groups:["actors","interface","core","integrator","crm"] },
-  { id:"prod",  label:"Productos",      icon:"📦", groups:["actors","crm","integrator","services","core"] },
-  { id:"insc",  label:"Inscripciones",  icon:"🎟️", groups:["actors","interface","core","integrator","crm","services"] },
-  { id:"pago",  label:"Pagos",          icon:"💰", groups:["actors","interface","core","erp","integrator"] },
-  { id:"renov", label:"Renovación",     icon:"🔄", groups:["core","integrator","crm","erp","interface","interno"] },
-];
+/* ═══════════════════════════════════════════
+   SVG COMPONENTS
+   ═══════════════════════════════════════════ */
 
-/* ═══════════════════════════════════════════════════════════════
-   COMPONENTS
-   ═══════════════════════════════════════════════════════════════ */
-
-function SubItem({ item }) {
-  return (
-    <div style={{
-      display:"flex",alignItems:"flex-start",gap:8,
-      padding:"8px 10px",background:"#0f172a",borderRadius:8,
-      border:"1px solid #1e293b",
-      transition:"border-color .15s",
-    }}>
-      <span style={{fontSize:16,lineHeight:1,flexShrink:0,marginTop:1}}>{item.icon}</span>
-      <div style={{flex:1,minWidth:0}}>
-        <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
-          <span style={{fontSize:12,fontWeight:600,color:"#e2e8f0"}}>{item.label}</span>
-          {item.tech && <span style={{fontSize:9,color:"#64748b",fontFamily:"'DM Mono',monospace",background:"#1e293b",padding:"1px 6px",borderRadius:4}}>{item.tech}</span>}
-          {item.phase2 && <span style={{fontSize:9,color:"#a855f7",fontFamily:"'DM Mono',monospace",background:"#a855f7"+"18",padding:"1px 6px",borderRadius:4,border:"1px solid #a855f7"+"30"}}>Fase 2</span>}
-          {item.pending && <span style={{fontSize:9,color:"#f59e0b",fontFamily:"'DM Mono',monospace",background:"#f59e0b"+"18",padding:"1px 6px",borderRadius:4,border:"1px solid #f59e0b"+"30"}}>Pendiente</span>}
-        </div>
-        <div style={{fontSize:10,color:"#64748b",marginTop:2,lineHeight:1.4}}>{item.sub}</div>
-      </div>
-    </div>
-  );
-}
-
-function GroupCard({ group, isActive, isExpanded, onToggle }) {
-  var dim = !isActive;
-  var hasMaster = group.master && group.master.length > 0;
-  return (
-    <div style={{
-      background:"#1e293b",
-      border:"2px solid "+(isExpanded ? group.color : (dim ? "#1e293b" : group.color+"40")),
-      borderRadius:16,
-      opacity:dim?0.2:1,
-      transition:"all .3s ease",
-      overflow:"hidden",
-      boxShadow:isExpanded?"0 0 30px "+group.color+"15":"none",
-    }}>
-      {/* Header */}
-      <div onClick={onToggle} style={{
-        padding:"14px 16px",cursor:"pointer",
-        background:isExpanded?group.color+"12":"transparent",
-        display:"flex",alignItems:"center",gap:10,
-        borderBottom:isExpanded?"1px solid "+group.color+"25":"1px solid transparent",
-        transition:"all .2s",
-      }}>
-        <div style={{width:8,height:8,borderRadius:99,background:group.color,flexShrink:0}}/>
-        <div style={{flex:1}}>
-          <div style={{fontSize:13,fontWeight:700,color:group.color,fontFamily:"'DM Mono',monospace",textTransform:"uppercase",letterSpacing:"0.05em"}}>{group.label}</div>
-          <div style={{fontSize:11,color:"#64748b",marginTop:1}}>{group.desc}</div>
-        </div>
-        {hasMaster && <span style={{fontSize:12,color:"#f59e0b",flexShrink:0}} title="Data master">★</span>}
-        <span style={{fontSize:12,color:"#475569",flexShrink:0,transform:isExpanded?"rotate(180deg)":"none",transition:"transform .2s"}}>▾</span>
-      </div>
-
-      {/* Expanded content */}
-      {isExpanded && (
-        <div style={{padding:"10px 12px",animation:"fadeIn .2s ease"}}>
-          {group.tech && (
-            <div style={{fontSize:9,color:"#475569",fontFamily:"'DM Mono',monospace",marginBottom:8,padding:"3px 8px",background:"#0f172a",borderRadius:6,display:"inline-block"}}>{group.tech}</div>
-          )}
-
-          {/* Master data */}
-          {hasMaster && (
-            <div style={{marginBottom:10,padding:"8px 10px",background:"#f59e0b"+"0a",border:"1px solid #f59e0b"+"20",borderRadius:10}}>
-              <div style={{fontSize:9,fontWeight:700,color:"#f59e0b",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5,fontFamily:"'DM Mono',monospace"}}>★ Master de</div>
-              <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
-                {group.master.map(function(m,i){
-                  return <span key={i} style={{fontSize:10,color:"#cbd5e1",background:"#0f172a",padding:"2px 8px",borderRadius:6}}>{m}</span>;
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Sub-items */}
-          <div style={{display:"flex",flexDirection:"column",gap:6}}>
-            {group.items.map(function(item){
-              return <SubItem key={item.id} item={item}/>;
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Collapsed preview */}
-      {!isExpanded && !dim && (
-        <div style={{padding:"6px 16px 12px",display:"flex",gap:8,flexWrap:"wrap"}}>
-          {group.items.slice(0,4).map(function(item){
-            return <span key={item.id} style={{fontSize:14}} title={item.label}>{item.icon}</span>;
-          })}
-          {group.items.length>4 && <span style={{fontSize:10,color:"#475569"}}>+{group.items.length-4}</span>}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function FlowArrow({ conn, isActive }) {
+function ConnPath({ conn, isActive }) {
   var dim = !isActive;
   var isDashed = conn.type==="dashed";
   var isDotted = conn.type==="dotted";
+  var dash = isDotted ? "2 4" : (isDashed ? "5 3" : "none");
+  var sw = isDotted ? 1 : 1.5;
+  var c = dim ? "#1e293b" : (conn.color||"#475569");
   return (
-    <div style={{
-      display:"flex",alignItems:"center",gap:6,
-      padding:"5px 10px",background:"#1e293b",borderRadius:8,
-      border:"1px solid #334155",fontSize:10,
-      opacity:dim?0.15:1,transition:"opacity .3s",
-    }}>
-      <span style={{fontWeight:700,color:"#94a3b8",fontFamily:"'DM Mono',monospace",whiteSpace:"nowrap",fontSize:9}}>{conn.from}</span>
-      <svg width="24" height="10" viewBox="0 0 24 10" style={{flexShrink:0}}>
-        <line x1="0" y1="5" x2="17" y2="5" stroke={isDotted?"#334155":(isDashed?"#475569":"#64748b")} strokeWidth="1.5"
-          strokeDasharray={isDotted?"2 3":(isDashed?"4 3":"none")}>
-          {!isDotted && <animate attributeName="stroke-dashoffset" from="14" to="0" dur="2s" repeatCount="indefinite"/>}
-        </line>
-        <polygon points="16,2 24,5 16,8" fill={isDotted?"#334155":(isDashed?"#475569":"#64748b")}/>
-      </svg>
-      <span style={{fontWeight:700,color:"#94a3b8",fontFamily:"'DM Mono',monospace",whiteSpace:"nowrap",fontSize:9}}>{conn.to}</span>
-      <span style={{color:"#334155"}}>|</span>
-      <span style={{color:"#64748b",fontSize:9}}>{conn.label}</span>
+    <g style={{opacity:dim?0.1:1,transition:"opacity .4s"}}>
+      <path d={conn.d} fill="none" stroke={c} strokeWidth={sw}
+        strokeDasharray={dash} markerEnd={isDotted?"":(dim?"":"url(#arrow-"+conn.color.replace("#","")+")")}>
+        {!isDotted && <animate attributeName="stroke-dashoffset" from="12" to="0" dur="2s" repeatCount="indefinite"/>}
+      </path>
+      {conn.label && !dim && (function(){
+        var parts = conn.d.split(/[ML ]+/).filter(Boolean);
+        if(parts.length<4) return null;
+        var x1=parseFloat(parts[0]),y1=parseFloat(parts[1]);
+        var x2=parseFloat(parts[parts.length-2]),y2=parseFloat(parts[parts.length-1]);
+        var mx=(x1+x2)/2, my=(y1+y2)/2;
+        return (
+          <text x={mx} y={my-4} textAnchor="middle" fill="#64748b" fontSize="7" fontFamily="DM Mono,monospace">{conn.label}</text>
+        );
+      })()}
+    </g>
+  );
+}
+
+function NodeBox({ id, node, isActive, isSelected, onClick }) {
+  var dim = !isActive;
+  var c = node.color;
+  var sel = isSelected;
+  return (
+    <g onClick={function(){ onClick(id); }} style={{cursor:"pointer",opacity:dim?0.15:1,transition:"opacity .4s"}}>
+      {/* Shadow */}
+      {sel && <rect x={node.x-2} y={node.y-2} width={node.w+4} height={node.h+4} rx={12} fill={c} fillOpacity={0.15}/>}
+      {/* Box */}
+      <rect x={node.x} y={node.y} width={node.w} height={node.h}
+        rx={10} fill={sel?"#1e293b":"#1e293b"} stroke={sel?c:(dim?"#334155":c+"60")} strokeWidth={sel?2:1}/>
+      {/* Color accent left */}
+      <rect x={node.x} y={node.y} width={4} height={node.h} rx={2} fill={c} fillOpacity={dim?0.2:(sel?1:0.6)}/>
+      {/* Icon */}
+      <text x={node.x+14} y={node.y+(node.big?20:18)} fontSize={node.big?14:12}>{node.icon}</text>
+      {/* Label */}
+      <text x={node.x+30} y={node.y+(node.big?20:18)} fill={sel?c:"#e2e8f0"} fontSize={node.big?11:10} fontWeight="600" fontFamily="DM Mono,monospace">{node.label}</text>
+      {/* Sub */}
+      {node.sub && <text x={node.x+14} y={node.y+(node.big?36:33)} fill="#64748b" fontSize="7" fontFamily="DM Sans,sans-serif">{node.sub}</text>}
+      {/* Phase 2 badge */}
+      {node.phase2 && (
+        <g>
+          <rect x={node.x+node.w-38} y={node.y+4} width={34} height={13} rx={4} fill="#a855f7" fillOpacity={0.15} stroke="#a855f7" strokeWidth={0.5} strokeOpacity={0.4}/>
+          <text x={node.x+node.w-21} y={node.y+13} textAnchor="middle" fill="#a855f7" fontSize="6" fontFamily="DM Mono,monospace" fontWeight="600">Fase 2</text>
+        </g>
+      )}
+    </g>
+  );
+}
+
+function CoreBackground({ isActive }) {
+  return (
+    <g style={{opacity:isActive?1:0.1,transition:"opacity .4s"}}>
+      <rect x={20} y={205} width={395} height={115} rx={14} fill="#10b981" fillOpacity={0.04} stroke="#10b981" strokeWidth={1} strokeOpacity={0.15} strokeDasharray="4 3"/>
+      <text x={32} y={218} fill="#10b981" fontSize="7" fontWeight="700" fontFamily="DM Mono,monospace" letterSpacing="0.08em" fillOpacity={0.5}>CORE DEL SISTEMA</text>
+    </g>
+  );
+}
+
+function HubspotBackground({ isActive }) {
+  return (
+    <g style={{opacity:isActive?1:0.1,transition:"opacity .4s"}}>
+      <rect x={45} y={368} width={270} height={84} rx={14} fill="#f97316" fillOpacity={0.04} stroke="#f97316" strokeWidth={1} strokeOpacity={0.15} strokeDasharray="4 3"/>
+      <text x={57} y={380} fill="#f97316" fontSize="7" fontWeight="700" fontFamily="DM Mono,monospace" letterSpacing="0.08em" fillOpacity={0.5}>CEREBRO DE NEGOCIO</text>
+    </g>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   DETAIL PANEL (below diagram)
+   ═══════════════════════════════════════════ */
+
+function DetailPanel({ nodeId, node, onClose }) {
+  var c = node.color;
+  return (
+    <div style={{animation:"fadeIn .2s ease",background:"#1e293b",border:"2px solid "+c+"40",borderRadius:14,padding:"16px",marginTop:12,position:"relative"}}>
+      <button onClick={onClose} style={{position:"absolute",top:10,right:12,background:"none",border:"none",fontSize:16,color:"#64748b",cursor:"pointer"}}>✕</button>
+      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+        <span style={{fontSize:22}}>{node.icon}</span>
+        <div>
+          <div style={{fontSize:15,fontWeight:700,color:c}}>{node.label}</div>
+          <div style={{fontSize:10,color:"#64748b"}}>{node.sub}</div>
+        </div>
+      </div>
+      {node.detail && <p style={{fontSize:12,color:"#94a3b8",lineHeight:1.6,marginBottom:8}}>{node.detail}</p>}
+      {/* Connections */}
+      <div style={{fontSize:9,fontWeight:700,color:"#475569",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5,fontFamily:"DM Mono,monospace"}}>Conexiones</div>
+      <div style={{display:"flex",flexDirection:"column",gap:3}}>
+        {CONNS.filter(function(c2){ return (c2.from===nodeId||c2.to===nodeId) && c2.label; }).map(function(c2,i){
+          var otherId = c2.from===nodeId ? c2.to : c2.from;
+          var other = NODES[otherId];
+          var out = c2.from===nodeId;
+          return (
+            <div key={i} style={{display:"flex",alignItems:"center",gap:5,fontSize:11,color:"#94a3b8"}}>
+              <span style={{color:out?"#10b981":"#3b82f6",fontFamily:"DM Mono,monospace",fontSize:9,fontWeight:700}}>{out?"→":"←"}</span>
+              <span style={{fontWeight:600,color:other.color}}>{other.label}</span>
+              <span style={{color:"#334155"}}>·</span>
+              <span style={{color:"#64748b"}}>{c2.label}</span>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════
    MAIN APP
-   ═══════════════════════════════════════════════════════════════ */
+   ═══════════════════════════════════════════ */
 
 function App() {
-  var ps = useState("all");    var process = ps[0]; var setProcess = ps[1];
-  var es = useState("core");   var expanded = es[0]; var setExpanded = es[1];
+  var ps = useState("all"); var process = ps[0]; var setProcess = ps[1];
+  var ss = useState(null);  var selected = ss[0]; var setSelected = ss[1];
 
-  var pf = PROCESS_FILTERS.filter(function(p){ return p.id===process; })[0];
-  var activeGroups = pf ? pf.groups : null;
+  var filt = FILTERS.filter(function(f){ return f.id===process; })[0];
+  var activeNodes = filt ? filt.nodes : null;
 
-  function isGroupActive(gid) {
-    if (!activeGroups) return true;
-    return activeGroups.indexOf(gid) !== -1;
+  function isNodeActive(nid) {
+    if (!activeNodes) return true;
+    return activeNodes.indexOf(nid) !== -1;
   }
   function isConnActive(conn) {
-    if (!activeGroups) return true;
-    return activeGroups.indexOf(conn.from)!==-1 && activeGroups.indexOf(conn.to)!==-1;
+    if (!activeNodes) return true;
+    return activeNodes.indexOf(conn.from)!==-1 && activeNodes.indexOf(conn.to)!==-1;
   }
-  function toggleGroup(gid) {
-    setExpanded(expanded===gid?null:gid);
-  }
+  function clickNode(id) { setSelected(selected===id?null:id); }
 
-  /* Layout order matches the PowerPoint: Actors → Interface → Core+Integrator → CRM → Services → ERP → Interno */
-  var layoutOrder = ["actors","interface","core","integrator","crm","services","erp","interno"];
+  var nodeIds = Object.keys(NODES);
+
+  // Unique arrow markers per color
+  var markerColors = {};
+  CONNS.forEach(function(c){ if(c.color) markerColors[c.color.replace("#","")]=c.color; });
 
   return (
     <div style={{background:"#0f172a",minHeight:"100vh"}}>
 
       {/* Header */}
-      <div style={{background:"linear-gradient(180deg,#1e293b 0%,#0f172a 100%)",borderBottom:"1px solid #334155",padding:"20px 20px 16px"}}>
-        <div style={{maxWidth:800,margin:"0 auto"}}>
-          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
-            <a href="index.html" style={{textDecoration:"none",color:"#64748b",fontSize:12}}>← Inicio</a>
-          </div>
-          <h1 style={{fontSize:22,fontWeight:700,color:"#f1f5f9",letterSpacing:"-0.02em",lineHeight:1.2}}>Arquitectura del Ecosistema Digital</h1>
-          <p style={{fontSize:12,color:"#64748b",marginTop:4,lineHeight:1.5}}>
-            Visión implementada del ecosistema IAI — 10 sistemas integrados, dual-master
-          </p>
-          {/* Dual master summary mini */}
-          <div style={{display:"flex",gap:8,marginTop:10,flexWrap:"wrap"}}>
-            <div style={{display:"flex",alignItems:"center",gap:5,padding:"4px 10px",background:"#f97316"+"12",border:"1px solid #f97316"+"25",borderRadius:8}}>
-              <span style={{width:6,height:6,borderRadius:99,background:"#f97316"}}/>
-              <span style={{fontSize:10,color:"#f97316",fontWeight:600,fontFamily:"'DM Mono',monospace"}}>HubSpot</span>
-              <span style={{fontSize:10,color:"#64748b"}}>Cerebro de negocio</span>
-            </div>
-            <div style={{display:"flex",alignItems:"center",gap:5,padding:"4px 10px",background:"#10b981"+"12",border:"1px solid #10b981"+"25",borderRadius:8}}>
-              <span style={{width:6,height:6,borderRadius:99,background:"#10b981"}}/>
-              <span style={{fontSize:10,color:"#10b981",fontWeight:600,fontFamily:"'DM Mono',monospace"}}>Supabase</span>
-              <span style={{fontSize:10,color:"#64748b"}}>Motor operativo</span>
-            </div>
-            <div style={{display:"flex",alignItems:"center",gap:5,padding:"4px 10px",background:"#ef4444"+"12",border:"1px solid #ef4444"+"25",borderRadius:8}}>
-              <span style={{width:6,height:6,borderRadius:99,background:"#ef4444"}}/>
-              <span style={{fontSize:10,color:"#ef4444",fontWeight:600,fontFamily:"'DM Mono',monospace"}}>n8n</span>
-              <span style={{fontSize:10,color:"#64748b"}}>Integrador</span>
-            </div>
+      <div style={{background:"linear-gradient(180deg,#1e293b 0%,#0f172a 100%)",borderBottom:"1px solid #334155",padding:"16px 20px 12px"}}>
+        <div style={{maxWidth:440,margin:"0 auto"}}>
+          <a href="index.html" style={{textDecoration:"none",color:"#64748b",fontSize:12}}>← Inicio</a>
+          <h1 style={{fontSize:19,fontWeight:700,color:"#f1f5f9",letterSpacing:"-0.02em",marginTop:6}}>Arquitectura del Ecosistema Digital</h1>
+          <div style={{display:"flex",gap:6,marginTop:8,flexWrap:"wrap"}}>
+            <span style={{fontSize:9,color:"#f97316",background:"#f97316"+"12",border:"1px solid #f97316"+"25",padding:"3px 8px",borderRadius:6,fontFamily:"DM Mono,monospace",fontWeight:600}}>🟠 HubSpot → Cerebro de negocio</span>
+            <span style={{fontSize:9,color:"#10b981",background:"#10b981"+"12",border:"1px solid #10b981"+"25",padding:"3px 8px",borderRadius:6,fontFamily:"DM Mono,monospace",fontWeight:600}}>🟢 Supabase → Motor operativo</span>
+            <span style={{fontSize:9,color:"#ef4444",background:"#ef4444"+"12",border:"1px solid #ef4444"+"25",padding:"3px 8px",borderRadius:6,fontFamily:"DM Mono,monospace",fontWeight:600}}>🔴 n8n → Integrador</span>
           </div>
         </div>
       </div>
 
-      <div style={{maxWidth:800,margin:"0 auto",padding:"16px 16px 40px"}}>
+      <div style={{maxWidth:440,margin:"0 auto",padding:"12px 10px 40px"}}>
 
         {/* Process filter */}
-        <div style={{marginBottom:16,overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
-          <div style={{display:"flex",gap:6,paddingBottom:4}}>
-            {PROCESS_FILTERS.map(function(p){
-              var active = process===p.id;
+        <div style={{marginBottom:12,overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+          <div style={{display:"flex",gap:5,paddingBottom:4}}>
+            {FILTERS.map(function(f){
+              var active = process===f.id;
               return (
-                <button key={p.id}
-                  onClick={function(){ setProcess(p.id); }}
-                  style={{
-                    padding:"6px 12px",borderRadius:8,fontSize:11,fontWeight:active?600:400,
+                <button key={f.id} onClick={function(){ setProcess(f.id); setSelected(null); }}
+                  style={{padding:"5px 10px",borderRadius:7,fontSize:10,fontWeight:active?600:400,
                     background:active?"#f97316":"#1e293b",color:active?"white":"#94a3b8",
-                    border:"1px solid "+(active?"#f97316":"#334155"),
-                    cursor:"pointer",transition:"all .15s",fontFamily:"'DM Sans',sans-serif",
-                    whiteSpace:"nowrap",flexShrink:0,
-                  }}>
-                  {p.icon} {p.label}
+                    border:"1px solid "+(active?"#f97316":"#334155"),cursor:"pointer",
+                    fontFamily:"DM Sans,sans-serif",whiteSpace:"nowrap",flexShrink:0}}>
+                  {f.icon} {f.label}
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* ═══ DIAGRAM — VERTICAL STACK ═══ */}
-        <div style={{display:"flex",flexDirection:"column",gap:8}}>
-          {layoutOrder.map(function(gid,idx){
-            var group = GROUPS.filter(function(g){ return g.id===gid; })[0];
-            if (!group) return null;
-            var active = isGroupActive(gid);
+        {/* ═══ SVG DIAGRAM ═══ */}
+        <div style={{background:"#0f172a",borderRadius:16,border:"1px solid #1e293b",overflow:"hidden"}}>
+          <svg viewBox="0 0 420 630" style={{width:"100%",height:"auto",display:"block"}}>
+            <defs>
+              {Object.keys(markerColors).map(function(key){
+                return (
+                  <marker key={key} id={"arrow-"+key} markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <polygon points="0,0 6,3 0,6" fill={markerColors[key]}/>
+                  </marker>
+                );
+              })}
+            </defs>
 
-            /* Visual connectors between groups */
-            var showConnector = idx > 0;
-            var prevActive = idx>0 && isGroupActive(layoutOrder[idx-1]);
-            var connDim = !active || !prevActive;
+            {/* Background zones */}
+            <CoreBackground isActive={isNodeActive("supabase")||isNodeActive("n8n")}/>
+            <HubspotBackground isActive={isNodeActive("hubspot")}/>
 
-            return (
-              <div key={gid}>
-                {showConnector && (
-                  <div style={{display:"flex",justifyContent:"center",padding:"2px 0",opacity:connDim?0.15:1,transition:"opacity .3s"}}>
-                    <svg width="2" height="16" viewBox="0 0 2 16">
-                      <line x1="1" y1="0" x2="1" y2="16" stroke={group.color+"60"} strokeWidth="2" strokeDasharray="3 3">
-                        <animate attributeName="stroke-dashoffset" from="12" to="0" dur="1.5s" repeatCount="indefinite"/>
-                      </line>
-                    </svg>
-                  </div>
-                )}
-                <GroupCard
-                  group={group}
-                  isActive={active}
-                  isExpanded={expanded===gid}
-                  onToggle={function(){ toggleGroup(gid); }}
-                />
-              </div>
-            );
-          })}
+            {/* Services label */}
+            <text x={22} y={496} fill="#3b82f6" fontSize="7" fontWeight="700" fontFamily="DM Mono,monospace" letterSpacing="0.08em" fillOpacity={isNodeActive("wordpress")?0.5:0.1} style={{transition:"fill-opacity .4s"}}>SERVICIOS</text>
+
+            {/* Connection paths (behind nodes) */}
+            {CONNS.map(function(conn,i){
+              return <ConnPath key={i} conn={conn} isActive={isConnActive(conn)}/>;
+            })}
+
+            {/* Nodes */}
+            {nodeIds.map(function(nid){
+              var node = NODES[nid];
+              return <NodeBox key={nid} id={nid} node={node} isActive={isNodeActive(nid)} isSelected={selected===nid} onClick={clickNode}/>;
+            })}
+
+            {/* Bidirectional label between Supabase and n8n */}
+            <g style={{opacity:(isNodeActive("supabase")&&isNodeActive("n8n"))?1:0.1,transition:"opacity .4s"}}>
+              <text x={215} y={248} textAnchor="middle" fill="#475569" fontSize="8" fontFamily="DM Mono,monospace">◀═══▶</text>
+            </g>
+
+            {/* Legend at bottom */}
+            <g transform="translate(10,598)">
+              <line x1="0" y1="8" x2="18" y2="8" stroke="#64748b" strokeWidth="1.5"/>
+              <text x="22" y="11" fill="#64748b" fontSize="7" fontFamily="DM Mono,monospace">Directo</text>
+              <line x1="80" y1="8" x2="98" y2="8" stroke="#64748b" strokeWidth="1.5" strokeDasharray="5 3"/>
+              <text x="102" y="11" fill="#64748b" fontSize="7" fontFamily="DM Mono,monospace">Webhook / async</text>
+              <line x1="200" y1="8" x2="218" y2="8" stroke="#64748b" strokeWidth="1" strokeDasharray="2 4"/>
+              <text x="222" y="11" fill="#64748b" fontSize="7" fontFamily="DM Mono,monospace">Redirect</text>
+              <rect x="280" y="2" width="12" height="12" rx="3" fill="#a855f7" fillOpacity="0.15" stroke="#a855f7" strokeWidth="0.5"/>
+              <text x="296" y="11" fill="#64748b" fontSize="7" fontFamily="DM Mono,monospace">Fase 2</text>
+              <text x="340" y="11" fill="#f59e0b" fontSize="8">★</text>
+              <text x="350" y="11" fill="#64748b" fontSize="7" fontFamily="DM Mono,monospace">Master</text>
+            </g>
+          </svg>
         </div>
 
-        {/* ═══ CONNECTION TABLE ═══ */}
-        <div style={{marginTop:24}}>
-          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
-            <div style={{width:6,height:6,borderRadius:99,background:"#f59e0b"}}/>
-            <span style={{fontSize:10,fontWeight:700,color:"#f59e0b",textTransform:"uppercase",letterSpacing:"0.08em",fontFamily:"'DM Mono',monospace"}}>Flujo de datos</span>
-            <span style={{fontSize:10,color:"#475569",fontFamily:"'DM Mono',monospace"}}>{CONNECTIONS.length} conexiones</span>
-            <div style={{flex:1,height:1,background:"#334155"}}/>
+        {/* Detail panel */}
+        {selected && NODES[selected] && (
+          <DetailPanel nodeId={selected} node={NODES[selected]} onClose={function(){ setSelected(null); }}/>
+        )}
+
+        {/* Payment flow callout */}
+        <div style={{marginTop:16,padding:"12px 14px",background:"#1e293b",borderRadius:12,border:"1px solid #f59e0b"+"25"}}>
+          <div style={{fontSize:9,fontWeight:700,color:"#f59e0b",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:6,fontFamily:"DM Mono,monospace"}}>💳 Flujo de pago con tarjeta</div>
+          <div style={{fontSize:11,color:"#94a3b8",lineHeight:1.7}}>
+            <span style={{color:"#8b5cf6"}}>Portal</span> (carrito) →
+            <span style={{color:"#10b981"}}> Supabase</span> (crea carrito) →
+            <span style={{color:"#10b981"}}> Edge Fn</span> (initiate-payment) →
+            <span style={{color:"#f59e0b"}}> Redsys</span> (usuario paga) →
+            <span style={{color:"#f59e0b"}}> webhook</span> →
+            <span style={{color:"#10b981"}}> Supabase</span> (Edge Fn confirma) →
+            <span style={{color:"#f59e0b"}}> Redsys</span> redirige a
+            <span style={{color:"#8b5cf6"}}> Portal</span> →
+            <span style={{color:"#ef4444"}}> n8n</span> detecta →
+            matrícula + factura (<span style={{color:"#6366f1"}}>BC</span>) + sync <span style={{color:"#f97316"}}>HubSpot</span>
           </div>
-          <div style={{display:"flex",flexDirection:"column",gap:4}}>
-            {CONNECTIONS.map(function(c,i){
-              return <FlowArrow key={i} conn={c} isActive={isConnActive(c)}/>;
+        </div>
+
+        {/* Dual master summary */}
+        <div style={{marginTop:12,display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+          <div style={{background:"#f97316"+"0a",border:"1px solid #f97316"+"20",borderRadius:12,padding:"12px"}}>
+            <div style={{fontSize:9,fontWeight:700,color:"#f97316",marginBottom:6,fontFamily:"DM Mono,monospace"}}>🟠 HubSpot manda en</div>
+            {["Productos y cursos","Empresas y tramos","Membresías","Pipeline de deals","Datos maestros"].map(function(t,i){
+              return <div key={i} style={{fontSize:10,color:"#cbd5e1",display:"flex",gap:4,marginBottom:2}}><span style={{color:"#f97316"}}>★</span>{t}</div>;
             })}
           </div>
-        </div>
-
-        {/* ═══ DUAL MASTER DETAIL ═══ */}
-        <div style={{marginTop:24,display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-          <div style={{background:"#f97316"+"0a",border:"1px solid #f97316"+"20",borderRadius:14,padding:"14px"}}>
-            <div style={{fontSize:10,fontWeight:700,color:"#f97316",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:8,fontFamily:"'DM Mono',monospace"}}>🟠 HubSpot manda en</div>
-            <div style={{display:"flex",flexDirection:"column",gap:4}}>
-              {["Productos y cursos","Empresas y tramos","Tipo de membresía","Pipeline comercial","Datos maestros"].map(function(t,i){
-                return <div key={i} style={{fontSize:10,color:"#cbd5e1",display:"flex",gap:4}}><span style={{color:"#f97316"}}>★</span>{t}</div>;
-              })}
-            </div>
-          </div>
-          <div style={{background:"#10b981"+"0a",border:"1px solid #10b981"+"20",borderRadius:14,padding:"14px"}}>
-            <div style={{fontSize:10,fontWeight:700,color:"#10b981",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:8,fontFamily:"'DM Mono',monospace"}}>🟢 Supabase manda en</div>
-            <div style={{display:"flex",flexDirection:"column",gap:4}}>
-              {["Autenticación","Inscripciones","Pagos y checkout","Diplomas y storage","Créditos formativos"].map(function(t,i){
-                return <div key={i} style={{fontSize:10,color:"#cbd5e1",display:"flex",gap:4}}><span style={{color:"#10b981"}}>★</span>{t}</div>;
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* Legend */}
-        <div style={{marginTop:20,padding:"12px 14px",background:"#1e293b",borderRadius:12,border:"1px solid #334155"}}>
-          <div style={{display:"flex",flexWrap:"wrap",gap:12,fontSize:10,color:"#64748b"}}>
-            <div style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:16,height:2,background:"#64748b",borderRadius:1}}/> Conexión directa</div>
-            <div style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:16,height:2,background:"#475569",borderRadius:1,borderTop:"2px dashed #475569"}}/> Webhook / async</div>
-            <div style={{display:"flex",alignItems:"center",gap:4}}><span style={{color:"#f59e0b"}}>★</span> Data master</div>
-            <div style={{display:"flex",alignItems:"center",gap:4}}><span style={{color:"#a855f7",fontSize:9,fontFamily:"'DM Mono',monospace",background:"#a855f7"+"18",padding:"1px 5px",borderRadius:3}}>Fase 2</span> En desarrollo</div>
+          <div style={{background:"#10b981"+"0a",border:"1px solid #10b981"+"20",borderRadius:12,padding:"12px"}}>
+            <div style={{fontSize:9,fontWeight:700,color:"#10b981",marginBottom:6,fontFamily:"DM Mono,monospace"}}>🟢 Supabase manda en</div>
+            {["Autenticación","Inscripciones","Pagos y checkout","Diplomas y storage","Créditos formativos"].map(function(t,i){
+              return <div key={i} style={{fontSize:10,color:"#cbd5e1",display:"flex",gap:4,marginBottom:2}}><span style={{color:"#10b981"}}>★</span>{t}</div>;
+            })}
           </div>
         </div>
 
