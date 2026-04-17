@@ -10,20 +10,21 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    html,body{min-height:100%;background:#f8fafc;font-family:'DM Sans',system-ui,sans-serif;color:#0f172a}
+    html,body{min-height:100%;background:#0f172a;font-family:'DM Sans',system-ui,sans-serif;color:#e2e8f0}
     #root{min-height:100%}
 
-    .iai-nav{position:sticky;top:0;z-index:999;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+    .iai-nav{position:sticky;top:0;z-index:999;background:#1e293b;border-bottom:1px solid #334155;box-shadow:0 1px 3px rgba(0,0,0,.3)}
     .iai-nav-inner{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:24px;height:44px;overflow-x:auto}
-    .iai-nav-logo{display:flex;align-items:center;gap:7px;text-decoration:none;font-size:12px;font-weight:600;color:#0f172a;white-space:nowrap;flex-shrink:0;font-family:'DM Mono',monospace}
+    .iai-nav-logo{display:flex;align-items:center;gap:7px;text-decoration:none;font-size:12px;font-weight:600;color:#f1f5f9;white-space:nowrap;flex-shrink:0;font-family:'DM Mono',monospace}
     .iai-nav-dot{width:8px;height:8px;border-radius:99px;background:#f97316;flex-shrink:0}
     .iai-nav-links{display:flex;gap:2px;align-items:center}
-    .iai-nav-links a{text-decoration:none;font-size:12px;color:#64748b;padding:4px 10px;border-radius:6px;white-space:nowrap;transition:background .15s,color .15s}
-    .iai-nav-links a:hover{background:#f1f5f9;color:#0f172a}
-    .iai-nav-links a.active{background:#fff7ed;color:#f97316;font-weight:500}
+    .iai-nav-links a{text-decoration:none;font-size:12px;color:#94a3b8;padding:4px 10px;border-radius:6px;white-space:nowrap;transition:background .15s,color .15s}
+    .iai-nav-links a:hover{background:#334155;color:#f1f5f9}
+    .iai-nav-links a.active{background:#f97316;color:white;font-weight:500}
 
     @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+    @keyframes flowPulse{0%,100%{opacity:.3}50%{opacity:.8}}
+    @keyframes dashFlow{from{stroke-dashoffset:16}to{stroke-dashoffset:0}}
   </style>
   <script>
   document.addEventListener('DOMContentLoaded',function(){
@@ -51,116 +52,140 @@
 </nav>
 <div id="root"></div>
 <script type="text/babel">
-const { useState, useRef, useEffect } = React;
+const { useState } = React;
 
-const SYSTEMS = {
-  usuario:   { label:"Usuario / Socio",       icon:"👤", color:"#64748b", desc:"Socios individuales y corporativos que interactúan con el ecosistema IAI.", cap:["Registro y login","Gestión de perfil","Inscripción a eventos","Consulta de facturas","Descarga de diplomas"] },
-  wordpress: { label:"Web pública",            icon:"🌐", color:"#3b82f6", desc:"Sitio web público de IAI. Publica eventos, formaciones y contenido institucional.", cap:["Publicación de eventos y cursos","Páginas institucionales","SEO y contenido público","Formularios de contacto"], tech:"WordPress · REST API · /wp-json/ai/v1/*" },
-  weweb:     { label:"Portal del socio",       icon:"🟣", color:"#8b5cf6", desc:"Portal privado donde los socios gestionan su membresía, inscripciones y perfil.", cap:["Mi perfil y datos","Inscripción/cancelación de eventos","Panel corporativo (empresas)","Carrito de compras","Admin panel (IAI)"], tech:"WeWeb · Supabase Auth · RLS" },
-  supabase:  { label:"Base de datos",          icon:"🟢", color:"#10b981", desc:"Core del sistema. Almacena todos los datos, gestiona autenticación y ejecuta lógica de negocio via Edge Functions.", cap:["PostgreSQL con RLS","Auth (email + OAuth)","Edge Functions (pagos, diplomas, cancelaciones)","Storage (PDFs, certificados)","Realtime subscriptions"], tech:"Supabase · PostgreSQL · Edge Functions · Storage" },
-  n8n:       { label:"Automatización",         icon:"🔴", color:"#ef4444", desc:"Orquestador central. Conecta todos los sistemas mediante workflows automáticos y webhooks.", cap:["Sync bidireccional HubSpot ↔ Supabase","Publicación a WordPress y Moodle","Workflows de pago y facturación","Cron jobs (renovaciones, recordatorios)","Webhooks de entrada y salida"], tech:"n8n · Webhooks · REST · Cron" },
-  hubspot:   { label:"CRM",                    icon:"🟠", color:"#f97316", desc:"Sistema de gestión de relaciones. IAI trabaja aquí día a día para gestionar socios y productos.", cap:["Ficha de contactos y empresas","Gestión de productos/cursos","Pipeline de deals","Propiedades custom sincronizadas","Reporting y dashboards"], tech:"HubSpot CRM · API v3 · Webhooks" },
-  moodle:    { label:"Campus virtual",         icon:"🔵", color:"#06b6d4", desc:"Plataforma de aprendizaje online. Los cursos se crean automáticamente desde HubSpot.", cap:["Cursos y materiales","Matriculación automática","Seguimiento de progreso","Certificados de completación"], tech:"Moodle LMS · REST API" },
-  bc:        { label:"Facturación",            icon:"🟤", color:"#6366f1", desc:"Sistema de facturación oficial. Genera facturas con validez fiscal.", cap:["Facturación de cuotas","Facturación de inscripciones","Series de facturación","Integración contable"], tech:"Business Central · API" },
-  redsys:    { label:"Pasarela de pago",       icon:"💳", color:"#f59e0b", desc:"Procesador de pagos con tarjeta. Gestiona transacciones seguras con firma HMAC.", cap:["Pago con tarjeta (TPV virtual)","Verificación de firma HMAC-SHA256","Notificación de resultado","3D Secure"], tech:"Redsys TPV · Webhooks" },
-  iai_admin: { label:"IAI (gestión interna)",  icon:"🏛️", color:"#f43f5e", desc:"El equipo de IAI que gestiona el día a día: altas, bajas, productos, facturación.", cap:["Alta y baja de socios","Gestión de productos en HubSpot","Aprobación de pagos por transferencia","Asignación de créditos formativos","Configuración de tramos"], tech:"HubSpot + Admin Panel WeWeb" },
+// ─── SYSTEMS ──────────────────────────────────────────────────
+const SYS = {
+  usuario:   { label:"Usuarios / Socios", short:"Usuarios",    icon:"👤", color:"#64748b", role:"actor" },
+  iai_admin: { label:"Equipo IAI",        short:"Admin IAI",   icon:"🏛️", color:"#f43f5e", role:"actor" },
+  weweb:     { label:"Portal del socio",  short:"Portal",      icon:"🟣", color:"#8b5cf6", role:"interface",
+    desc:"Interfaz privada para socios. Login, perfil, inscripciones, carrito, panel corporativo, admin panel.",
+    master:["Datos editados por el socio (perfil, preferencias)","Carrito de compras en curso"],
+    tech:"WeWeb · Supabase Auth · RLS" },
+  supabase:  { label:"Base de datos + Auth + Edge Functions", short:"Supabase", icon:"🟢", color:"#10b981", role:"core",
+    desc:"Motor operativo del sistema. Almacena todos los datos, gestiona autenticación y ejecuta lógica de negocio.",
+    master:["Autenticación (login, tokens, sesiones)","Inscripciones y registros de eventos","Pagos y checkout","Diplomas y certificados (Storage)","Créditos formativos y saldos"],
+    tech:"PostgreSQL · Auth · Edge Functions · Storage · RLS" },
+  n8n:       { label:"Orquestador / Integrador", short:"n8n",  icon:"🔴", color:"#ef4444", role:"core",
+    desc:"Puente entre todos los sistemas. Ejecuta workflows automáticos, sincroniza datos y gestiona webhooks.",
+    master:["Lógica de sincronización y orden de ejecución","Transformación de datos entre sistemas","Cron jobs (renovaciones, recordatorios)"],
+    tech:"n8n · Webhooks · REST · Cron" },
+  hubspot:   { label:"CRM",               short:"HubSpot",     icon:"🟠", color:"#f97316", role:"brain",
+    desc:"Cerebro de negocio. Donde IAI gestiona socios, productos y pipeline comercial día a día.",
+    master:["Productos y cursos (alta, configuración, precios)","Empresas (tramos, membresía corporativa)","Estado de membresía y tipo de socio","Deals y pipeline comercial","Datos maestros de contactos"],
+    tech:"HubSpot CRM · API v3 · Webhooks" },
+  wordpress: { label:"Web pública",       short:"WordPress",   icon:"🌐", color:"#3b82f6", role:"service",
+    desc:"Sitio web público. Publica eventos, formaciones y contenido para captación.",
+    tech:"WordPress · REST API" },
+  moodle:    { label:"Campus virtual",    short:"Moodle",      icon:"📚", color:"#06b6d4", role:"service",
+    desc:"Plataforma de e-learning. Cursos online con matriculación automática.",
+    tech:"Moodle LMS · REST API" },
+  bc:        { label:"Facturación",       short:"Business Central", icon:"📄", color:"#6366f1", role:"service",
+    desc:"ERP de facturación. Genera facturas con validez fiscal.",
+    tech:"Business Central · API" },
+  redsys:    { label:"Pasarela de pago",  short:"Redsys",      icon:"💳", color:"#f59e0b", role:"service",
+    desc:"TPV virtual para pagos con tarjeta. Firma HMAC y 3D Secure.",
+    tech:"Redsys TPV · Webhooks · HMAC-SHA256" },
 };
 
-const LAYERS = [
-  { id:"frontend", label:"Interfaces", systems:["usuario","wordpress","weweb"], bg:"#eff6ff", border:"#bfdbfe" },
-  { id:"core",     label:"Core",       systems:["supabase","n8n"],              bg:"#ecfdf5", border:"#a7f3d0" },
-  { id:"external", label:"Servicios",  systems:["hubspot","moodle","bc","redsys"], bg:"#fff7ed", border:"#fed7aa" },
-  { id:"ops",      label:"Operación",  systems:["iai_admin"],                   bg:"#fff1f2", border:"#fecdd3" },
+// ─── CONNECTIONS ─────────────────────────────────────────────
+const FLOWS = [
+  { from:"usuario",   to:"weweb",    label:"Login · perfil · inscripciones" },
+  { from:"iai_admin", to:"hubspot",  label:"Gestión diaria de socios y productos" },
+  { from:"iai_admin", to:"weweb",    label:"Admin panel (aprobaciones, config)" },
+  { from:"weweb",     to:"supabase", label:"CRUD · Auth · Edge Functions" },
+  { from:"supabase",  to:"n8n",      label:"Webhooks de cambios en datos" },
+  { from:"n8n",       to:"supabase", label:"UPDATE datos sincronizados" },
+  { from:"hubspot",   to:"n8n",      label:"Webhooks: productos, contactos, empresas" },
+  { from:"n8n",       to:"hubspot",  label:"PATCH contactos · CREATE deals" },
+  { from:"n8n",       to:"wordpress",label:"POST eventos y formaciones a la web" },
+  { from:"n8n",       to:"moodle",   label:"Crear cursos · matricular alumnos" },
+  { from:"n8n",       to:"bc",       label:"Crear facturas de cuotas e inscripciones" },
+  { from:"weweb",     to:"redsys",   label:"Iniciar pago con tarjeta" },
+  { from:"redsys",    to:"supabase", label:"Webhook confirmación de pago" },
 ];
 
-const CONNECTIONS = [
-  { from:"usuario",   to:"weweb",    label:"Login, perfil, inscripciones",  dir:"right" },
-  { from:"usuario",   to:"wordpress",label:"Consulta cursos y eventos",     dir:"right" },
-  { from:"weweb",     to:"supabase", label:"CRUD + Auth + Edge Functions",  dir:"right" },
-  { from:"supabase",  to:"n8n",      label:"Webhooks de cambios",           dir:"right" },
-  { from:"n8n",       to:"supabase", label:"UPDATE datos sincronizados",    dir:"left"  },
-  { from:"n8n",       to:"hubspot",  label:"PATCH contactos, deals",        dir:"right" },
-  { from:"hubspot",   to:"n8n",      label:"Webhooks de productos y contactos", dir:"left" },
-  { from:"n8n",       to:"wordpress",label:"POST eventos y formaciones",    dir:"left"  },
-  { from:"n8n",       to:"moodle",   label:"Crear cursos, matricular",      dir:"right" },
-  { from:"n8n",       to:"bc",       label:"Crear facturas",                dir:"right" },
-  { from:"weweb",     to:"redsys",   label:"Pago con tarjeta",              dir:"right" },
-  { from:"redsys",    to:"supabase", label:"Webhook confirmación pago",     dir:"left"  },
-  { from:"iai_admin", to:"hubspot",  label:"Gestión diaria",                dir:"right" },
-  { from:"iai_admin", to:"weweb",    label:"Admin panel",                   dir:"left"  },
+const PROCESS_FILTERS = [
+  { id:"all",   label:"Todo",           icon:"🏗️", highlight:null },
+  { id:"alta",  label:"Alta socios",    icon:"📋", highlight:["usuario","weweb","supabase","n8n","hubspot","wordpress","iai_admin"] },
+  { id:"gest",  label:"Gestión socios", icon:"✏️", highlight:["usuario","weweb","supabase","n8n","hubspot","iai_admin"] },
+  { id:"prod",  label:"Productos",      icon:"📦", highlight:["iai_admin","hubspot","n8n","wordpress","moodle","supabase"] },
+  { id:"insc",  label:"Inscripciones",  icon:"🎟️", highlight:["usuario","weweb","supabase","n8n","hubspot","moodle"] },
+  { id:"pago",  label:"Pagos",          icon:"💰", highlight:["usuario","weweb","supabase","redsys","n8n","bc","iai_admin"] },
+  { id:"renov", label:"Renovación",     icon:"🔄", highlight:["supabase","n8n","hubspot","bc","weweb","iai_admin"] },
 ];
 
-const PROCESSES = [
-  { id:"all",            label:"Vista general",      icon:"🏗️", systems:null },
-  { id:"alta",           label:"Alta de socios",     icon:"📋", systems:["usuario","weweb","supabase","n8n","hubspot","wordpress","iai_admin"] },
-  { id:"gestion",        label:"Gestión de socios",  icon:"✏️", systems:["usuario","weweb","supabase","n8n","hubspot","iai_admin"] },
-  { id:"producto",       label:"Ciclo de producto",  icon:"📦", systems:["iai_admin","hubspot","n8n","wordpress","moodle","supabase"] },
-  { id:"inscripciones",  label:"Inscripciones",      icon:"🎟️", systems:["usuario","weweb","supabase","n8n","hubspot","moodle"] },
-  { id:"pagos",          label:"Pagos",              icon:"💰", systems:["usuario","weweb","supabase","redsys","n8n","bc","iai_admin"] },
-  { id:"renovacion",     label:"Renovación",         icon:"🔄", systems:["supabase","n8n","hubspot","bc","weweb","iai_admin"] },
-];
+// ─── COMPONENTS ──────────────────────────────────────────────
 
-function SystemNode({ sysId, sys, isActive, isDimmed, isSelected, onClick }) {
+function Block({ sysId, sys, isActive, isSelected, onClick, size }) {
+  var big = size==="big";
+  var dim = !isActive;
   return (
     <div onClick={function(){ onClick(sysId); }}
       style={{
-        display:"flex", flexDirection:"column", alignItems:"center", gap:6,
-        padding:"12px 10px", borderRadius:14, cursor:"pointer",
-        background: isSelected ? sys.color+"15" : (isDimmed ? "#f8fafc" : "white"),
-        border: "2px solid " + (isSelected ? sys.color : (isDimmed ? "#e2e8f0" : sys.color+"40")),
-        opacity: isDimmed ? 0.35 : 1,
-        transition: "all .25s ease",
-        transform: isSelected ? "scale(1.04)" : "scale(1)",
-        boxShadow: isSelected ? "0 4px 20px "+sys.color+"25" : (isDimmed ? "none" : "0 2px 8px rgba(0,0,0,.04)"),
-        minWidth: 90, maxWidth: 110, flex:"0 0 auto",
+        display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
+        gap: big?6:4,
+        padding: big?"16px 14px":"10px 8px",
+        borderRadius: big?16:12,
+        cursor:"pointer",
+        background: isSelected ? sys.color+"25" : (dim ? "#1e293b" : "#1e293b"),
+        border: "2px solid " + (isSelected ? sys.color : (dim ? "#334155" : sys.color+"50")),
+        opacity: dim ? 0.25 : 1,
+        transition: "all .3s ease",
+        transform: isSelected ? "scale(1.06)" : "scale(1)",
+        boxShadow: isSelected ? "0 0 24px "+sys.color+"30" : "none",
+        minWidth: big?100:80, maxWidth: big?130:105,
+        flex:"0 0 auto",
         position:"relative",
       }}>
-      {isActive && !isDimmed && (
-        <div style={{position:"absolute",top:-3,right:-3,width:10,height:10,borderRadius:99,background:sys.color,border:"2px solid white",animation:"pulse 2s infinite"}}/>
-      )}
-      <div style={{fontSize:24,lineHeight:1}}>{sys.icon}</div>
-      <div style={{fontSize:11,fontWeight:600,color:isDimmed?"#cbd5e1":sys.color,textAlign:"center",lineHeight:1.2,fontFamily:"'DM Mono',monospace"}}>{sys.label}</div>
+      <div style={{fontSize:big?28:20,lineHeight:1}}>{sys.icon}</div>
+      <div style={{fontSize:big?11:10,fontWeight:600,color:dim?"#475569":sys.color,textAlign:"center",lineHeight:1.2,fontFamily:"'DM Mono',monospace"}}>{sys.short}</div>
+    </div>
+  );
+}
+
+function MasterTag({ label }) {
+  return (
+    <div style={{display:"flex",alignItems:"flex-start",gap:6,fontSize:11,color:"#cbd5e1",lineHeight:1.4}}>
+      <span style={{color:"#f59e0b",flexShrink:0,marginTop:1}}>★</span>
+      <span>{label}</span>
     </div>
   );
 }
 
 function DetailPanel({ sysId, sys, onClose }) {
   return (
-    <div style={{animation:"fadeIn .2s ease",background:"white",border:"2px solid "+sys.color+"40",borderRadius:16,padding:"20px",marginTop:16,position:"relative"}}>
-      <button onClick={onClose} style={{position:"absolute",top:12,right:14,background:"none",border:"none",fontSize:18,color:"#94a3b8",cursor:"pointer",lineHeight:1}}>×</button>
-      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
-        <span style={{fontSize:28}}>{sys.icon}</span>
+    <div style={{animation:"fadeIn .2s ease",background:"#1e293b",border:"1px solid "+sys.color+"40",borderRadius:14,padding:"16px 18px",marginTop:12,position:"relative"}}>
+      <button onClick={onClose} style={{position:"absolute",top:10,right:12,background:"none",border:"none",fontSize:16,color:"#64748b",cursor:"pointer"}}>✕</button>
+      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+        <span style={{fontSize:22}}>{sys.icon}</span>
         <div>
-          <div style={{fontSize:16,fontWeight:700,color:sys.color}}>{sys.label}</div>
-          {sys.tech && <div style={{fontSize:10,color:"#94a3b8",fontFamily:"'DM Mono',monospace",marginTop:1}}>{sys.tech}</div>}
+          <div style={{fontSize:14,fontWeight:700,color:sys.color}}>{sys.label}</div>
+          {sys.tech && <div style={{fontSize:9,color:"#64748b",fontFamily:"'DM Mono',monospace",marginTop:1}}>{sys.tech}</div>}
         </div>
       </div>
-      <p style={{fontSize:13,color:"#475569",lineHeight:1.6,marginBottom:12}}>{sys.desc}</p>
-      <div style={{fontSize:10,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:8,fontFamily:"'DM Mono',monospace"}}>Capacidades</div>
-      <div style={{display:"flex",flexDirection:"column",gap:4}}>
-        {sys.cap.map(function(c,i){
-          return (
-            <div key={i} style={{display:"flex",alignItems:"flex-start",gap:6}}>
-              <div style={{width:5,height:5,borderRadius:99,background:sys.color,flexShrink:0,marginTop:5}}/>
-              <span style={{fontSize:12,color:"#334155",lineHeight:1.5}}>{c}</span>
-            </div>
-          );
-        })}
-      </div>
-      {/* Connections */}
-      <div style={{marginTop:14,paddingTop:12,borderTop:"1px solid #f1f5f9"}}>
-        <div style={{fontSize:10,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:8,fontFamily:"'DM Mono',monospace"}}>Conexiones</div>
-        <div style={{display:"flex",flexDirection:"column",gap:4}}>
-          {CONNECTIONS.filter(function(c){ return c.from===sysId||c.to===sysId; }).map(function(c,i){
-            var otherId = c.from===sysId ? c.to : c.from;
-            var other = SYSTEMS[otherId];
-            var isOutgoing = c.from===sysId;
+      {sys.desc && <p style={{fontSize:12,color:"#94a3b8",lineHeight:1.6,marginBottom:10}}>{sys.desc}</p>}
+      {sys.master && sys.master.length>0 && (
+        <div>
+          <div style={{fontSize:9,fontWeight:700,color:"#f59e0b",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:6,fontFamily:"'DM Mono',monospace"}}>★ Master de</div>
+          <div style={{display:"flex",flexDirection:"column",gap:3}}>
+            {sys.master.map(function(m,i){ return <MasterTag key={i} label={m}/>; })}
+          </div>
+        </div>
+      )}
+      <div style={{marginTop:10,paddingTop:10,borderTop:"1px solid #334155"}}>
+        <div style={{fontSize:9,fontWeight:700,color:"#64748b",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:6,fontFamily:"'DM Mono',monospace"}}>Conexiones</div>
+        <div style={{display:"flex",flexDirection:"column",gap:3}}>
+          {FLOWS.filter(function(f){ return f.from===sysId||f.to===sysId; }).map(function(f,i){
+            var otherId = f.from===sysId ? f.to : f.from;
+            var other = SYS[otherId];
+            var out = f.from===sysId;
             return (
-              <div key={i} style={{display:"flex",alignItems:"center",gap:6,fontSize:11,color:"#64748b"}}>
-                <span style={{color:isOutgoing?"#10b981":"#3b82f6",fontFamily:"'DM Mono',monospace",fontSize:10,fontWeight:600}}>{isOutgoing?"→":"←"}</span>
-                <span style={{fontWeight:600,color:other.color}}>{other.label}</span>
-                <span style={{color:"#94a3b8"}}>·</span>
-                <span>{c.label}</span>
+              <div key={i} style={{display:"flex",alignItems:"center",gap:5,fontSize:11,color:"#94a3b8"}}>
+                <span style={{color:out?"#10b981":"#3b82f6",fontFamily:"'DM Mono',monospace",fontSize:9,fontWeight:700}}>{out?"OUT":"IN"}</span>
+                <span style={{fontWeight:600,color:other.color}}>{other.short}</span>
+                <span style={{color:"#475569"}}>·</span>
+                <span style={{color:"#64748b"}}>{f.label}</span>
               </div>
             );
           })}
@@ -170,31 +195,41 @@ function DetailPanel({ sysId, sys, onClose }) {
   );
 }
 
-function ConnectionsList({ activeSystems }) {
-  var conns = CONNECTIONS.filter(function(c){
-    if (!activeSystems) return true;
-    return activeSystems.indexOf(c.from)!==-1 && activeSystems.indexOf(c.to)!==-1;
-  });
-  if (conns.length===0) return null;
+function Arrow({ color, direction }) {
+  var rotate = direction==="down" ? "rotate(90deg)" : (direction==="up" ? "rotate(-90deg)" : (direction==="left" ? "rotate(180deg)" : "none"));
   return (
-    <div style={{marginTop:20}}>
-      <div style={{fontSize:10,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:10,fontFamily:"'DM Mono',monospace"}}>
-        Flujo de datos
-      </div>
-      <div style={{display:"grid",gap:6}}>
-        {conns.map(function(c,i){
-          var fromSys=SYSTEMS[c.from]; var toSys=SYSTEMS[c.to];
-          return (
-            <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",background:"white",borderRadius:10,border:"1px solid #f1f5f9",fontSize:12}}>
-              <span style={{fontWeight:600,color:fromSys.color,fontSize:11,fontFamily:"'DM Mono',monospace",minWidth:0,whiteSpace:"nowrap"}}>{fromSys.label}</span>
-              <span style={{color:"#10b981",fontFamily:"'DM Mono',monospace",flexShrink:0}}>→</span>
-              <span style={{fontWeight:600,color:toSys.color,fontSize:11,fontFamily:"'DM Mono',monospace",minWidth:0,whiteSpace:"nowrap"}}>{toSys.label}</span>
-              <span style={{color:"#94a3b8",flexShrink:0}}>·</span>
-              <span style={{color:"#64748b",fontSize:11}}>{c.label}</span>
-            </div>
-          );
-        })}
-      </div>
+    <div style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"2px 0"}}>
+      <svg width="30" height="16" viewBox="0 0 30 16" style={{transform:rotate}}>
+        <line x1="0" y1="8" x2="24" y2="8" stroke={color||"#475569"} strokeWidth="2" strokeDasharray="4 3">
+          <animate attributeName="stroke-dashoffset" from="16" to="0" dur="1.5s" repeatCount="indefinite"/>
+        </line>
+        <polygon points="22,3 30,8 22,13" fill={color||"#475569"}/>
+      </svg>
+    </div>
+  );
+}
+
+function BiArrow({ color }) {
+  return (
+    <div style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"2px 0"}}>
+      <svg width="40" height="16" viewBox="0 0 40 16">
+        <polygon points="0,8 6,3 6,13" fill={color||"#475569"}/>
+        <line x1="6" y1="8" x2="34" y2="8" stroke={color||"#475569"} strokeWidth="2" strokeDasharray="4 3">
+          <animate attributeName="stroke-dashoffset" from="16" to="0" dur="1.5s" repeatCount="indefinite"/>
+        </line>
+        <polygon points="40,8 34,3 34,13" fill={color||"#475569"}/>
+      </svg>
+    </div>
+  );
+}
+
+function SectionLabel({ label, color, sub }) {
+  return (
+    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+      <div style={{width:6,height:6,borderRadius:99,background:color||"#64748b",flexShrink:0}}/>
+      <span style={{fontSize:10,fontWeight:700,color:color||"#94a3b8",textTransform:"uppercase",letterSpacing:"0.08em",fontFamily:"'DM Mono',monospace"}}>{label}</span>
+      {sub && <span style={{fontSize:10,color:"#475569",fontFamily:"'DM Mono',monospace"}}>{sub}</span>}
+      <div style={{flex:1,height:1,background:"#334155"}}/>
     </div>
   );
 }
@@ -203,45 +238,50 @@ function App() {
   var ps = useState("all");    var process = ps[0];  var setProcess = ps[1];
   var ss = useState(null);     var selected = ss[0];  var setSelected = ss[1];
 
-  var activeProcess = PROCESSES.filter(function(p){ return p.id===process; })[0];
-  var activeSystems = activeProcess ? activeProcess.systems : null;
+  var pf = PROCESS_FILTERS.filter(function(p){ return p.id===process; })[0];
+  var highlight = pf ? pf.highlight : null;
 
-  function isSystemActive(sysId) {
-    if (!activeSystems) return true;
-    return activeSystems.indexOf(sysId) !== -1;
+  function isActive(sysId) {
+    if (!highlight) return true;
+    return highlight.indexOf(sysId) !== -1;
   }
+  function click(id) { setSelected(selected===id?null:id); }
+
+  var activeFlows = FLOWS.filter(function(f){
+    if (!highlight) return true;
+    return highlight.indexOf(f.from)!==-1 && highlight.indexOf(f.to)!==-1;
+  });
 
   return (
-    <div style={{background:"#f8fafc",minHeight:"100vh"}}>
+    <div style={{background:"#0f172a",minHeight:"100vh"}}>
+
       {/* Header */}
-      <div style={{background:"white",borderBottom:"1px solid #e2e8f0",padding:"16px 20px"}}>
+      <div style={{background:"#1e293b",borderBottom:"1px solid #334155",padding:"16px 20px"}}>
         <div style={{maxWidth:800,margin:"0 auto"}}>
           <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
-            <a href="index.html" style={{textDecoration:"none",color:"#64748b",fontSize:13}}>← Inicio</a>
-            <span style={{color:"#e2e8f0"}}>·</span>
-            <span style={{fontSize:11,color:"#94a3b8",fontFamily:"'DM Mono',monospace"}}>v1.0</span>
+            <a href="index.html" style={{textDecoration:"none",color:"#64748b",fontSize:12}}>← Inicio</a>
           </div>
-          <h1 style={{fontSize:20,fontWeight:700,letterSpacing:"-0.02em"}}>🏗️ Arquitectura del Sistema</h1>
-          <p style={{fontSize:13,color:"#64748b",marginTop:2}}>10 sistemas integrados · Vista general y por proceso</p>
+          <h1 style={{fontSize:20,fontWeight:700,color:"#f1f5f9",letterSpacing:"-0.02em"}}>Arquitectura del Ecosistema IAI</h1>
+          <p style={{fontSize:12,color:"#64748b",marginTop:2}}>10 sistemas · Dual-master · HubSpot (negocio) + Supabase (operación)</p>
         </div>
       </div>
 
-      <div style={{maxWidth:800,margin:"0 auto",padding:"20px 16px"}}>
+      <div style={{maxWidth:800,margin:"0 auto",padding:"16px 16px 40px"}}>
 
-        {/* Process selector */}
-        <div style={{marginBottom:20}}>
-          <div style={{fontSize:10,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:8,fontFamily:"'DM Mono',monospace"}}>Filtrar por proceso</div>
-          <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-            {PROCESSES.map(function(p){
+        {/* Process filter */}
+        <div style={{marginBottom:20,overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+          <div style={{display:"flex",gap:6,paddingBottom:4}}>
+            {PROCESS_FILTERS.map(function(p){
               var active = process===p.id;
               return (
                 <button key={p.id}
                   onClick={function(){ setProcess(p.id); setSelected(null); }}
                   style={{
-                    padding:"6px 12px",borderRadius:8,fontSize:12,fontWeight:active?600:400,
-                    background:active?"#1e293b":"white",color:active?"white":"#64748b",
-                    border:"1px solid "+(active?"#1e293b":"#e2e8f0"),
+                    padding:"6px 12px",borderRadius:8,fontSize:11,fontWeight:active?600:400,
+                    background:active?"#f97316":"#1e293b",color:active?"white":"#94a3b8",
+                    border:"1px solid "+(active?"#f97316":"#334155"),
                     cursor:"pointer",transition:"all .15s",fontFamily:"'DM Sans',sans-serif",
+                    whiteSpace:"nowrap",flexShrink:0,
                   }}>
                   {p.icon} {p.label}
                 </button>
@@ -250,49 +290,139 @@ function App() {
           </div>
         </div>
 
-        {/* Architecture layers */}
-        <div style={{display:"flex",flexDirection:"column",gap:12}}>
-          {LAYERS.map(function(layer){
-            return (
-              <div key={layer.id} style={{
-                background:layer.bg,border:"1px solid "+layer.border,borderRadius:16,padding:"14px 16px",
-                transition:"opacity .25s",
-                opacity: activeSystems && layer.systems.every(function(s){ return !isSystemActive(s); }) ? 0.3 : 1,
-              }}>
-                <div style={{fontSize:10,fontWeight:600,color:"#64748b",textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:10,fontFamily:"'DM Mono',monospace"}}>{layer.label}</div>
-                <div style={{display:"flex",gap:10,flexWrap:"wrap",justifyContent:"center"}}>
-                  {layer.systems.map(function(sysId){
-                    var sys = SYSTEMS[sysId];
-                    var active = isSystemActive(sysId);
-                    var dimmed = !active;
-                    var sel = selected===sysId;
-                    return (
-                      <SystemNode key={sysId} sysId={sysId} sys={sys}
-                        isActive={active} isDimmed={dimmed} isSelected={sel}
-                        onClick={function(id){ setSelected(selected===id?null:id); }}
-                      />
-                    );
-                  })}
-                </div>
-                {/* Detail panel inside layer */}
-                {selected && layer.systems.indexOf(selected)!==-1 && (
-                  <DetailPanel sysId={selected} sys={SYSTEMS[selected]} onClose={function(){ setSelected(null); }} />
-                )}
-              </div>
-            );
-          })}
+        {/* ═══ DIAGRAM ═══ */}
+
+        {/* ACTORS */}
+        <SectionLabel label="Actores" color="#64748b" sub="Quién interactúa"/>
+        <div style={{display:"flex",gap:10,justifyContent:"center",marginBottom:6}}>
+          <Block sysId="usuario" sys={SYS.usuario} isActive={isActive("usuario")} isSelected={selected==="usuario"} onClick={click} size="normal"/>
+          <Block sysId="iai_admin" sys={SYS.iai_admin} isActive={isActive("iai_admin")} isSelected={selected==="iai_admin"} onClick={click} size="normal"/>
+        </div>
+        {selected==="usuario"&&<DetailPanel sysId="usuario" sys={SYS.usuario} onClose={function(){setSelected(null);}}/>}
+        {selected==="iai_admin"&&<DetailPanel sysId="iai_admin" sys={SYS.iai_admin} onClose={function(){setSelected(null);}}/>}
+
+        <div style={{display:"flex",justifyContent:"center",gap:40}}>
+          <Arrow color="#64748b" direction="down"/>
+          <Arrow color="#f43f5e" direction="down"/>
         </div>
 
-        {/* Connection list */}
-        <ConnectionsList activeSystems={activeSystems} />
+        {/* INTERFACE */}
+        <SectionLabel label="Interfaz" color="#8b5cf6" sub="Punto de contacto"/>
+        <div style={{display:"flex",justifyContent:"center",marginBottom:6}}>
+          <Block sysId="weweb" sys={SYS.weweb} isActive={isActive("weweb")} isSelected={selected==="weweb"} onClick={click} size="big"/>
+        </div>
+        {selected==="weweb"&&<DetailPanel sysId="weweb" sys={SYS.weweb} onClose={function(){setSelected(null);}}/>}
+
+        <Arrow color="#8b5cf6" direction="down"/>
+
+        {/* CORE — DUAL MASTER */}
+        <div style={{background:"#1e293b",border:"1px solid #334155",borderRadius:18,padding:"16px 14px",marginBottom:6}}>
+          <SectionLabel label="Core del sistema" color="#10b981" sub="Dual-master"/>
+
+          {/* Supabase + n8n side by side */}
+          <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:6}}>
+            <Block sysId="supabase" sys={SYS.supabase} isActive={isActive("supabase")} isSelected={selected==="supabase"} onClick={click} size="big"/>
+            <BiArrow color="#475569"/>
+            <Block sysId="n8n" sys={SYS.n8n} isActive={isActive("n8n")} isSelected={selected==="n8n"} onClick={click} size="big"/>
+          </div>
+
+          {selected==="supabase"&&<DetailPanel sysId="supabase" sys={SYS.supabase} onClose={function(){setSelected(null);}}/>}
+          {selected==="n8n"&&<DetailPanel sysId="n8n" sys={SYS.n8n} onClose={function(){setSelected(null);}}/>}
+
+          {/* Role labels */}
+          <div style={{display:"flex",justifyContent:"center",gap:20,marginTop:6}}>
+            <div style={{background:"#10b981"+"18",border:"1px solid #10b981"+"30",borderRadius:8,padding:"4px 10px",fontSize:9,color:"#10b981",fontWeight:600,fontFamily:"'DM Mono',monospace",textAlign:"center"}}>
+              MOTOR OPERATIVO<br/><span style={{fontWeight:400,color:"#64748b"}}>Auth · Datos · Pagos · Storage</span>
+            </div>
+            <div style={{background:"#ef4444"+"18",border:"1px solid #ef4444"+"30",borderRadius:8,padding:"4px 10px",fontSize:9,color:"#ef4444",fontWeight:600,fontFamily:"'DM Mono',monospace",textAlign:"center"}}>
+              INTEGRADOR<br/><span style={{fontWeight:400,color:"#64748b"}}>Sync · Workflows · Cron</span>
+            </div>
+          </div>
+        </div>
+
+        <Arrow color="#ef4444" direction="down"/>
+
+        {/* BRAIN — HUBSPOT */}
+        <div style={{background:"#f97316"+"0d",border:"1px solid #f97316"+"30",borderRadius:18,padding:"16px 14px",marginBottom:6}}>
+          <SectionLabel label="Cerebro de negocio" color="#f97316" sub="Master de datos de gestión"/>
+          <div style={{display:"flex",justifyContent:"center",marginBottom:6}}>
+            <Block sysId="hubspot" sys={SYS.hubspot} isActive={isActive("hubspot")} isSelected={selected==="hubspot"} onClick={click} size="big"/>
+          </div>
+          {selected==="hubspot"&&<DetailPanel sysId="hubspot" sys={SYS.hubspot} onClose={function(){setSelected(null);}}/>}
+          <div style={{display:"flex",justifyContent:"center"}}>
+            <div style={{background:"#f97316"+"18",border:"1px solid #f97316"+"30",borderRadius:8,padding:"4px 10px",fontSize:9,color:"#f97316",fontWeight:600,fontFamily:"'DM Mono',monospace",textAlign:"center"}}>
+              DONDE IAI TRABAJA<br/><span style={{fontWeight:400,color:"#64748b"}}>Productos · Empresas · Membresías · Deals</span>
+            </div>
+          </div>
+        </div>
+
+        <Arrow color="#475569" direction="down"/>
+
+        {/* SERVICES */}
+        <SectionLabel label="Servicios conectados" color="#3b82f6" sub="Ejecución especializada"/>
+        <div style={{display:"flex",gap:10,justifyContent:"center",flexWrap:"wrap",marginBottom:6}}>
+          <Block sysId="wordpress" sys={SYS.wordpress} isActive={isActive("wordpress")} isSelected={selected==="wordpress"} onClick={click} size="normal"/>
+          <Block sysId="moodle" sys={SYS.moodle} isActive={isActive("moodle")} isSelected={selected==="moodle"} onClick={click} size="normal"/>
+          <Block sysId="bc" sys={SYS.bc} isActive={isActive("bc")} isSelected={selected==="bc"} onClick={click} size="normal"/>
+          <Block sysId="redsys" sys={SYS.redsys} isActive={isActive("redsys")} isSelected={selected==="redsys"} onClick={click} size="normal"/>
+        </div>
+        {selected==="wordpress"&&<DetailPanel sysId="wordpress" sys={SYS.wordpress} onClose={function(){setSelected(null);}}/>}
+        {selected==="moodle"&&<DetailPanel sysId="moodle" sys={SYS.moodle} onClose={function(){setSelected(null);}}/>}
+        {selected==="bc"&&<DetailPanel sysId="bc" sys={SYS.bc} onClose={function(){setSelected(null);}}/>}
+        {selected==="redsys"&&<DetailPanel sysId="redsys" sys={SYS.redsys} onClose={function(){setSelected(null);}}/>}
+
+        {/* ═══ DATA FLOWS ═══ */}
+        <div style={{marginTop:24}}>
+          <SectionLabel label="Flujo de datos" color="#f59e0b" sub={activeFlows.length+" conexiones"}/>
+          <div style={{display:"grid",gap:4}}>
+            {activeFlows.map(function(f,i){
+              var fromS=SYS[f.from]; var toS=SYS[f.to];
+              return (
+                <div key={i} style={{display:"flex",alignItems:"center",gap:6,padding:"7px 10px",background:"#1e293b",borderRadius:8,border:"1px solid #334155",fontSize:11}}>
+                  <span style={{fontWeight:700,color:fromS.color,fontSize:10,fontFamily:"'DM Mono',monospace",whiteSpace:"nowrap"}}>{fromS.short}</span>
+                  <svg width="20" height="10" viewBox="0 0 20 10" style={{flexShrink:0}}>
+                    <line x1="0" y1="5" x2="14" y2="5" stroke="#475569" strokeWidth="1.5" strokeDasharray="3 2">
+                      <animate attributeName="stroke-dashoffset" from="10" to="0" dur="1.5s" repeatCount="indefinite"/>
+                    </line>
+                    <polygon points="13,2 20,5 13,8" fill="#475569"/>
+                  </svg>
+                  <span style={{fontWeight:700,color:toS.color,fontSize:10,fontFamily:"'DM Mono',monospace",whiteSpace:"nowrap"}}>{toS.short}</span>
+                  <span style={{color:"#334155"}}>|</span>
+                  <span style={{color:"#64748b",fontSize:10,lineHeight:1.3}}>{f.label}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ═══ MASTER SUMMARY ═══ */}
+        <div style={{marginTop:24,display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+          <div style={{background:"#f97316"+"0d",border:"1px solid #f97316"+"25",borderRadius:14,padding:"14px"}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#f97316",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8,fontFamily:"'DM Mono',monospace"}}>🟠 HubSpot es master de</div>
+            <div style={{display:"flex",flexDirection:"column",gap:4}}>
+              {["Productos y cursos","Empresas y tramos","Tipo de membresía","Pipeline de deals","Datos maestros"].map(function(t,i){
+                return <div key={i} style={{fontSize:10,color:"#cbd5e1",display:"flex",gap:4,alignItems:"flex-start"}}><span style={{color:"#f97316",flexShrink:0}}>★</span>{t}</div>;
+              })}
+            </div>
+          </div>
+          <div style={{background:"#10b981"+"0d",border:"1px solid #10b981"+"25",borderRadius:14,padding:"14px"}}>
+            <div style={{fontSize:10,fontWeight:700,color:"#10b981",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8,fontFamily:"'DM Mono',monospace"}}>🟢 Supabase es master de</div>
+            <div style={{display:"flex",flexDirection:"column",gap:4}}>
+              {["Autenticación y sesiones","Inscripciones y registros","Pagos y checkout","Diplomas y storage","Créditos formativos"].map(function(t,i){
+                return <div key={i} style={{fontSize:10,color:"#cbd5e1",display:"flex",gap:4,alignItems:"flex-start"}}><span style={{color:"#10b981",flexShrink:0}}>★</span>{t}</div>;
+              })}
+            </div>
+          </div>
+        </div>
 
         {/* Legend */}
-        <div style={{marginTop:24,padding:"16px",background:"white",borderRadius:14,border:"1px solid #e2e8f0"}}>
-          <div style={{fontSize:10,fontWeight:600,color:"#94a3b8",textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:10,fontFamily:"'DM Mono',monospace"}}>Cómo leer este diagrama</div>
-          <div style={{display:"grid",gap:8,fontSize:12,color:"#475569",lineHeight:1.6}}>
-            <div><strong>Capas:</strong> Los sistemas están organizados en 4 capas — Interfaces (lo que toca el usuario), Core (datos y orquestación), Servicios (sistemas externos) y Operación (equipo IAI).</div>
-            <div><strong>Interacción:</strong> Toca cualquier sistema para ver su rol, capacidades y conexiones con otros sistemas.</div>
-            <div><strong>Filtro por proceso:</strong> Selecciona un proceso arriba para ver solo los sistemas involucrados en ese flujo. Los demás se atenúan.</div>
+        <div style={{marginTop:24,padding:"14px",background:"#1e293b",borderRadius:14,border:"1px solid #334155"}}>
+          <div style={{fontSize:10,fontWeight:600,color:"#64748b",textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:8,fontFamily:"'DM Mono',monospace"}}>Cómo leer este diagrama</div>
+          <div style={{display:"grid",gap:6,fontSize:11,color:"#94a3b8",lineHeight:1.5}}>
+            <div><strong style={{color:"#e2e8f0"}}>Toca un sistema</strong> para ver su rol, capacidades, stack técnico y conexiones.</div>
+            <div><strong style={{color:"#e2e8f0"}}>Filtra por proceso</strong> arriba para ver solo los sistemas de ese flujo.</div>
+            <div><strong style={{color:"#f59e0b"}}>★ Master</strong> indica qué sistema es dueño autoritativo de cada tipo de dato.</div>
+            <div><strong style={{color:"#ef4444"}}>n8n</strong> sincroniza bidireccionalmente entre HubSpot y Supabase. Ningún dato se pierde.</div>
           </div>
         </div>
 
