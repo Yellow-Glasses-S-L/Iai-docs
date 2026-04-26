@@ -691,6 +691,17 @@ function render() {
     return matchType && matchPrio && matchSearch;
   });
 
+  // Sort pending: Alta > Media > Baja, dentro de cada nivel Bug > Ajuste > Aclaración
+  if (currentTab === 'pending') {
+    const prioOrder = { 'Alta': 0, 'Media': 1, 'Baja': 2 };
+    const typeOrder = { 'Bug': 0, 'Ajuste': 1, 'Aclaración': 2 };
+    filtered.sort((a, b) => {
+      const p = (prioOrder[a.priority] ?? 99) - (prioOrder[b.priority] ?? 99);
+      if (p !== 0) return p;
+      return (typeOrder[a.type] ?? 99) - (typeOrder[b.type] ?? 99);
+    });
+  }
+
   if (filtered.length === 0) {
     container.innerHTML = `<div class="empty">No hay resultados con los filtros actuales.</div>`;
     return;
