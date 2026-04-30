@@ -218,9 +218,9 @@ document.addEventListener('DOMContentLoaded',function(){
 
   <!-- STATS -->
   <div class="stats">
-    <div class="stat"><div class="stat-n" style="color:var(--green)">13</div><div class="stat-l">Procesos documentados</div></div>
-    <div class="stat"><div class="stat-n" style="color:var(--yellow)">3</div><div class="stat-l">Cambios solicitados</div></div>
-    <div class="stat"><div class="stat-n" style="color:var(--purple)">6</div><div class="stat-l">Funcionalidades Fase 2</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--green)">102</div><div class="stat-l"><a href="issues.html" style="text-decoration:none;color:inherit">Incidentes resueltos</a></div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--yellow)">40</div><div class="stat-l"><a href="issues.html" style="text-decoration:none;color:inherit">Incidentes pendientes</a></div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--purple)">7</div><div class="stat-l">Funcionalidades Fase 2</div></div>
   </div>
 
   <!-- MACROS -->
@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded',function(){
         <div class="macro-bar"><div class="macro-bar-fill" style="width:65%;background:var(--green)"></div></div>
         <div class="macro-pills">
           <span class="pill p-done">Alta HubSpot ✓</span><span class="pill p-done">Sync WordPress ✓</span><span class="pill p-done">Moodle ✓</span>
-          <span class="pill p-inc">🐛 WP no actualiza desde portal</span><span class="pill p-f2">Nirestream F2</span><span class="pill p-f2">Publicaciones F2</span>
+          <span class="pill p-inc">🐛 WP no actualiza desde portal</span>
         </div>
       </div>
 
@@ -251,7 +251,7 @@ document.addEventListener('DOMContentLoaded',function(){
         <div class="macro-bar"><div class="macro-bar-fill" style="width:80%;background:var(--green)"></div></div>
         <div class="macro-pills">
           <span class="pill p-done">Aforo ✓</span><span class="pill p-done">Cancelación 72h ✓</span><span class="pill p-done">Diplomas ✓</span><span class="pill p-done">Invitaciones ✓</span>
-          <span class="pill p-done">Auto-confirm ✓</span><span class="pill p-inc">🐛 Progreso Moodle</span>
+          <span class="pill p-done">Auto-confirm ✓</span><span class="pill p-done">Progreso Moodle ✓</span>
         </div>
       </div>
 
@@ -287,7 +287,6 @@ document.addEventListener('DOMContentLoaded',function(){
         <div class="macro-bar"><div class="macro-bar-fill" style="width:90%;background:var(--green)"></div></div>
         <div class="macro-pills">
           <span class="pill p-done">Histórico socio ✓</span><span class="pill p-done">Listados admin ✓</span><span class="pill p-done">Recordatorios email ✓</span>
-          <span class="pill p-f2">Notif. in-app F2</span>
         </div>
       </div>
 
@@ -296,50 +295,7 @@ document.addEventListener('DOMContentLoaded',function(){
         <div class="macro-bar"><div class="macro-bar-fill" style="width:30%;background:var(--yellow)"></div></div>
         <div class="macro-pills">
           <span class="pill p-done">Emails transaccionales ✓</span>
-          <span class="pill p-pend">Segmentación pendiente</span><span class="pill p-f2">Encuestas Vexco F2</span>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <div class="sec">
-    <div class="sec-head"><span class="sec-label">Ajustes post-lanzamiento</span><div class="sec-line"></div></div>
-    <div class="critical-list">
-
-      <div class="crit-item chg">
-        <div class="crit-icon">🔧</div>
-        <div class="crit-body">
-          <div class="crit-top">
-            <span class="crit-title">CHG-01 · Código de ética — popup obligatorio al primer login</span>
-            <span class="crit-tag tag-chg">CAMBIO</span>
-          </div>
-          <div class="crit-desc">Modal bloqueante en WeWeb al primer acceso con membresía activa. Requiere campos ethics_accepted_at y ethics_version en user_profiles de Supabase.</div>
-          <div class="crit-owner">Yellow Glasses · WeWeb + Supabase</div>
-        </div>
-      </div>
-
-      <div class="crit-item chg">
-        <div class="crit-icon">🔧</div>
-        <div class="crit-body">
-          <div class="crit-top">
-            <span class="crit-title">CHG-02 · Auto-confirm como parámetro en invitaciones a eventos</span>
-            <span class="crit-tag tag-chg">CAMBIO</span>
-          </div>
-          <div class="crit-desc">Añadir parámetro auto_confirm en bulk-invite-event para que el admin decida si la inscripción se confirma automáticamente o espera aceptación del usuario.</div>
-          <div class="crit-owner">Yellow Glasses · Edge Function</div>
-        </div>
-      </div>
-
-      <div class="crit-item chg">
-        <div class="crit-icon">🔧</div>
-        <div class="crit-body">
-          <div class="crit-top">
-            <span class="crit-title">CHG-03 · Abono automático al cancelar matrícula</span>
-            <span class="crit-tag tag-chg">CAMBIO</span>
-          </div>
-          <div class="crit-desc">Al cancelar una inscripción de pago, el abono debe generarse automáticamente en BC. El flujo [ORCH] Abono ya existe en n8n — pendiente de conectarlo con cancel-registration.</div>
-          <div class="crit-owner">Yellow Glasses · n8n + BC</div>
+          <span class="pill p-pend">Segmentación pendiente</span>
         </div>
       </div>
 
