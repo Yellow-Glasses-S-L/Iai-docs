@@ -1,350 +1,737 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>IAI · Incidentes Post-migración</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-  <style>
-    :root{--bg:#f8fafc;--surface:#fff;--border:#e2e8f0;--text:#0f172a;--text-2:#475569;--text-3:#94a3b8;--orange:#f97316;--green:#10b981;--green-l:#ecfdf5;--green-b:#a7f3d0;--yellow:#f59e0b;--yellow-l:#fffbeb;--yellow-b:#fde68a;--red:#ef4444;--red-l:#fef2f2;--red-b:#fecaca;--pink:#f43f5e;--pink-l:#fff1f2;--pink-b:#fecdd3;--blue:#3b82f6;--blue-l:#eff6ff;--blue-b:#bfdbfe;--purple:#8b5cf6;--purple-l:#f5f3ff;--purple-b:#ddd6fe}
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    html,body{min-height:100%;background:var(--bg);font-family:'DM Sans',system-ui,sans-serif;color:var(--text)}
-    .page{max-width:900px;margin:0 auto;padding:40px 20px 80px}
-    .header{margin-bottom:28px}
-    .header-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:6px}
-    .logo{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-    .logo-dot{width:9px;height:9px;border-radius:99px;background:var(--orange)}
-    .logo-text{font-size:12px;font-weight:500;color:var(--text-3);font-family:'DM Mono',monospace;letter-spacing:.04em}
-    h1{font-size:24px;font-weight:600;letter-spacing:-.03em;line-height:1.2}
-    .subtitle{font-size:13px;color:var(--text-2);margin-top:3px}
-    .date-pill{font-size:11px;font-family:'DM Mono',monospace;color:var(--text-3);background:var(--border);padding:4px 10px;border-radius:99px;white-space:nowrap;align-self:flex-start;margin-top:4px}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IAI · Estado de Incidentes</title>
+<style>
+:root {
+  --bg: #fafafa;
+  --card: #ffffff;
+  --border: #e5e7eb;
+  --text: #111827;
+  --muted: #6b7280;
+  --resolved: #10b981;
+  --pending: #f59e0b;
+  --iai: #8b5cf6;
+  --bug: #ef4444;
+  --ajuste: #3b82f6;
+  --aclaracion: #6b7280;
+  --alta: #dc2626;
+  --media: #f59e0b;
+  --baja: #10b981;
+  --orange: #FB7639;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+}
+.container { max-width: 1280px; margin: 0 auto; padding: 24px; }
 
-    /* SUMMARY CARDS */
-    .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px}
-    .sum-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;text-align:center}
-    .sum-n{font-size:32px;font-weight:600;font-family:'DM Mono',monospace;line-height:1}
-    .sum-l{font-size:11px;color:var(--text-3);margin-top:4px}
-    .sum-green .sum-n{color:var(--green)}
-    .sum-orange .sum-n{color:var(--orange)}
-    .sum-total .sum-n{color:var(--text)}
+/* Header */
+header {
+  background: white;
+  border-bottom: 1px solid var(--border);
+  padding: 24px 0;
+}
+.header-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand-logo { width: 40px; height: 40px; background: var(--orange); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; }
+.brand-text h1 { font-size: 18px; font-weight: 600; }
+.brand-text p { font-size: 13px; color: var(--muted); }
+.update-info { font-size: 13px; color: var(--muted); }
 
-    /* PROCESS CARDS */
-    .proc-grid{display:grid;gap:12px;margin-bottom:32px}
-    .proc{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:box-shadow .15s}
-    .proc:hover{box-shadow:0 2px 8px rgba(0,0,0,.06)}
-    .proc-head{padding:16px 20px;display:flex;align-items:center;gap:14px}
-    .proc-icon{font-size:20px;flex-shrink:0}
-    .proc-info{flex:1;min-width:0}
-    .proc-name{font-size:14px;font-weight:600;margin-bottom:4px}
-    .proc-bar{height:6px;background:var(--bg);border-radius:99px;overflow:hidden}
-    .proc-bar-fill{height:100%;border-radius:99px;transition:width .4s}
-    .proc-stats{display:flex;gap:8px;margin-top:6px}
-    .proc-pill{font-size:10px;font-family:'DM Mono',monospace;font-weight:500;padding:2px 8px;border-radius:99px}
-    .pp-done{background:var(--green-l);color:#065f46;border:1px solid var(--green-b)}
-    .pp-pend{background:var(--red-l);color:var(--red);border:1px solid var(--red-b)}
-    .proc-pct{font-size:15px;font-weight:600;font-family:'DM Mono',monospace;color:var(--text-2);flex-shrink:0}
-    .proc-arrow{font-size:12px;color:var(--text-3);flex-shrink:0;transition:transform .2s}
-    .proc.open .proc-arrow{transform:rotate(180deg)}
+/* Hero counters */
+.hero {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.counter-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-left: 4px solid;
+}
+.counter-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.counter-card[data-tab="resolved"] { border-left-color: var(--resolved); }
+.counter-card[data-tab="pending"] { border-left-color: var(--pending); }
+.counter-card[data-tab="iai"] { border-left-color: var(--iai); }
+.counter-card[data-tab="resolved"].active { background: #ecfdf5; }
+.counter-card[data-tab="pending"].active { background: #fffbeb; }
+.counter-card[data-tab="iai"].active { background: #f5f3ff; }
+.counter-num { font-size: 38px; font-weight: 700; line-height: 1; }
+.counter-label { font-size: 14px; color: var(--muted); margin-top: 4px; }
+.counter-icon { font-size: 22px; margin-bottom: 6px; display: inline-block; }
 
-    /* DETAIL */
-    .proc-detail{display:none;border-top:1px solid var(--border);padding:0 20px 16px}
-    .proc.open .proc-detail{display:block}
-    .detail-sec{margin-top:14px}
-    .detail-sec-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3);font-family:'DM Mono',monospace;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-    .detail-sec-title span{font-size:14px}
-    .issue{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:8px;margin-bottom:4px;border-left:3px solid transparent}
-    .issue.pending{background:var(--red-l);border-left-color:var(--red)}
-    .issue.resolved{background:var(--green-l);border-left-color:var(--green)}
-    .issue-body{flex:1;min-width:0}
-    .issue-title{font-size:12px;font-weight:600;margin-bottom:2px}
-    .issue-desc{font-size:11px;color:var(--text-2);line-height:1.5}
-    .issue-meta{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap}
-    .badge{font-size:9px;font-family:'DM Mono',monospace;font-weight:500;padding:1px 7px;border-radius:99px}
-    .b-alta{background:var(--red-l);color:var(--red);border:1px solid var(--red-b)}
-    .b-media{background:var(--yellow-l);color:#92400e;border:1px solid var(--yellow-b)}
-    .b-baja{background:var(--bg);color:var(--text-3);border:1px solid var(--border)}
-    .b-urgente{background:var(--pink-l);color:#9f1239;border:1px solid var(--pink-b)}
-    .b-num{background:var(--blue-l);color:var(--blue);border:1px solid var(--blue-b)}
+/* Synthesis grid */
+.synthesis {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+.synthesis-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+.synthesis-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+.proc-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  background: #fafafa;
+  transition: all 0.15s;
+}
+.proc-card:hover { background: white; border-color: #d1d5db; }
+.proc-name {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.proc-stats {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.proc-stats .pending-num { font-size: 22px; font-weight: 700; }
+.proc-stats .resolved-info { font-size: 11px; color: var(--muted); }
+.priorities {
+  display: flex;
+  gap: 4px;
+  font-size: 11px;
+  align-items: center;
+}
+.prio-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 10px;
+}
+.prio-dot.alta { background: #fef2f2; color: var(--alta); }
+.prio-dot.media { background: #fffbeb; color: var(--media); }
+.prio-dot.baja { background: #ecfdf5; color: var(--baja); }
+.proc-bar {
+  margin-top: 8px;
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  overflow: hidden;
+  display: flex;
+}
+.proc-bar > div { height: 100%; }
+.proc-bar .b-resolved { background: var(--resolved); }
+.proc-bar .b-pending { background: var(--pending); }
 
-    /* MEJORAS */
-    .mejoras{margin-top:32px}
-    .mejora{background:var(--purple-l);border:1px solid var(--purple-b);border-radius:8px;padding:10px 14px;margin-bottom:6px}
-    .mejora-title{font-size:12px;font-weight:600;color:#5b21b6}
-    .mejora-where{font-size:11px;color:var(--text-3);margin-top:2px}
+/* Sub-tabs (process tabs within each main tab) */
+.subtabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+  overflow-x: auto;
+  padding-bottom: 0;
+  background: white;
+  border-radius: 12px 12px 0 0;
+  padding: 8px 8px 0;
+}
+.subtab {
+  padding: 10px 14px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: all 0.15s;
+  margin-bottom: -1px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.subtab:hover { color: var(--text); }
+.subtab.active { color: var(--text); border-bottom-color: var(--orange); font-weight: 600; }
+.subtab .badge-count {
+  background: #f3f4f6;
+  color: var(--muted);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.subtab.active .badge-count { background: var(--orange); color: white; }
 
-    /* FOOTER */
-    .footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--border);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
-    .footer-text{font-size:11px;color:var(--text-3);font-family:'DM Mono',monospace}
+/* Filters */
+.filters {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-top: none;
+  padding: 12px 16px;
+  margin-top: -16px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.filter-group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.filter-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.chip {
+  padding: 5px 10px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: white;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.15s;
+  user-select: none;
+}
+.chip:hover { background: #f3f4f6; }
+.chip.active { background: var(--text); color: white; border-color: var(--text); }
+.chip.alta.active { background: var(--alta); border-color: var(--alta); }
+.chip.media.active { background: var(--media); border-color: var(--media); }
+.chip.baja.active { background: var(--baja); border-color: var(--baja); }
+.search-input {
+  flex: 1;
+  min-width: 180px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+}
 
-    /* NAV */
-    .iai-nav{position:sticky;top:0;z-index:999;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-    .iai-nav-inner{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:24px;height:44px;overflow-x:auto}
-    .iai-nav-logo{display:flex;align-items:center;gap:7px;text-decoration:none;font-size:12px;font-weight:600;color:#0f172a;white-space:nowrap;flex-shrink:0;font-family:'DM Mono',monospace}
-    .iai-nav-dot{width:8px;height:8px;border-radius:99px;background:#f97316;flex-shrink:0}
-    .iai-nav-links{display:flex;gap:2px;align-items:center}
-    .iai-nav-links a{text-decoration:none;font-size:12px;color:#64748b;padding:4px 10px;border-radius:6px;white-space:nowrap;transition:background .15s,color .15s}
-    .iai-nav-links a:hover{background:#f1f5f9;color:#0f172a}
-    .iai-nav-links a.active{background:#fff7ed;color:#f97316;font-weight:500}
+/* Cards */
+.cards-wrapper { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 12px; }
+.card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  transition: all 0.15s;
+}
+.card:hover { border-color: #d1d5db; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.card-header { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; flex-wrap: wrap; }
+.card-title { font-size: 13.5px; font-weight: 600; line-height: 1.4; }
+.card-detail { font-size: 12px; color: var(--muted); padding-top: 6px; border-top: 1px dashed var(--border); margin-top: 6px; }
 
-    @media(max-width:580px){.summary{grid-template-columns:1fr}}
-  </style>
-  <script>
-  document.addEventListener('DOMContentLoaded',function(){
-    var cur=window.location.pathname.split('/').pop()||'index.html';
-    document.querySelectorAll('.iai-nav-links a').forEach(function(a){
-      if(a.getAttribute('href')===cur)a.classList.add('active');
-    });
-  });
-  </script>
+/* Type & priority badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+.badge.bug { background: #fef2f2; color: var(--bug); }
+.badge.ajuste { background: #eff6ff; color: var(--ajuste); }
+.badge.aclaracion { background: #f3f4f6; color: var(--aclaracion); }
+.badge-prio {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.badge-prio.alta { background: #fef2f2; color: var(--alta); }
+.badge-prio.media { background: #fffbeb; color: var(--media); }
+.badge-prio.baja { background: #ecfdf5; color: var(--baja); }
+.card.prio-alta { border-left: 3px solid var(--alta); }
+.card.prio-media { border-left: 3px solid var(--media); }
+.card.prio-baja { border-left: 3px solid var(--baja); }
+
+/* Tab content */
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Empty state */
+.empty {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--muted);
+}
+
+/* For IAI tab — special cards */
+.iai-card {
+  background: linear-gradient(180deg, #faf5ff 0%, white 100%);
+  border-left: 4px solid var(--iai);
+  padding: 18px;
+  margin-bottom: 14px;
+  border-radius: 8px;
+  border: 1px solid #e9d5ff;
+  border-left-width: 4px;
+}
+.iai-card h3 { font-size: 16px; margin-bottom: 6px; color: #6d28d9; }
+.iai-card p { font-size: 13.5px; margin-bottom: 8px; }
+.iai-card .meta { font-size: 11px; color: var(--muted); }
+
+@media (max-width: 968px) {
+  .hero { grid-template-columns: 1fr; }
+  .synthesis-grid { grid-template-columns: repeat(2, 1fr); }
+  .cards { grid-template-columns: 1fr; }
+}
+</style>
 </head>
 <body>
-<nav class="iai-nav">
-  <div class="iai-nav-inner">
-    <a class="iai-nav-logo" href="index.html"><span class="iai-nav-dot"></span><span>IAI · Documentación</span></a>
-    <div class="iai-nav-links">
-      <a href="index.html">Inicio</a>
-      <a href="inventario.html">Procesos</a>
-      <a href="issues.html">Incidentes</a>
-      <a href="arquitectura.html">Arquitectura</a>
-    </div>
 
-  </div>
-</nav>
-
-<div class="page">
-  <div class="header">
-    <div class="header-top">
-      <div>
-        <div class="logo"><div class="logo-dot"></div><span class="logo-text">IAI · auditoresinternos.es</span></div>
-        <h1>Incidentes Post-migración</h1>
-        <p class="subtitle">Seguimiento de incidencias desde la salida a producción (23/03/2026)</p>
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-logo">YG</div>
+      <div class="brand-text">
+        <h1>IAI · Estado de Incidentes</h1>
+        <p>Post-migración Portal · Notion + Teams + Design Review</p>
       </div>
-      <span class="date-pill">17 abr 2026</span>
+    </div>
+    <div class="update-info">Actualización: 30/04/2026</div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Hero counters / Tab nav -->
+  <div class="hero">
+    <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
+      <div class="counter-icon">⏳</div>
+      <div class="counter-num" style="color: var(--pending);">34</div>
+      <div class="counter-label">Pendientes</div>
+    </div>
+    <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
+      <div class="counter-icon">✅</div>
+      <div class="counter-num" style="color: var(--resolved);">104</div>
+      <div class="counter-label">Resueltos</div>
+    </div>
+    <div class="counter-card" data-tab="iai" onclick="switchTab('iai')">
+      <div class="counter-icon">📋</div>
+      <div class="counter-num" style="color: var(--iai);">3</div>
+      <div class="counter-label">Para IAI</div>
     </div>
   </div>
 
-  <div class="summary">
-    <div class="sum-card sum-green"><div class="sum-n">55</div><div class="sum-l">Resueltos</div></div>
-    <div class="sum-card sum-orange"><div class="sum-n">12</div><div class="sum-l">Pendientes</div></div>
-    <div class="sum-card sum-total"><div class="sum-n">67</div><div class="sum-l">Total</div></div>
+  <!-- Synthesis: stats per process -->
+  <div class="synthesis" id="synthesis">
+    <div class="synthesis-title">Síntesis por proceso</div>
+    <div class="synthesis-grid" id="synthesis-grid"></div>
   </div>
 
-  <div class="proc-grid" id="processes"></div>
-
-  <div class="mejoras">
-    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3);font-family:'DM Mono',monospace;margin-bottom:10px">Mejoras solicitadas</div>
-    <div class="mejora" style="background:var(--green-l);border-color:var(--green-b)"><div class="mejora-title" style="color:#065f46">✅ M2 · Exportar listado de asistentes</div><div class="mejora-where">Portal / HubSpot</div></div>
-    <div class="mejora" style="background:var(--green-l);border-color:var(--green-b)"><div class="mejora-title" style="color:#065f46">✅ M4 · Proceso upgrade de tramo con prorrateo automático</div><div class="mejora-where">Portal / BC</div></div>
-    <div class="mejora" style="background:var(--green-l);border-color:var(--green-b)"><div class="mejora-title" style="color:#065f46">✅ M5 · Múltiples cursos en una compra = un Deal y Factura por curso</div><div class="mejora-where">Portal / n8n</div></div>
-    <div class="mejora"><div class="mejora-title">⚠️ M1 · Imprimir credenciales/carteles para cursos presenciales</div><div class="mejora-where">Portal / HubSpot</div></div>
-    <div class="mejora"><div class="mejora-title">⚠️ M3 · Mostrar IIA Global y email en listado asistentes</div><div class="mejora-where">Portal / HubSpot</div></div>
-    <div class="mejora"><div class="mejora-title">⚠️ M6 · Integración Nirestream (streaming eventos)</div><div class="mejora-where">Portal / n8n</div></div>
-    <div class="mejora" style="background:var(--green-l);border-color:var(--green-b)"><div class="mejora-title" style="color:#065f46">✅ M7 · Detalle de uso de créditos/bolsa de horas por curso y participante</div><div class="mejora-where">Portal admin</div></div>
-    <div class="mejora" style="background:var(--green-l);border-color:var(--green-b)"><div class="mejora-title" style="color:#065f46">✅ M8 · Autocomplete datos empresa en inscripción admin por transferencia</div><div class="mejora-where">Portal admin</div></div>
-    <div class="mejora"><div class="mejora-title">⚠️ M9 · Formato interlineado contenido cursos (WordPress)</div><div class="mejora-where">WordPress · Ej: Normas Globales de Auditoría Interna — sin interlineado pese a ajustes</div></div>
-<div class="mejora"><div class="mejora-title">⚠️ M11 · Correo alternativo para comunicaciones no transaccionales</div><div class="mejora-where">Portal · user_profiles.alternative_email → enviar notificaciones a este si está relleno</div></div>
+  <!-- Tab: Resueltos -->
+  <div class="tab-content" id="tab-resolved">
+    <div class="subtabs" id="subtabs-resolved"></div>
+    <div class="filters">
+      <div class="filter-group">
+        <span class="filter-label">Tipo</span>
+        <button class="chip active" data-type="all">Todos</button>
+        <button class="chip" data-type="Bug">🐛 Bug</button>
+        <button class="chip" data-type="Ajuste">✏️ Ajuste</button>
+        <button class="chip" data-type="Aclaración">💬 Aclaración</button>
+      </div>
+      <input type="text" class="search-input" placeholder="Buscar incidencia...">
+    </div>
+    <div class="cards-wrapper"><div id="resolved-content"></div></div>
   </div>
 
-  <div class="footer">
-    <span class="footer-text">Yellow Glasses S.L. — IAI</span>
-    <span class="footer-text">Actualizado 17 abr 2026</span>
+  <!-- Tab: Pendientes -->
+  <div class="tab-content active" id="tab-pending">
+    <div class="subtabs" id="subtabs-pending"></div>
+    <div class="filters">
+      <div class="filter-group">
+        <span class="filter-label">Criticidad</span>
+        <button class="chip active" data-priority="all">Todas</button>
+        <button class="chip alta" data-priority="Alta">🔴 Alta</button>
+        <button class="chip media" data-priority="Media">🟡 Media</button>
+        <button class="chip baja" data-priority="Baja">🟢 Baja</button>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Tipo</span>
+        <button class="chip active" data-type="all">Todos</button>
+        <button class="chip" data-type="Bug">🐛 Bug</button>
+        <button class="chip" data-type="Ajuste">✏️ Ajuste</button>
+        <button class="chip" data-type="Aclaración">💬 Aclaración</button>
+      </div>
+      <input type="text" class="search-input" placeholder="Buscar incidencia...">
+    </div>
+    <div class="cards-wrapper"><div id="pending-content"></div></div>
   </div>
+
+  <!-- Tab: Para IAI -->
+  <div class="tab-content" id="tab-iai">
+    <div class="iai-card">
+      <h3>📋 Bajas de socios pendientes</h3>
+      <p>Confirmar bajas: SABA, Sofía Robredo (Repsol), Luis Da Costa (Medvida), Sandra Perelli (GESTAMP).</p>
+      <div class="meta">Acción IAI · Sin SLA</div>
+    </div>
+    <div class="iai-card">
+      <h3>📋 538 usuarios con NIF "PENDIENTE"</h3>
+      <p>Migrados de IMIS con NIF marcado como "PENDIENTE". Necesario para facturación BC.</p>
+      <div class="meta">Acción IAI · Recolectar NIF/DNI real</div>
+    </div>
+    <div class="iai-card">
+      <h3>📋 Gregorio Fernández Elvira — no migró a HubSpot</h3>
+      <p>Email IMIS: <code>gregfernandez@gruposantander.com</code>. Activo en IMIS como socio corporativo, NO existe en HubSpot ni Supabase.</p>
+      <div class="meta">Acción IAI · Verificar alta</div>
+    </div>
+  </div>
+
 </div>
 
 <script>
-const DATA = [
-  {
-    name: "Integraciones generales", icon: "🔗",
-    resolved: [
-      {n:"INC-01",t:"Nuevo usuario por invitación corporativa no llega a HubSpot",d:"Causa: flujo n8n de sincronización no estaba activado. Flujo activado y probado — el alta end-to-end (Supabase → HubSpot → WordPress) funciona correctamente."},
-      {n:"INC-02",t:"Additional Information no sincroniza a WordPress desde el portal",d:"PORTAL-01 ahora dispara SYNC-WP-01 tras el PATCH a HubSpot. Probado end-to-end — los cambios de Additional Information desde el portal se propagan a WordPress."}
+const data = {
+  resolved: {
+    socios: [
+      { title: '#28 Usuarios registrados de empresa socia no pueden inscribir compañeros', type: 'Bug', detail: 'Cambiar subtipo a socio-representante' },
+      { title: '#30 Perfil socio representante no muestra tramo/sector empresa', type: 'Bug', detail: 'Ajustado' },
+      { title: '76 company_members con status inactive incorrecto', type: 'Bug', detail: '76 activados tras cruce con HubSpot' },
+      { title: 'Vilma Tejada con rol WEB en Supabase', type: 'Bug', detail: 'Rol corregido a socio-individual' },
+      { title: 'Eugenia Castillo — crédito 16h en perfil IMIS muerto', type: 'Bug', detail: 'Crédito movido al perfil activo' },
+      { title: '6 socios individuales con usuario-cliente', type: 'Bug', detail: 'Rol corregido a socio-individual' },
+      { title: 'Marta Fernández (Exolum) con usuario-cliente', type: 'Bug', detail: 'Rol corregido a socio-corporativo' },
+      { title: '10 INM + 2 IIM con rol usuario-cliente', type: 'Bug', detail: '10 → socio-individual, 2 → iim' },
+      { title: 'Julián Serrapio (ABANCA) sin company_members', type: 'Bug', detail: 'Insertado en company_members' },
+      { title: '4 Kutxabank sin empresa asignada', type: 'Bug', detail: 'Asignados a KUTXABANK' },
+      { title: '47 usuarios socio → WEB en HubSpot', type: 'Aclaración', detail: 'Batch Cristian 22/04 (71/100 sincronizaron)' },
+      { title: '#24 593 usuarios sin Subtipo de Miembro en HubSpot', type: 'Aclaración', detail: 'Sync HubSpot → Supabase funciona' },
+      { title: '#6 Usuario no recibe clave reset contraseña', type: 'Aclaración', detail: 'Proceso documentado' },
+      { title: '#9 Usuario bloqueada actualizando datos', type: 'Bug', detail: 'Ajustado' },
+      { title: '#17 URL restablecer contraseña enlace no válido', type: 'Bug', detail: 'Migración sin confirmación mail corregida' },
+      { title: '#34 Login anómalo socio corporativo Santiago', type: 'Bug', detail: 'Ajustado' },
+      { title: '#48 aangulos@iberdrola.es reset contraseña', type: 'Aclaración', detail: 'Reseteada manualmente' },
+      { title: 'Carolina Ferreiro OAuth Client not found', type: 'Aclaración', detail: 'Transitorio' },
+      { title: 'get_invitation_by_token devolvía 404', type: 'Bug', detail: 'Schema cache PostgREST recargado' },
+      { title: 'Raúl Augusto Carranza (Eroski) no accede', type: 'Aclaración', detail: 'Contraseña temporal generada' },
+      { title: 'A.1.1 Fields en disabled poco legibles', type: 'Ajuste', detail: 'Fondo gris read-only' },
+      { title: 'A.1.3 Estado pressed del menú lateral', type: 'Ajuste', detail: 'Color cambiado' },
+      { title: 'A.1.5 Selectores datos fiscales no funcionales', type: 'Aclaración', detail: 'Socio rep no puede editar datos empresa' },
+      { title: 'A.2.1 Selectores certificaciones/nivel sin resultados', type: 'Bug', detail: 'Ajustado obtención de data' },
+      { title: 'A.6.1 Error get_invitation_by_token', type: 'Bug', detail: 'Textos email adaptados' },
+      { title: 'A.7.1 Fields ticket sin fill', type: 'Ajuste', detail: 'Fondo gris read-only' },
+      { title: 'B.4.1 Iconos preview socio desactualizados', type: 'Ajuste', detail: 'Iconos aplicados' },
+      { title: 'C.1.1 Enlace reset lleva a 404', type: 'Bug', detail: 'Redirige a /forgot-password' },
+      { title: 'C.2.1 Alta directamente como Socio corporativo', type: 'Bug', detail: 'Por defecto No socio' },
+      { title: 'C.3.1 Error 400 al reenviar correo activación', type: 'Bug', detail: 'Flujo actualizado' },
+      { title: 'Pedir Login cuando se te vence el Token', type: 'Ajuste', detail: 'Resuelto' },
+      { title: 'Aumentar Admin Token a 8 horas', type: 'Ajuste', detail: 'Resuelto' },
+      { title: 'Mostrar registros cancelados en Asistentes', type: 'Ajuste', detail: 'Filtro Cancelados añadido' },
+      { title: 'División Asistentes (vista rápida vs CSV)', type: 'Ajuste', detail: 'Columnas separadas' },
+      { title: 'Añadir Sector Afín', type: 'Ajuste', detail: 'Campo affine_sector_id Supabase + sector_afin HubSpot' },
+      { title: 'Buzón Email % éxito', type: 'Ajuste', detail: 'Revisado SendGrid' },
+      { title: 'Socio representante: permisos para gestionar bajas', type: 'Bug', detail: 'Fix company_representatives: usuarios sin registro en tabla (ej. Mónica Albadalejo UCI)' },
+      { title: 'Banco de Costa Rica: contraseñas temporales', type: 'Aclaración', detail: 'Contraseñas temporales generadas desde admin (Verónica Ferreto + Liliana Azevedo)' }
     ],
-    pending: [
-      {n:"INC-03",t:"Progreso de Moodle no visible en el histórico del socio",d:"Flujo n8n desarrollado, pendiente de pruebas y puesta en producción. IAI reporta 2 casos específicos: paloma.ontanon@exolum.com y otro usuario con e-learnings completados no reflejados en portal.",c:"ALTA",who:"Yellow Glasses"}
+    producto: [
+      { title: '#2 Faltan reuniones y foros en eventos', type: 'Bug', detail: 'Sincronizado' },
+      { title: 'Editar cursos en HubSpot duplica en WordPress', type: 'Bug', detail: 'Corregido (COSO CI/ERM)' },
+      { title: 'Moodle Duplicate Course body incorrecto', type: 'Bug', detail: 'Template IDs corregidos' },
+      { title: 'Moodle Update post-duplicate __COURSE_ID__', type: 'Bug', detail: 'parseInt preserva placeholder' },
+      { title: 'B.2.1 Datos de ubicación inconsistentes', type: 'Bug', detail: 'Fórmula → Presencial si no hay dirección' },
+      { title: 'Moodle no actualiza avance completado', type: 'Bug', detail: 'Corregido' },
+      { title: 'Agregar hora en tarjeta Eventos y Formación (usuario final)', type: 'Ajuste', detail: 'Resuelto' }
+    ],
+    inscripciones: [
+      { title: '#3 Buscador Campus filtra solo por una fecha', type: 'Bug', detail: 'Ajustado' },
+      { title: '#4 Buscador alta Socios filtro fecha no funciona', type: 'Bug', detail: 'Ajustado' },
+      { title: '#5 Eventos: no posible añadir asistentes', type: 'Aclaración', detail: 'Aclarado' },
+      { title: '#7 3 inscripciones e-learning no aparecían', type: 'Aclaración', detail: 'Inscripción realizada' },
+      { title: '#11 Error al inscribir e-learning (capacidad)', type: 'Bug', detail: 'Campo corregido' },
+      { title: '#12 Error inscribir MEDIAPRO', type: 'Bug', detail: 'company_members activado' },
+      { title: '#13 Inscritos no registrados en Moodle', type: 'Aclaración', detail: 'Inscripciones realizadas' },
+      { title: '#15 Andrea Rubio inscripción no aparecía', type: 'Aclaración', detail: 'Realizada' },
+      { title: '#16 Proceso anular inscripción con créditos', type: 'Bug', detail: 'Ajustado' },
+      { title: '#21 Ponentes aparecen como participantes', type: 'Bug', detail: 'Ajustado' },
+      { title: '#22 Inscripciones canceladas IMIS aparecen como participante', type: 'Bug', detail: '29 product_registrations canceladas' },
+      { title: '#43 Error no son socios corporativos activos (Esther/CLECE)', type: 'Bug', detail: 'company_members.status corregido' },
+      { title: '#44 Prefactura solo facturaba 1 inscripción de 3', type: 'Bug', detail: 'Fix workflow: N line items' },
+      { title: '#50 Elena Saborit no en Moodle ni HubSpot', type: 'Bug', detail: 'Trigger fn_handle_cap_approved + webhook n8n' },
+      { title: 'Auto-approve créditos no llamaba webhook n8n', type: 'Bug', detail: 'Trigger añadido' },
+      { title: '3 registrations fantasma (user_id null)', type: 'Bug', detail: 'Canceladas' },
+      { title: '423 deals cuota corp sin contactos asociados', type: 'Bug', detail: '310/314 asociados vía HubSpot' },
+      { title: 'Email invitación eventos no se enviaba desde admin', type: 'Bug', detail: 'Fix v42 bulk-invite-event' },
+      { title: 'Inscripciones Kutxabank: 49 e-learning, 35 personas, 12 cursos', type: 'Aclaración', detail: 'Realizado' },
+      { title: 'A.3.1 Inscripción fuera de fechas WordPress', type: 'Aclaración', detail: 'E-learning abierto hasta fin de año' },
+      { title: 'A.3.3 Botón Ir a Campus IAI redirige', type: 'Aclaración', detail: 'Moodle solicita datos primera vez' },
+      { title: 'A.4.1 Botones certificado/sesión antes de celebración', type: 'Ajuste', detail: 'Ocultar hasta emisión' },
+      { title: 'A.5.1 Carga lenta de precios modal', type: 'Ajuste', detail: 'Fetch on mount añadido' },
+      { title: 'A.8.1 Datos del curso no cargan', type: 'Bug', detail: 'Loader añadido' },
+      { title: 'B.1.4 Funcionamiento de estados', type: 'Ajuste', detail: 'Pendiente → Borrador' },
+      { title: 'B.1.5 Densidad lista en pantallas grandes', type: 'Aclaración', detail: 'Descartado' },
+      { title: 'B.3.1 Título Asistentes a undefined', type: 'Bug', detail: 'Tiempo carga + loader' },
+      { title: 'B.3.2 Loader en pantalla asistentes', type: 'Ajuste', detail: 'Ya existía' },
+      { title: 'B.3.4 Empty state cuando no hay asistentes', type: 'Aclaración', detail: 'Ya existía' },
+      { title: 'Compra con Créditos Socios Individuales', type: 'Bug', detail: 'Fix campo WeWeb y deal_id path individual' }
+    ],
+    facturacion: [
+      { title: '#14 No se puede actualizar tramo empresa desde portal', type: 'Aclaración', detail: 'Se hace desde HubSpot' },
+      { title: '#25 Prefacturas no entran en BC', type: 'Bug', detail: 'Environment cambiado a IAI' },
+      { title: '#36 Belinda no visualiza cancelación inscripciones', type: 'Bug', detail: 'Permisos actualizados' },
+      { title: '#44 Prefactura con 1 item en vez de 3', type: 'Bug', detail: 'Fix line items en workflows' },
+      { title: '#45 Actualizar texto email prefacturas', type: 'Ajuste', detail: 'Actualizado' },
+      { title: '#47 CIF del contacto en vez de CIF empresa', type: 'Bug', detail: 'Fix nifcif en 3 workflows' },
+      { title: 'dimensionCode2 igual para todas las líneas', type: 'Bug', detail: 'Fix lineDimCode2 por línea' },
+      { title: 'Dirección facturación concatenada', type: 'Bug', detail: 'RPC + 11 streets limpiados' },
+      { title: 'Modalidad no viene en line item → Get IVA falla', type: 'Bug', detail: 'Get Product tipos como fallback' },
+      { title: '24 deals pendientes de facturar (~22.160 EUR)', type: 'Aclaración', detail: 'Reporte enviado a Belinda' },
+      { title: 'Operaciones Pendientes BC', type: 'Ajuste', detail: 'Tx 48 y 50 pending borrados; prefacturas visibles para Belinda' }
+    ],
+    ux: [
+      { title: '#10 Documentos Esfera Consejeros no disponibles', type: 'Bug', detail: 'Perfiles WordPress revisados' },
+      { title: '#20 Certificados/diplomas e-learning no se habilitan', type: 'Bug', detail: 'Corregido' },
+      { title: '#27 Horarios cursos 1h diferencia', type: 'Bug', detail: 'Corregido' },
+      { title: '#33 Personalización vistas HubSpot', type: 'Ajuste', detail: 'Corregido (altas y bajas)' },
+      { title: '#39 Dirección migrada incorrectamente desde IMIS', type: 'Bug', detail: 'Solucionado' },
+      { title: 'Código descuento muestra null como chip', type: 'Bug', detail: 'Corregido' },
+      { title: 'Población vacía en datos facturación', type: 'Bug', detail: 'Corregido' },
+      { title: 'Ciudades en MAYÚSCULAS no matchean dropdown', type: 'Bug', detail: '6.155 registros corregidos (INITCAP)' },
+      { title: 'geo-data error 400 cuando provincia vacía', type: 'Bug', detail: 'Edge function devuelve []' },
+      { title: 'Ir al campus deja ubicado en portal', type: 'Bug', detail: 'Corregido' },
+      { title: 'Admin: ver saldo créditos formativos por empresa', type: 'Ajuste', detail: 'Agregado filtro' },
+      { title: 'Checkbox obligatorio Redsys términos/condiciones', type: 'Ajuste', detail: 'Agregado' },
+      { title: 'Field total_hours_remaining no existe en portal', type: 'Bug', detail: 'WeWeb: cambiar a balance_credito_formativo' },
+      { title: 'B.5.1 Deseleccionar tipo socio/producto', type: 'Ajuste', detail: 'Opción quitar selección' },
+      { title: 'B.5.2 Buscador empresa devuelve null', type: 'Bug', detail: 'Usar business_name' },
+      { title: 'Revisar orden en Asistentes (Fecha desc.)', type: 'Ajuste', detail: 'Ajustado' },
+      { title: 'Permitir descargar en histórico (admin)', type: 'Ajuste', detail: 'Descarga en Cursos Completados' },
+      { title: 'Añadir Horas CPE en Histórico Usuarios', type: 'Ajuste', detail: 'Listado con suma + descarga CSV' }
     ]
   },
-  {
-    name: "Gestión de Socios", icon: "👥",
-    resolved: [
-      {n:"#28",t:"Usuarios registrados de empresa socia no pueden inscribir compañeros",d:"Cambiar subtipo a socio-representante"},
-      {n:"#30",t:"Perfil socio representante no muestra tramo/sector empresa",d:"Ajustado"},
-      {n:"—",t:"76 company_members con status inactive incorrecto",d:"Corregido: 76 activados tras cruce con HubSpot"},
-      {n:"—",t:"Vilma Tejada con rol WEB en Supabase en vez de INM",d:"Rol corregido a socio-individual"},
-      {n:"#24",t:"593 usuarios sin Subtipo de Miembro en HubSpot",d:"Subtipos asignados correctamente"},
-      {n:"#31",t:'Botón "solicitar baja" sin acción en portal',d:"Funcionalidad habilitada"},
-      {n:"#32",t:"Tarjeta perfil muestra tramo de socio (no debería)",d:"Ocultado del perfil"},
-      {n:"#38",t:"Datos actualizados en portal no sincronizan a HubSpot",d:"Sincronización bidireccional operativa"}
+  pending: {
+    socios: [
+      { title: 'A.1.2 Cierre sesión desincronizado Portal ↔ WordPress', type: 'Bug', priority: 'Alta', detail: 'Si se cierra desde portal, WP sigue activo' },
+      { title: 'Usuarios registro web no reciben email de confirmación', type: 'Bug', priority: 'Alta', detail: 'Milagros — distinto del tema SendGrid' },
+      { title: 'Admin portal: agregar socios corporativos a empresa', type: 'Ajuste', priority: 'Media', detail: 'Hoy solo representantes; habilitar Portal Admin' },
+      { title: 'Código de ética obligatorio para todos los usuarios', type: 'Ajuste', priority: 'Media', detail: 'Campo Supabase + forzar aceptación al login' },
+      { title: 'Reenviar invitación a eventos no aceptadas', type: 'Ajuste', priority: 'Media', detail: 'Definir desde Portal Admin vs HubSpot' },
+      { title: 'Creacion empresa en hubspot', type: 'Ajuste', priority: 'Media', detail: 'Detalle de campos por categoría' },
+      { title: 'Segregar Admin y Super Admin', type: 'Ajuste', priority: 'Media', detail: 'Cambios solo desde Super Admin' },
+      { title: 'WordPress calculateWordPressRole: Premium/Foro sobreescribe ASC', type: 'Bug', priority: 'Media', detail: 'Pendiente fix en oauth-userinfo' },
+      { title: 'Alta socio: aclarar crédito formativo contiene impuesto', type: 'Aclaración', priority: 'Baja', detail: 'En la cuota generada' }
     ],
-    pending: [
-      {n:"#29",t:"Olga Moreno no aparece en listado para inscribir",c:"MEDIA",who:"Milagros"},
-      {n:"—",t:"Gestionar bajas: SABA, Sofía Robredo, Luis Da Costa, GESTAMP",c:"MEDIA",who:"IAI"}
-    ]
-  },
-  {
-    name: "Ciclo de Producto", icon: "🔄",
-    resolved: [
-      {n:"#2",t:"Faltan reuniones y foros en la parte de eventos",d:"Sincronizado"},
-      {n:"—",t:"Editar cursos en HubSpot duplica en WordPress",d:"Corregido"},
-      {n:"—",t:"Moodle: Duplicate Course enviaba body incorrecto",d:"Template IDs (Presencial=51, Virtual=50, E-learning=507) + options"},
-      {n:"—",t:"Moodle: Update post-duplicate no reemplazaba __COURSE_ID__",d:"parseInt preserva placeholder"}
+    producto: [
+      { title: 'Aumenta capacidad, pero no actualiza en portal', type: 'Bug', priority: 'Alta', detail: 'Sin sync visible' },
+      { title: 'Adaptar pagina de campus (resumen + documentos)', type: 'Ajuste', priority: 'Media', detail: 'Habilitar Resumen y Documentos para Moodle' },
+      { title: 'Devolver completado (sub capacidad) API WordPress', type: 'Ajuste', priority: 'Media', detail: 'Enviar email a See the Change' },
+      { title: 'Eventos con info incompleta en HubSpot', type: 'Bug', priority: 'Media', detail: 'País, Ciudad y Capacidad' },
+      { title: 'Interlineado muy corto en Wordpress', type: 'Bug', priority: 'Baja', detail: 'See the Change' },
+      { title: 'Opción Campus Virtual en menú se mueve', type: 'Bug', priority: 'Baja', detail: 'See the Change' },
+      { title: 'A.3.2 Imagen cabecera del curso inconsistente', type: 'Aclaración', priority: 'Baja', detail: 'Revisar con cliente' }
     ],
-    pending: [
-      {n:"#37",t:"Publicaciones (tienda online) no visibles en web",c:"MEDIA",who:"Fátima"}
-    ]
-  },
-  {
-    name: "Inscripciones y Eventos", icon: "📋",
-    resolved: [
-      {n:"#3",t:"Buscador Campus: solo filtra por una fecha",d:"Ajustado"},
-      {n:"#4",t:"Buscador alta Socios: filtro fecha no funciona",d:"Ajustado"},
-      {n:"#5",t:"Eventos: no posible añadir asistentes",d:"Aclarado"},
-      {n:"#7",t:"3 inscripciones e-learning apetito riesgo no aparecían",d:"Inscripción realizada"},
-      {n:"#11",t:"Error al inscribir e-learning (cálculo capacidad)",d:"Campo corregido"},
-      {n:"#12",t:"Error inscribir MEDIAPRO (empresa sin company_members activo)",d:"company_members activado"},
-      {n:"#13",t:"Inscritos no registrados en Moodle",d:"Inscripciones realizadas"},
-      {n:"#15",t:"Andrea Rubio inscripción no aparecía",d:"Realizada"},
-      {n:"#16",t:"Proceso anular inscripción con créditos",d:"Ajustado"},
-      {n:"#21",t:"Ponentes aparecen como participantes",d:"Ajustado"},
-      {n:"#22",t:"Inscripciones canceladas en IMIS aparecen como participante",d:"29 product_registrations canceladas"},
-      {n:"#43",t:'Error "no son socios corporativos activos" (Esther/CLECE)',d:"company_members.status corregido"},
-      {n:"#44",t:"Prefactura solo facturaba 1 inscripción de 3",d:"Fix: crea N line items"},
-      {n:"#50",t:"Elena Saborit no en Moodle ni HubSpot",d:"Trigger fn_handle_cap_approved + webhook n8n"},
-      {n:"—",t:"Auto-approve créditos no llamaba webhook n8n",d:"Trigger añadido"},
-      {n:"—",t:"3 registrations fantasma (user_id null)",d:"Canceladas"},
-      {n:"—",t:"Socio Individual con créditos no puede inscribir desde admin",d:"Corregido"},
-      {n:"—",t:"Créditos/bolsa de horas: roles incorrectos impedían uso",d:"Marta Fernández (Exolum) corregida a socio-corporativo, 6 socios individuales con rol corregido, Eugenia Castillo crédito 16h movido al perfil activo. Devoluciones por cancelación verificadas OK. 2.461 'descoordinados' eran falsa alarma — empleados WEB en HubSpot."}
+    inscripciones: [
+      { title: 'D.1.1 No recibe correo confirmación inscripción (HubSpot)', type: 'Bug', priority: 'Alta', detail: 'Revisar integración y disparo del email' },
+      { title: 'Certificados Eventos y Lunes sin Horas CPE', type: 'Ajuste', priority: 'Media', detail: '—' },
+      { title: 'Conexión nirestream Horas Certificado', type: 'Ajuste', priority: 'Media', detail: 'Certificado mínimo 85% visionado' },
+      { title: 'Eventos con DNI requerido (ampliar)', type: 'Ajuste', priority: 'Media', detail: 'Campos personalizados por evento' },
+      { title: 'B.6.1 Horas formativas — revisión global', type: 'Ajuste', priority: 'Media', detail: 'Pantalla confusa en conjunto' },
+      { title: 'B.7.1 On behalf of: inscribir en nombre de otro auditor', type: 'Ajuste', priority: 'Media', detail: 'Funcionalidad nueva' },
+      { title: 'Inscripciones DSV: 18 personas', type: 'Aclaración', priority: 'Media', detail: 'Pendiente ejecutar' },
+      { title: 'Crear formulario Alergias Hubspot', type: 'Ajuste', priority: 'Baja', detail: 'Formulario + enviar en ciertos eventos' },
+      { title: 'Impresión Cartel de Mesa', type: 'Ajuste', priority: 'Baja', detail: 'Cursos presenciales' },
+      { title: 'B.1.2 Filtro por fecha del mes actual por defecto', type: 'Ajuste', priority: 'Baja', detail: 'Listado admin' },
+      { title: 'B.3.3 Ajuste visual tabla asistentes', type: 'Ajuste', priority: 'Baja', detail: 'Reducir anchos de columnas' }
     ],
-    pending: [
-      {n:"#19",t:"Jorge Figueredo: inscripción no detectada",c:"MEDIA",who:"Milagros"},
-      {n:"—",t:"Inscripciones Kutxabank: 49 e-learning, 35 personas",c:"MEDIA"},
-      {n:"—",t:"Inscripciones DSV: 18 personas",c:"MEDIA"},
-      {n:"—",t:"Capacidad inscripciones cuenta ponentes como participantes",d:"Ejemplo: Herramientas análisis causa-raíz muestra 17/18 en vez de 16 asistentes reales. Además, al completar máximo debe bloquearse la opción inscripción en la web.",c:"MEDIA",who:"Begoña"}
-    ]
-  },
-  {
-    name: "Facturación y BC", icon: "🧾",
-    resolved: [
-      {n:"#14",t:"No se puede actualizar tramo desde portal",d:"Se hace desde HubSpot"},
-      {n:"#25",t:"Prefacturas no entran en BC",d:"Environment cambiado a IAI"},
-      {n:"#36",t:"Belinda no visualiza cancelación inscripciones",d:"Permisos actualizados"},
-      {n:"#44",t:"Prefactura con 1 item en vez de 3",d:"Fix line items en workflows"},
-      {n:"#45",t:"Actualizar texto email prefacturas",d:"Actualizado"},
-      {n:"#47",t:"CIF del contacto en vez de CIF empresa",d:"Fix nifcif en 3 workflows"},
-      {n:"—",t:"dimensionCode2 igual para todas las líneas",d:"Fix: lineDimCode2 por línea"},
-      {n:"—",t:"Dirección facturación concatenada",d:"RPC devuelve campos separados + streets limpiados"},
-      {n:"—",t:"Modalidad no viene en line item → Get IVA falla",d:"Nodo Get Product tipos como fallback"},
-      {n:"—",t:"24 deals pendientes de facturar (~22.160€)",d:"Reporte generado y enviado"},
-      {n:"—",t:"Bug beneficiary_name: prefacturas con nombre del comprador en vez de participantes",d:"3 Edge Functions parcheadas para escribir beneficiary_name. 8 deals de Exolum, SAREB y Kutxabank afectados. Corregido por Jon — pendiente reenviar a BC."}
+    facturacion: [
+      { title: 'Admin poder usar código de descuento', type: 'Ajuste', priority: 'Media', detail: 'promo_code en bulk-invite-event (RPC listo)' }
     ],
-    pending: [
-      {n:"#26",t:"Belinda no recibe copia de prefacturas por email",c:"ALTA",who:"Belinda"},
-      {n:"#46",t:"Logotipo en prefactura se visualiza mal",c:"MEDIA",who:"Belinda"},
-      {n:"—",t:'538 usuarios con NIF "PENDIENTE" de migración IMIS',c:"MEDIA",who:"IAI"},
-      {n:"—",t:"8 deals con prefactura generada (7.090€) — revisar en BC",c:"ALTA",who:"Belinda"}
-    ]
-  },
-  {
-    name: "Acceso y Autenticación", icon: "🔐",
-    resolved: [
-      {n:"#6",t:"Usuario no recibe clave reset contraseña",d:"Proceso documentado"},
-      {n:"#9",t:"Usuario bloqueada actualizando datos",d:"Ajustado"},
-      {n:"#17",t:'URL restablecer contraseña "enlace no válido"',d:"Migración sin confirmación corregida"},
-      {n:"#34",t:"Login anómalo socio corporativo Santiago",d:"Ajustado"},
-      {n:"#48",t:"aangulos@iberdrola.es reset contraseña",d:"Contraseña reseteada"},
-      {n:"—",t:'Carolina Ferreiro OAuth "Client not found"',d:"Transitorio, funciona"},
-      {n:"—",t:"WordPress calculateWordPressRole prioriza Premium sobre ASC",d:"Identificado, pendiente fix"},
-      {n:"—",t:"get_invitation_by_token devolvía 404",d:"Schema cache recargado"}
-    ],
-    pending: [
-      {n:"#40",t:"Gmail: recuperar contraseña página en blanco",c:"ALTA"},
-      {n:"#42",t:"Pascual Saez (Telefónica) error recuperar contraseña",c:"ALTA",who:"Milagros"}
-    ]
-  },
-  {
-    name: "Portal — UX y Admin", icon: "🖥️",
-    resolved: [
-      {n:"#10",t:"Documentos Esfera Consejeros no disponibles",d:"Perfiles WordPress revisados"},
-      {n:"#20",t:"Certificados/diplomas e-learning no se habilitan",d:"Corregido"},
-      {n:"#27",t:"Horarios cursos 1h diferencia",d:"Corregido"},
-      {n:"#33",t:"Personalización vistas HubSpot",d:"Corregido (altas y bajas)"},
-      {n:"#39",t:"Dirección migrada incorrectamente desde IMIS",d:"Solucionado"},
-      {n:"—",t:'Código descuento muestra "null"',d:"Corregido"},
-      {n:"—",t:"Población vacía al usar datos facturación",d:"Corregido"},
-      {n:"—",t:"Ciudades en MAYÚSCULAS no matchean dropdown",d:"6.155 registros corregidos"},
-      {n:"—",t:"geo-data error 400 sin provincia",d:"Edge function devuelve []"},
-      {n:"—",t:'"Ir al campus" abre pestaña pero queda en portal',d:"Corregido"},
-      {n:"—",t:"Admin: ver créditos formativos por empresa",d:"Agregado"},
-      {n:"—",t:"Checkbox Redsys términos/condiciones",d:"Agregado"},
-      {n:"—",t:"Bug caché resuelto",d:"Begoña confirma que el bug de caché reportado ayer ya está solucionado tras pruebas con clientes."}
-    ],
-    pending: [
-      {n:"#8",t:"Incluir información asociación individual en enlace",c:"ALTA",who:"Milagros"},
-      {n:"#41",t:"Menú Campus Virtual texto mal alineado",c:"BAJA"},
-      {n:"—",t:"Diplomas de cursos finalizados no se visualizan",d:"Usuarios no ven diplomas de cursos completados en el portal.",c:"MEDIA",who:"Begoña"},
-      {n:"—",t:"Campus: sin detalle del curso, solo totales completados/finalizados",d:"Queja recurrente de Kutxabank y otros. Solo ven número de completados, no el desglose por curso.",c:"MEDIA",who:"Begoña"}
+    ux: [
+      { title: 'Email comunicaciones — Diferenciado del principal', type: 'Ajuste', priority: 'Media', detail: 'Pendiente confirmar Fátima' },
+      { title: 'Email en copia (CC) en flujos no-auth', type: 'Ajuste', priority: 'Media', detail: 'IAI dará email copia' },
+      { title: 'Agregar campo personalizado en el registro', type: 'Ajuste', priority: 'Baja', detail: 'Custom field con label editable' },
+      { title: 'Listado de usuarios', type: 'Ajuste', priority: 'Baja', detail: 'URLs HubSpot, Portal Admin, Dev Apps, n8n' },
+      { title: 'Clear filters', type: 'Ajuste', priority: 'Baja', detail: 'Agregar botón' },
+      { title: 'Añadir datos a la arquitectura', type: 'Aclaración', priority: 'Baja', detail: 'URLs y Endpoints' }
     ]
   }
-];
+};
 
-function getColor(pct){return pct>=80?'var(--green)':pct>=60?'var(--yellow)':'var(--red)'}
+const procMeta = {
+  socios:        { name: 'Socios y Accesos',  icon: '👥' },
+  producto:      { name: 'Ciclo de Producto', icon: '🎓' },
+  inscripciones: { name: 'Inscripciones',     icon: '📝' },
+  facturacion:   { name: 'Facturación',       icon: '💰' },
+  ux:            { name: 'Portal UX/Admin',   icon: '🎨' }
+};
 
-function render(){
-  const grid=document.getElementById('processes');
-  DATA.forEach((p,i)=>{
-    const total=p.resolved.length+p.pending.length;
-    const pct=Math.round(p.resolved.length/total*100);
-    const color=getColor(pct);
-    const div=document.createElement('div');
-    div.className='proc';
-    div.innerHTML=`
-      <div class="proc-head" onclick="this.parentElement.classList.toggle('open')">
-        <span class="proc-icon">${p.icon}</span>
-        <div class="proc-info">
-          <div class="proc-name">${p.name}</div>
-          <div class="proc-bar"><div class="proc-bar-fill" style="width:${pct}%;background:${color}"></div></div>
-          <div class="proc-stats">
-            <span class="proc-pill pp-done">${p.resolved.length} resueltos</span>
-            ${p.pending.length?`<span class="proc-pill pp-pend">${p.pending.length} pendientes</span>`:''}
-          </div>
-        </div>
-        <span class="proc-pct" style="color:${color}">${pct}%</span>
-        <span class="proc-arrow">▼</span>
-      </div>
-      <div class="proc-detail">
-        ${p.pending.length?`
-        <div class="detail-sec">
-          <div class="detail-sec-title"><span>⚠️</span> Pendientes (${p.pending.length})</div>
-          ${p.pending.map(x=>`
-            <div class="issue pending">
-              <div class="issue-body">
-                <div class="issue-title">${x.t}</div>
-                ${x.d?`<div class="issue-desc">${x.d}</div>`:''}
-                <div class="issue-meta">
-                  ${x.n!=='—'?`<span class="badge b-num">${x.n}</span>`:''}
-                  ${x.c?`<span class="badge b-${x.c.toLowerCase()}">${x.c}</span>`:''}
-                  ${x.who?`<span class="badge" style="background:var(--bg);color:var(--text-3);border:1px solid var(--border)">${x.who}</span>`:''}
-                </div>
-              </div>
-            </div>`).join('')}
-        </div>`:''}
-        <div class="detail-sec">
-          <div class="detail-sec-title"><span>✅</span> Resueltos (${p.resolved.length})</div>
-          ${p.resolved.map(x=>`
-            <div class="issue resolved">
-              <div class="issue-body">
-                <div class="issue-title">${x.t}</div>
-                <div class="issue-desc">${x.d||''}</div>
-                <div class="issue-meta">
-                  ${x.n!=='—'?`<span class="badge b-num">${x.n}</span>`:''}
-                </div>
-              </div>
-            </div>`).join('')}
-        </div>
-      </div>`;
-    grid.appendChild(div);
-  });
+let currentTab = 'pending';
+let activeProc = { resolved: 'all', pending: 'all' };
+let activeType = 'all';
+let activePriority = 'all';
+let searchQuery = '';
+
+function classifyBadge(type) {
+  if (type === 'Bug') return 'bug';
+  if (type === 'Ajuste') return 'ajuste';
+  return 'aclaracion';
 }
+
+function buildSynthesis() {
+  const grid = document.getElementById('synthesis-grid');
+  let html = '';
+  for (const [key, meta] of Object.entries(procMeta)) {
+    const resolved = (data.resolved[key] || []).length;
+    const pending = data.pending[key] || [];
+    const pendCount = pending.length;
+    const alta = pending.filter(p => p.priority === 'Alta').length;
+    const media = pending.filter(p => p.priority === 'Media').length;
+    const baja = pending.filter(p => p.priority === 'Baja').length;
+    const total = resolved + pendCount;
+    const resPct = total ? (resolved / total * 100) : 0;
+    const pendPct = total ? (pendCount / total * 100) : 0;
+
+    html += `<div class="proc-card">
+      <div class="proc-name">${meta.icon} ${meta.name}</div>
+      <div class="proc-stats">
+        <div class="pending-num" style="color: ${pendCount > 0 ? 'var(--pending)' : 'var(--resolved)'};">${pendCount}</div>
+        <div class="resolved-info">pend.<br>${resolved} resueltos</div>
+      </div>
+      <div class="priorities">
+        ${alta > 0 ? `<span class="prio-dot alta">🔴 ${alta}</span>` : ''}
+        ${media > 0 ? `<span class="prio-dot media">🟡 ${media}</span>` : ''}
+        ${baja > 0 ? `<span class="prio-dot baja">🟢 ${baja}</span>` : ''}
+        ${pendCount === 0 ? `<span class="prio-dot baja">✓ Limpio</span>` : ''}
+      </div>
+      <div class="proc-bar">
+        <div class="b-resolved" style="width:${resPct}%"></div>
+        <div class="b-pending" style="width:${pendPct}%"></div>
+      </div>
+    </div>`;
+  }
+  grid.innerHTML = html;
+}
+
+function buildSubtabs(tab) {
+  const container = document.getElementById(`subtabs-${tab}`);
+  const total = Object.values(data[tab]).reduce((s, arr) => s + arr.length, 0);
+  let html = `<button class="subtab ${activeProc[tab] === 'all' ? 'active' : ''}" data-proc="all" onclick="setProc('${tab}','all')">📊 Todos <span class="badge-count">${total}</span></button>`;
+  for (const [key, meta] of Object.entries(procMeta)) {
+    const cnt = (data[tab][key] || []).length;
+    if (cnt === 0) continue;
+    html += `<button class="subtab ${activeProc[tab] === key ? 'active' : ''}" data-proc="${key}" onclick="setProc('${tab}','${key}')">${meta.icon} ${meta.name} <span class="badge-count">${cnt}</span></button>`;
+  }
+  container.innerHTML = html;
+}
+
+function setProc(tab, proc) {
+  activeProc[tab] = proc;
+  buildSubtabs(tab);
+  render();
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.counter-card').forEach(c => c.classList.toggle('active', c.dataset.tab === tab));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === `tab-${tab}`));
+  if (tab !== 'iai') render();
+}
+
+function render() {
+  const containerId = currentTab === 'resolved' ? 'resolved-content' : 'pending-content';
+  const container = document.getElementById(containerId);
+  const sectionData = data[currentTab];
+  const proc = activeProc[currentTab];
+
+  let allItems = [];
+  if (proc === 'all') {
+    for (const [key, items] of Object.entries(sectionData)) {
+      items.forEach(it => allItems.push({ ...it, _proc: key }));
+    }
+  } else {
+    (sectionData[proc] || []).forEach(it => allItems.push({ ...it, _proc: proc }));
+  }
+
+  const filtered = allItems.filter(item => {
+    const matchType = activeType === 'all' || item.type === activeType;
+    const matchPrio = currentTab !== 'pending' || activePriority === 'all' || item.priority === activePriority;
+    const matchSearch = !searchQuery || (item.title + ' ' + item.detail).toLowerCase().includes(searchQuery.toLowerCase());
+    return matchType && matchPrio && matchSearch;
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="empty">No hay resultados con los filtros actuales.</div>`;
+    return;
+  }
+
+  let html = `<div class="cards">`;
+  filtered.forEach(item => {
+    const procClass = item._proc;
+    const procIcon = procMeta[procClass]?.icon || '';
+    const prioClass = item.priority ? `prio-${item.priority.toLowerCase()}` : '';
+    html += `<div class="card ${prioClass}">
+      <div class="card-header">
+        ${item.priority ? `<span class="badge-prio ${item.priority.toLowerCase()}">${item.priority === 'Alta' ? '🔴' : item.priority === 'Media' ? '🟡' : '🟢'} ${item.priority}</span>` : ''}
+        <span class="badge ${classifyBadge(item.type)}">${item.type}</span>
+        ${proc === 'all' ? `<span style="font-size:11px;color:var(--muted);">${procIcon}</span>` : ''}
+      </div>
+      <div class="card-title">${item.title}</div>
+      ${item.detail && item.detail !== '—' ? `<div class="card-detail">${item.detail}</div>` : ''}
+    </div>`;
+  });
+  html += `</div>`;
+  container.innerHTML = html;
+}
+
+// Bind filter chips per tab
+document.querySelectorAll('#tab-resolved [data-type], #tab-pending [data-type]').forEach(b => b.addEventListener('click', () => {
+  const tab = b.closest('.tab-content').id.replace('tab-', '');
+  document.querySelectorAll(`#tab-${tab} [data-type]`).forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  activeType = b.dataset.type;
+  render();
+}));
+document.querySelectorAll('#tab-pending [data-priority]').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('#tab-pending [data-priority]').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  activePriority = b.dataset.priority;
+  render();
+}));
+document.querySelectorAll('.search-input').forEach(inp => inp.addEventListener('input', e => {
+  searchQuery = e.target.value;
+  render();
+}));
+
+// Init
+buildSynthesis();
+buildSubtabs('resolved');
+buildSubtabs('pending');
 render();
 </script>
+
 </body>
 </html>
