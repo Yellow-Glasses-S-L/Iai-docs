@@ -308,12 +308,12 @@ header {
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">37</div>
+      <div class="counter-num" style="color: var(--pending);">35</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">120</div>
+      <div class="counter-num" style="color: var(--resolved);">122</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="iai" onclick="switchTab('iai')">
@@ -427,7 +427,9 @@ const data = {
       { title: 'Buzón Email % éxito', type: 'Ajuste', detail: 'Revisado SendGrid' },
       { title: 'Socio representante: permisos para gestionar bajas', type: 'Bug', detail: 'Fix company_representatives: usuarios sin registro en tabla (ej. Mónica Albadalejo UCI)' },
       { title: 'Banco de Costa Rica: contraseñas temporales', type: 'Aclaración', detail: 'Contraseñas temporales generadas desde admin (Verónica Ferreto + Liliana Azevedo)' },
-      { title: 'Email confirmación no llega a usuarios nuevos web', type: 'Bug', detail: 'Fix desplegado 05/05 (confirmado Teams — Jon)' }
+      { title: 'Email confirmación no llega a usuarios nuevos web', type: 'Bug', detail: 'Fix desplegado 05/05 (confirmado Teams — Jon)' },
+      { title: 'BNCR — 7 contraseñas temporales generadas', type: 'Bug', detail: 'Contraseñas temporales aplicadas a 7 usuarios (cserrano, mmongea, hbermudezv, vferreto, macastro, jmarrieta, lnmiranda). ⚠️ Emails de reset pendientes — BNCR debe añadir dominio IAI a su whitelist corporativa (gestión IT de BNCR)' },
+      { title: 'Telefónica — 3 contraseñas temporales generadas', type: 'Bug', detail: 'Contraseñas temporales aplicadas a 3 usuarios (pablo.calderontejedor, m.pastor, ana.jimenezjimenez). ⚠️ Emails de reset pendientes — Telefónica debe añadir dominio IAI a su whitelist corporativa (gestión IT de Telefónica)' }
     ],
     producto: [
       { title: '#2 Faltan reuniones y foros en eventos', type: 'Bug', detail: 'Sincronizado' },
@@ -521,8 +523,6 @@ const data = {
   },
   pending: {
     socios: [
-      { title: 'BNCR — 7 contraseñas temporales generadas', type: 'Bug', priority: 'Alta', detail: '✅ Contraseña BNCR2026! aplicada a: cserrano, mmongea, hbermudezv, vferreto, macastro, jmarrieta, lnmiranda. ⚠️ Emails de reset siguen sin llegar — BNCR debe añadir dominio IAI a su whitelist corporativa' },
-      { title: 'Telefónica — 3 contraseñas temporales generadas', type: 'Bug', priority: 'Alta', detail: '✅ Contraseña Telefonica2026! aplicada a: pablo.calderontejedor, m.pastor, ana.jimenezjimenez. ⚠️ Emails de reset siguen sin llegar — Telefónica debe añadir dominio IAI a su whitelist corporativa' },
       { title: '🚨 Inscribir a otra persona sigue sin funcionar', type: 'Bug', priority: 'Alta', detail: 'Reapertura de #28 — usuarios registrados no ven la opción "inscribir a otra persona" para sus compañeros' },
       { title: '🚨 Socios corporativos activos sin HubSpot', type: 'Bug', priority: 'Alta', detail: 'Concepción Ramos Fernández (coramos@mapfre.com, estaba inactiva) + más casos; consejera mencionada 05/05' },
       { title: '🚨 Fusiones de perfiles no funciona', type: 'Bug', priority: 'Alta', detail: 'Nicolas Federico Delarroca (nicolas.delarroca@symrise.com fusionado con n.delarroca@gmail.com)' },
