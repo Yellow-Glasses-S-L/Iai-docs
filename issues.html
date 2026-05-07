@@ -30,8 +30,6 @@ body {
   line-height: 1.5;
 }
 .container { max-width: 1280px; margin: 0 auto; padding: 24px; }
-
-/* Header */
 header {
   background: white;
   border-bottom: 1px solid var(--border);
@@ -52,8 +50,6 @@ header {
 .brand-text h1 { font-size: 18px; font-weight: 600; }
 .brand-text p { font-size: 13px; color: var(--muted); }
 .update-info { font-size: 13px; color: var(--muted); }
-
-/* Hero counters */
 .hero {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -79,8 +75,6 @@ header {
 .counter-num { font-size: 38px; font-weight: 700; line-height: 1; }
 .counter-label { font-size: 14px; color: var(--muted); margin-top: 4px; }
 .counter-icon { font-size: 22px; margin-bottom: 6px; display: inline-block; }
-
-/* Synthesis grid */
 .synthesis {
   background: var(--card);
   border: 1px solid var(--border);
@@ -154,8 +148,6 @@ header {
 .proc-bar > div { height: 100%; }
 .proc-bar .b-resolved { background: var(--resolved); }
 .proc-bar .b-pending { background: var(--pending); }
-
-/* Sub-tabs (process tabs within each main tab) */
 .subtabs {
   display: flex;
   gap: 4px;
@@ -193,8 +185,6 @@ header {
   font-weight: 600;
 }
 .subtab.active .badge-count { background: var(--orange); color: white; }
-
-/* Filters */
 .filters {
   background: var(--card);
   border: 1px solid var(--border);
@@ -232,8 +222,6 @@ header {
   border-radius: 6px;
   font-size: 13px;
 }
-
-/* Cards */
 .cards-wrapper { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 12px; }
 .card {
@@ -247,8 +235,6 @@ header {
 .card-header { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; flex-wrap: wrap; }
 .card-title { font-size: 13.5px; font-weight: 600; line-height: 1.4; }
 .card-detail { font-size: 12px; color: var(--muted); padding-top: 6px; border-top: 1px dashed var(--border); margin-top: 6px; }
-
-/* Type & priority badges */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -280,19 +266,9 @@ header {
 .card.prio-alta { border-left: 3px solid var(--alta); }
 .card.prio-media { border-left: 3px solid var(--media); }
 .card.prio-baja { border-left: 3px solid var(--baja); }
-
-/* Tab content */
 .tab-content { display: none; }
 .tab-content.active { display: block; }
-
-/* Empty state */
-.empty {
-  text-align: center;
-  padding: 48px 24px;
-  color: var(--muted);
-}
-
-/* For IAI tab — special cards */
+.empty { text-align: center; padding: 48px 24px; color: var(--muted); }
 .iai-card {
   background: linear-gradient(180deg, #faf5ff 0%, white 100%);
   border-left: 4px solid var(--iai);
@@ -305,7 +281,6 @@ header {
 .iai-card h3 { font-size: 16px; margin-bottom: 6px; color: #6d28d9; }
 .iai-card p { font-size: 13.5px; margin-bottom: 8px; }
 .iai-card .meta { font-size: 11px; color: var(--muted); }
-
 @media (max-width: 968px) {
   .hero { grid-template-columns: 1fr; }
   .synthesis-grid { grid-template-columns: repeat(2, 1fr); }
@@ -324,22 +299,21 @@ header {
         <p>Post-migración Portal · Notion + Teams + Design Review</p>
       </div>
     </div>
-    <div class="update-info">Actualización: 30/04/2026</div>
+    <div class="update-info">Actualización: 06/05/2026</div>
   </div>
 </header>
 
 <div class="container">
 
-  <!-- Hero counters / Tab nav -->
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">34</div>
+      <div class="counter-num" style="color: var(--pending);">37</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">104</div>
+      <div class="counter-num" style="color: var(--resolved);">120</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="iai" onclick="switchTab('iai')">
@@ -349,13 +323,11 @@ header {
     </div>
   </div>
 
-  <!-- Synthesis: stats per process -->
   <div class="synthesis" id="synthesis">
     <div class="synthesis-title">Síntesis por proceso</div>
     <div class="synthesis-grid" id="synthesis-grid"></div>
   </div>
 
-  <!-- Tab: Resueltos -->
   <div class="tab-content" id="tab-resolved">
     <div class="subtabs" id="subtabs-resolved"></div>
     <div class="filters">
@@ -371,7 +343,6 @@ header {
     <div class="cards-wrapper"><div id="resolved-content"></div></div>
   </div>
 
-  <!-- Tab: Pendientes -->
   <div class="tab-content active" id="tab-pending">
     <div class="subtabs" id="subtabs-pending"></div>
     <div class="filters">
@@ -394,7 +365,6 @@ header {
     <div class="cards-wrapper"><div id="pending-content"></div></div>
   </div>
 
-  <!-- Tab: Para IAI -->
   <div class="tab-content" id="tab-iai">
     <div class="iai-card">
       <h3>📋 Bajas de socios pendientes</h3>
@@ -456,7 +426,8 @@ const data = {
       { title: 'Añadir Sector Afín', type: 'Ajuste', detail: 'Campo affine_sector_id Supabase + sector_afin HubSpot' },
       { title: 'Buzón Email % éxito', type: 'Ajuste', detail: 'Revisado SendGrid' },
       { title: 'Socio representante: permisos para gestionar bajas', type: 'Bug', detail: 'Fix company_representatives: usuarios sin registro en tabla (ej. Mónica Albadalejo UCI)' },
-      { title: 'Banco de Costa Rica: contraseñas temporales', type: 'Aclaración', detail: 'Contraseñas temporales generadas desde admin (Verónica Ferreto + Liliana Azevedo)' }
+      { title: 'Banco de Costa Rica: contraseñas temporales', type: 'Aclaración', detail: 'Contraseñas temporales generadas desde admin (Verónica Ferreto + Liliana Azevedo)' },
+      { title: 'Email confirmación no llega a usuarios nuevos web', type: 'Bug', detail: 'Fix desplegado 05/05 (confirmado Teams — Jon)' }
     ],
     producto: [
       { title: '#2 Faltan reuniones y foros en eventos', type: 'Bug', detail: 'Sincronizado' },
@@ -465,7 +436,11 @@ const data = {
       { title: 'Moodle Update post-duplicate __COURSE_ID__', type: 'Bug', detail: 'parseInt preserva placeholder' },
       { title: 'B.2.1 Datos de ubicación inconsistentes', type: 'Bug', detail: 'Fórmula → Presencial si no hay dirección' },
       { title: 'Moodle no actualiza avance completado', type: 'Bug', detail: 'Corregido' },
-      { title: 'Agregar hora en tarjeta Eventos y Formación (usuario final)', type: 'Ajuste', detail: 'Resuelto' }
+      { title: 'Agregar hora en tarjeta Eventos y Formación (usuario final)', type: 'Ajuste', detail: 'Resuelto' },
+      { title: 'Devolver completado (sub capacidad) API WordPress', type: 'Ajuste', detail: 'Hecho' },
+      { title: 'Eventos con info incompleta en HubSpot (País, Ciudad, Capacidad)', type: 'Bug', detail: 'Migración 24/03 dejó venue_city/venue_country/max_capacity nulos en 2.545 de 2.563 productos. Recuperados desde imis_raw."CSIIASEvent": 878 ciudades, 979 países, 684 capacidades. Push HubSpot en chunks de 100: 1.088 productos actualizados (06/05)' },
+      { title: 'Aumenta capacidad, pero no actualiza en portal', type: 'Bug', detail: 'Resuelto en el mismo fix: max_capacity recuperado de IMIS y sincronizado en Supabase + HubSpot (06/05)' },
+      { title: 'Opción Campus Virtual en menú se mueve', type: 'Bug', detail: 'Corregido' }
     ],
     inscripciones: [
       { title: '#3 Buscador Campus filtra solo por una fecha', type: 'Bug', detail: 'Ajustado' },
@@ -497,7 +472,11 @@ const data = {
       { title: 'B.3.1 Título Asistentes a undefined', type: 'Bug', detail: 'Tiempo carga + loader' },
       { title: 'B.3.2 Loader en pantalla asistentes', type: 'Ajuste', detail: 'Ya existía' },
       { title: 'B.3.4 Empty state cuando no hay asistentes', type: 'Aclaración', detail: 'Ya existía' },
-      { title: 'Compra con Créditos Socios Individuales', type: 'Bug', detail: 'Fix campo WeWeb y deal_id path individual' }
+      { title: 'Compra con Créditos Socios Individuales', type: 'Bug', detail: 'Fix campo WeWeb y deal_id path individual' },
+      { title: 'B.3.3 Ajuste visual tabla asistentes', type: 'Ajuste', detail: 'Anchos de columna reducidos' },
+      { title: 'Certificados Eventos y Lunes sin Horas CPE', type: 'Ajuste', detail: 'Resuelto (05/05)' },
+      { title: 'Certificados eLearning no se generaban — 1.147 inscripciones expiradas masivamente', type: 'Bug', detail: 'Polling "Sincronización de Progreso" en n8n marcaba inscripciones como expired al recibir usernotenroled de Moodle sin distinguir desmatrícula administrativa de caducidad real. Fix: bypasseado nodo "If Usuario Caducado". Recuperación bulk: 222 → completed (222 certificados, 502h CPE restauradas), 911 → confirmed, 14 quedan expired (06/05)' },
+      { title: 'Cursos finalizados aparecen Pendientes en Portal', type: 'Bug', detail: '88 registros corregidos + fix en fn_check_certificate_conditions: ahora sincroniza status=completed al emitir certificado' }
     ],
     facturacion: [
       { title: '#14 No se puede actualizar tramo empresa desde portal', type: 'Aclaración', detail: 'Se hace desde HubSpot' },
@@ -510,7 +489,12 @@ const data = {
       { title: 'Dirección facturación concatenada', type: 'Bug', detail: 'RPC + 11 streets limpiados' },
       { title: 'Modalidad no viene en line item → Get IVA falla', type: 'Bug', detail: 'Get Product tipos como fallback' },
       { title: '24 deals pendientes de facturar (~22.160 EUR)', type: 'Aclaración', detail: 'Reporte enviado a Belinda' },
-      { title: 'Operaciones Pendientes BC', type: 'Ajuste', detail: 'Tx 48 y 50 pending borrados; prefacturas visibles para Belinda' }
+      { title: 'Operaciones Pendientes BC', type: 'Ajuste', detail: 'Tx 48 y 50 pending borrados; prefacturas visibles para Belinda' },
+      { title: 'Créditos formativos — doble descuento (CONSUM + 5 empresas DOBLE_INSERT)', type: 'Bug', detail: 'CONSUM: allocation duplicada eliminada (8h→0h balance restituido). ALMIRALL: Raúl Poza añadido a company_members. Banco Santander, Cajasiete, Clece, Fujikura, Mercados Centrales: allocations DOBLE_INSERT eliminadas' },
+      { title: 'Créditos formativos — grant migrado con horas incorrectas', type: 'Bug', detail: 'DIA Retail, Caja Rural Aragón, Caja Mun. Trujillo: credits_granted corregido 8→16h. Causa: migración importó horas restantes en vez del total del paquete anual' },
+      { title: 'Créditos formativos — doble descuento post-migración ADIF', type: 'Bug', detail: 'Allocation de Elena Fernandez (IMIS-81729, Gobernanza de Datos de IA, 8h) eliminada. Balance: 62h→70h' },
+      { title: 'Créditos formativos — allocation faltante Exolum', type: 'Bug', detail: 'Allocation de 6h creada para Marta Fernandez (IMIS-81781, E-learning Apetito de Riesgo). Balance: 16h→10h' },
+      { title: 'Emails inventados sesión anterior (Rita Estevez + Ramón Aznar)', type: 'Bug', detail: 'rita.estevez@isdefe.es → estevezluanarita@gmail.com; raznar@fincasloscercados.com → ramon.aznar.pascua@gmail.com. Corregido en HubSpot y Supabase auth+profiles' }
     ],
     ux: [
       { title: '#10 Documentos Esfera Consejeros no disponibles', type: 'Bug', detail: 'Perfiles WordPress revisados' },
@@ -530,53 +514,58 @@ const data = {
       { title: 'B.5.2 Buscador empresa devuelve null', type: 'Bug', detail: 'Usar business_name' },
       { title: 'Revisar orden en Asistentes (Fecha desc.)', type: 'Ajuste', detail: 'Ajustado' },
       { title: 'Permitir descargar en histórico (admin)', type: 'Ajuste', detail: 'Descarga en Cursos Completados' },
-      { title: 'Añadir Horas CPE en Histórico Usuarios', type: 'Ajuste', detail: 'Listado con suma + descarga CSV' }
+      { title: 'Añadir Horas CPE en Histórico Usuarios', type: 'Ajuste', detail: 'Listado con suma + descarga CSV' },
+      { title: 'Suplantación Admin — actuar en nombre de usuario', type: 'Ajuste', detail: 'Admin puede operar como un cliente desde el panel' },
+      { title: 'A.1.2 Cierre de sesión desincronizado Portal ↔ WordPress', type: 'Aclaración', detail: 'Arquitectura adoptada: sliding window independiente por sistema (Portal 1h/8h admin, WordPress 1h, Moodle 4h). Moodle 4h en producción con aviso 10 min antes. WordPress y WeWeb pendientes (ver PENDIENTES)' }
     ]
   },
   pending: {
     socios: [
-      { title: 'A.1.2 Cierre sesión desincronizado Portal ↔ WordPress', type: 'Bug', priority: 'Alta', detail: 'Si se cierra desde portal, WP sigue activo' },
-      { title: 'Usuarios registro web no reciben email de confirmación', type: 'Bug', priority: 'Alta', detail: 'Milagros — distinto del tema SendGrid' },
-      { title: 'Admin portal: agregar socios corporativos a empresa', type: 'Ajuste', priority: 'Media', detail: 'Hoy solo representantes; habilitar Portal Admin' },
+      { title: 'BNCR — 7 contraseñas temporales generadas', type: 'Bug', priority: 'Alta', detail: '✅ Contraseña BNCR2026! aplicada a: cserrano, mmongea, hbermudezv, vferreto, macastro, jmarrieta, lnmiranda. ⚠️ Emails de reset siguen sin llegar — BNCR debe añadir dominio IAI a su whitelist corporativa' },
+      { title: 'Telefónica — 3 contraseñas temporales generadas', type: 'Bug', priority: 'Alta', detail: '✅ Contraseña Telefonica2026! aplicada a: pablo.calderontejedor, m.pastor, ana.jimenezjimenez. ⚠️ Emails de reset siguen sin llegar — Telefónica debe añadir dominio IAI a su whitelist corporativa' },
+      { title: '🚨 Inscribir a otra persona sigue sin funcionar', type: 'Bug', priority: 'Alta', detail: 'Reapertura de #28 — usuarios registrados no ven la opción "inscribir a otra persona" para sus compañeros' },
+      { title: '🚨 Socios corporativos activos sin HubSpot', type: 'Bug', priority: 'Alta', detail: 'Concepción Ramos Fernández (coramos@mapfre.com, estaba inactiva) + más casos; consejera mencionada 05/05' },
+      { title: '🚨 Fusiones de perfiles no funciona', type: 'Bug', priority: 'Alta', detail: 'Nicolas Federico Delarroca (nicolas.delarroca@symrise.com fusionado con n.delarroca@gmail.com)' },
+      { title: 'Admin portal: agregar socios corporativos a empresa', type: 'Ajuste', priority: 'Media', detail: 'Hoy solo representantes; habilitar en Portal Admin' },
       { title: 'Código de ética obligatorio para todos los usuarios', type: 'Ajuste', priority: 'Media', detail: 'Campo Supabase + forzar aceptación al login' },
       { title: 'Reenviar invitación a eventos no aceptadas', type: 'Ajuste', priority: 'Media', detail: 'Definir desde Portal Admin vs HubSpot' },
       { title: 'Creacion empresa en hubspot', type: 'Ajuste', priority: 'Media', detail: 'Detalle de campos por categoría' },
-      { title: 'Segregar Admin y Super Admin', type: 'Ajuste', priority: 'Media', detail: 'Cambios solo desde Super Admin' },
-      { title: 'WordPress calculateWordPressRole: Premium/Foro sobreescribe ASC', type: 'Bug', priority: 'Media', detail: 'Pendiente fix en oauth-userinfo' },
+      { title: 'Segregar Admin y Super Admin', type: 'Ajuste', priority: 'Media', detail: 'Dividir funciones; cambios solo desde Super Admin' },
+      { title: 'WordPress calculateWordPressRole: Premium/Foro sobreescribe rol ASC', type: 'Bug', priority: 'Media', detail: 'Identificado, pendiente fix en oauth-userinfo' },
       { title: 'Alta socio: aclarar crédito formativo contiene impuesto', type: 'Aclaración', priority: 'Baja', detail: 'En la cuota generada' }
     ],
     producto: [
-      { title: 'Aumenta capacidad, pero no actualiza en portal', type: 'Bug', priority: 'Alta', detail: 'Sin sync visible' },
       { title: 'Adaptar pagina de campus (resumen + documentos)', type: 'Ajuste', priority: 'Media', detail: 'Habilitar Resumen y Documentos para Moodle' },
-      { title: 'Devolver completado (sub capacidad) API WordPress', type: 'Ajuste', priority: 'Media', detail: 'Enviar email a See the Change' },
-      { title: 'Eventos con info incompleta en HubSpot', type: 'Bug', priority: 'Media', detail: 'País, Ciudad y Capacidad' },
-      { title: 'Interlineado muy corto en Wordpress', type: 'Bug', priority: 'Baja', detail: 'See the Change' },
-      { title: 'Opción Campus Virtual en menú se mueve', type: 'Bug', priority: 'Baja', detail: 'See the Change' },
+      { title: 'Interlineado muy corto en Wordpress', type: 'Bug', priority: 'Baja', detail: 'Enviar email a See the Change' },
       { title: 'A.3.2 Imagen cabecera del curso inconsistente', type: 'Aclaración', priority: 'Baja', detail: 'Revisar con cliente' }
     ],
     inscripciones: [
+      { title: '🚨 Inscripción urgente — Jason Mark Hay (Grupo Fuertes)', type: 'Aclaración', priority: 'Alta', detail: 'jason.hay@grupofuertes.com → curso Estrategia, Objetivos y Apetito de Riesgo (inminente, no pueden hacerlo desde IAI)' },
+      { title: '🚨 Diplomas eLearning no visibles', type: 'Bug', priority: 'Alta', detail: 'Emilio Arrate (earrate@pentavida.cl) — Segregación de funciones; Ana Cristina Soto Fallas (asotof@bncr.fi.cr) — Normas Globales de Auditoría Interna' },
+      { title: '🚨 Participantes pre-migración aparecen como Pendiente', type: 'Bug', priority: 'Alta', detail: 'Adrián Serrano Garrido (aserrano@mutuauniversal.net) en curso Auditoría Interna del sistema de gobierno' },
       { title: 'D.1.1 No recibe correo confirmación inscripción (HubSpot)', type: 'Bug', priority: 'Alta', detail: 'Revisar integración y disparo del email' },
-      { title: 'Certificados Eventos y Lunes sin Horas CPE', type: 'Ajuste', priority: 'Media', detail: '—' },
       { title: 'Conexión nirestream Horas Certificado', type: 'Ajuste', priority: 'Media', detail: 'Certificado mínimo 85% visionado' },
-      { title: 'Eventos con DNI requerido (ampliar)', type: 'Ajuste', priority: 'Media', detail: 'Campos personalizados por evento' },
+      { title: 'Eventos con DNI requerido (ampliar)', type: 'Ajuste', priority: 'Media', detail: 'Campos personalizados por evento, no solo DNI' },
       { title: 'B.6.1 Horas formativas — revisión global', type: 'Ajuste', priority: 'Media', detail: 'Pantalla confusa en conjunto' },
-      { title: 'B.7.1 On behalf of: inscribir en nombre de otro auditor', type: 'Ajuste', priority: 'Media', detail: 'Funcionalidad nueva' },
       { title: 'Inscripciones DSV: 18 personas', type: 'Aclaración', priority: 'Media', detail: 'Pendiente ejecutar' },
       { title: 'Crear formulario Alergias Hubspot', type: 'Ajuste', priority: 'Baja', detail: 'Formulario + enviar en ciertos eventos' },
       { title: 'Impresión Cartel de Mesa', type: 'Ajuste', priority: 'Baja', detail: 'Cursos presenciales' },
-      { title: 'B.1.2 Filtro por fecha del mes actual por defecto', type: 'Ajuste', priority: 'Baja', detail: 'Listado admin' },
-      { title: 'B.3.3 Ajuste visual tabla asistentes', type: 'Ajuste', priority: 'Baja', detail: 'Reducir anchos de columnas' }
+      { title: 'B.1.2 Filtro por fecha del mes actual por defecto', type: 'Ajuste', priority: 'Baja', detail: 'Listado admin' }
     ],
     facturacion: [
+      { title: '🚨 Créditos formativos — cancelación parcial no refleja horas en "Usadas"', type: 'Bug', priority: 'Alta', detail: 'Inscripción con 2 cancelaciones previas no devuelve horas correctamente (Belinda, 05/05) — pendiente investigar flujo de créditos en cancelación' },
+      { title: '🚨 Créditos formativos — ajuste manual para cursos especiales', type: 'Ajuste', priority: 'Alta', detail: 'Telefónica: aplicar créditos a COSO CI/ERM/ASG-UE; añadir cancelación parcial de horas + campo texto de comentario' },
       { title: 'Admin poder usar código de descuento', type: 'Ajuste', priority: 'Media', detail: 'promo_code en bulk-invite-event (RPC listo)' }
     ],
     ux: [
-      { title: 'Email comunicaciones — Diferenciado del principal', type: 'Ajuste', priority: 'Media', detail: 'Pendiente confirmar Fátima' },
-      { title: 'Email en copia (CC) en flujos no-auth', type: 'Ajuste', priority: 'Media', detail: 'IAI dará email copia' },
-      { title: 'Agregar campo personalizado en el registro', type: 'Ajuste', priority: 'Baja', detail: 'Custom field con label editable' },
+      { title: 'Email comunicaciones — Diferenciado del principal', type: 'Ajuste', priority: 'Media', detail: 'Alternativo para automatizados/marketing; CC: servicioscliente@iai.es (confirmado Tracy, Teams 05/05)' },
+      { title: 'Email en copia (CC) en flujos no-auth', type: 'Ajuste', priority: 'Media', detail: 'IAI dará email copia (eventos, cursos, invitaciones socios corp)' },
+      { title: 'A.1.2 Sesión inactiva WordPress — sliding window 1h', type: 'Ajuste', priority: 'Media', detail: 'Pendiente: mensaje a SeeTheChange para expirar sesión tras 1h sin actividad (sliding window). Parte del fix A.1.2' },
+      { title: 'A.1.2 Sesión inactiva WeWeb — workflow On app load', type: 'Ajuste', priority: 'Media', detail: 'Pendiente: workflow On app load con tracking actividad + refresh automático del token + logout por inactividad según rol (1h usuarios / 8h admin). Fase 2: modal con aviso X min antes del logout' },
+      { title: 'Agregar campo personalizado en el registro de usuarios', type: 'Ajuste', priority: 'Baja', detail: 'Custom field con label editable' },
       { title: 'Listado de usuarios', type: 'Ajuste', priority: 'Baja', detail: 'URLs HubSpot, Portal Admin, Dev Apps, n8n' },
       { title: 'Clear filters', type: 'Ajuste', priority: 'Baja', detail: 'Agregar botón' },
-      { title: 'Añadir datos a la arquitectura', type: 'Aclaración', priority: 'Baja', detail: 'URLs y Endpoints' }
+      { title: 'Añadir datos a la arquitectura', type: 'Aclaración', priority: 'Baja', detail: 'URLs y Endpoints de integración' }
     ]
   }
 };
@@ -614,7 +603,6 @@ function buildSynthesis() {
     const total = resolved + pendCount;
     const resPct = total ? (resolved / total * 100) : 0;
     const pendPct = total ? (pendCount / total * 100) : 0;
-
     html += `<div class="proc-card">
       <div class="proc-name">${meta.icon} ${meta.name}</div>
       <div class="proc-stats">
@@ -666,7 +654,6 @@ function render() {
   const container = document.getElementById(containerId);
   const sectionData = data[currentTab];
   const proc = activeProc[currentTab];
-
   let allItems = [];
   if (proc === 'all') {
     for (const [key, items] of Object.entries(sectionData)) {
@@ -675,23 +662,19 @@ function render() {
   } else {
     (sectionData[proc] || []).forEach(it => allItems.push({ ...it, _proc: proc }));
   }
-
   const filtered = allItems.filter(item => {
     const matchType = activeType === 'all' || item.type === activeType;
     const matchPrio = currentTab !== 'pending' || activePriority === 'all' || item.priority === activePriority;
-    const matchSearch = !searchQuery || (item.title + ' ' + item.detail).toLowerCase().includes(searchQuery.toLowerCase());
+    const matchSearch = !searchQuery || (item.title + ' ' + (item.detail||'')).toLowerCase().includes(searchQuery.toLowerCase());
     return matchType && matchPrio && matchSearch;
   });
-
   if (filtered.length === 0) {
     container.innerHTML = `<div class="empty">No hay resultados con los filtros actuales.</div>`;
     return;
   }
-
   let html = `<div class="cards">`;
   filtered.forEach(item => {
-    const procClass = item._proc;
-    const procIcon = procMeta[procClass]?.icon || '';
+    const procIcon = procMeta[item._proc]?.icon || '';
     const prioClass = item.priority ? `prio-${item.priority.toLowerCase()}` : '';
     html += `<div class="card ${prioClass}">
       <div class="card-header">
@@ -707,7 +690,6 @@ function render() {
   container.innerHTML = html;
 }
 
-// Bind filter chips per tab
 document.querySelectorAll('#tab-resolved [data-type], #tab-pending [data-type]').forEach(b => b.addEventListener('click', () => {
   const tab = b.closest('.tab-content').id.replace('tab-', '');
   document.querySelectorAll(`#tab-${tab} [data-type]`).forEach(x => x.classList.remove('active'));
@@ -726,7 +708,6 @@ document.querySelectorAll('.search-input').forEach(inp => inp.addEventListener('
   render();
 }));
 
-// Init
 buildSynthesis();
 buildSubtabs('resolved');
 buildSubtabs('pending');
