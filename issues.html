@@ -400,12 +400,12 @@ header {
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">32</div>
+      <div class="counter-num" style="color: var(--pending);">31</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">138</div>
+      <div class="counter-num" style="color: var(--resolved);">139</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -613,7 +613,8 @@ const data = {
       { title: 'Créditos formativos — grant migrado con horas incorrectas', type: 'Bug', detail: 'DIA Retail, Caja Rural Aragón, Caja Mun. Trujillo: credits_granted corregido 8→16h' },
       { title: 'Créditos formativos — doble descuento post-migración ADIF', type: 'Bug', detail: 'Allocation de Elena Fernandez (IMIS-81729, 8h) eliminada. Balance: 62h→70h' },
       { title: 'Créditos formativos — allocation faltante Exolum', type: 'Bug', detail: 'Allocation de 6h creada para Marta Fernandez (IMIS-81781). Balance: 16h→10h' },
-      { title: 'Emails inventados sesión anterior (Rita Estevez + Ramón Aznar)', type: 'Bug', detail: 'rita.estevez@isdefe.es → estevezluanarita@gmail.com; raznar@fincasloscercados.com → ramon.aznar.pascua@gmail.com. Corregido en HubSpot y Supabase auth+profiles' }
+      { title: 'Emails inventados sesión anterior (Rita Estevez + Ramón Aznar)', type: 'Bug', detail: 'rita.estevez@isdefe.es → estevezluanarita@gmail.com; raznar@fincasloscercados.com → ramon.aznar.pascua@gmail.com. Corregido en HubSpot y Supabase auth+profiles' },
+      { title: 'Créditos formativos — cancelación parcial no refleja horas en "Usadas"', type: 'Bug', detail: 'Fix en dos funciones que hacían INSERT WHERE NOT EXISTS sin filtrar por status — canceladas contaban como duplicado. Corregido coherente con partial unique index. event-registration-check y bulk-invite-event ya filtraban correctamente (Jon 08/05)' }
     ],
     ux: [
       { title: '#10 Documentos Esfera Consejeros no disponibles', type: 'Bug', detail: 'Perfiles WordPress revisados' },
@@ -668,7 +669,6 @@ const data = {
       { title: 'B.1.2 Filtro por fecha del mes actual por defecto', type: 'Ajuste', priority: 'Baja', target: '13/05', detail: 'Listado admin' }
     ],
     facturacion: [
-      { title: '🚨 Créditos formativos — cancelación parcial no refleja horas en "Usadas"', type: 'Bug', priority: 'Alta', target: null, detail: 'Inscripción con 2 cancelaciones previas no devuelve horas correctamente (Belinda, 05/05) — pendiente investigar flujo de créditos en cancelación' },
       { title: '🚨 Créditos formativos — ajuste manual para cursos especiales', type: 'Ajuste', priority: 'Alta', target: '15/05', detail: 'Telefónica: aplicar créditos a COSO CI/ERM/ASG-UE; añadir cancelación parcial de horas + campo texto de comentario' },
       { title: 'Admin poder usar código de descuento', type: 'Ajuste', priority: 'Media', target: '15/05', detail: 'promo_code en bulk-invite-event (RPC listo)' },
       { title: 'Revisión facturación cambio de tramos', type: 'Aclaración', priority: 'Media', target: null, detail: 'Flujo: cambio desde HubSpot; tramo inferior no genera factura, tramo superior genera factura por incremento prorrateado al resto del año (Jon 07/05) — pendiente validar con Belinda' },
