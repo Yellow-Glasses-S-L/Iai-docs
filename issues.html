@@ -391,7 +391,7 @@ header {
         <p>Post-migración Portal · Notion + Teams + Design Review</p>
       </div>
     </div>
-    <div class="update-info">Actualización: 07/05/2026</div>
+    <div class="update-info">Actualización: 08/05/2026</div>
   </div>
 </header>
 
@@ -400,12 +400,12 @@ header {
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">33</div>
+      <div class="counter-num" style="color: var(--pending);">32</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">130</div>
+      <div class="counter-num" style="color: var(--resolved);">138</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -535,7 +535,11 @@ const data = {
       { title: 'BNCR — 7 contraseñas temporales generadas', type: 'Bug', detail: 'Contraseñas temporales aplicadas a 7 usuarios. ⚠️ Emails de reset pendientes — BNCR debe añadir dominio IAI a su whitelist corporativa' },
       { title: 'Telefónica — 3 contraseñas temporales generadas', type: 'Bug', detail: 'Contraseñas temporales aplicadas a 3 usuarios. ⚠️ Emails de reset pendientes — Telefónica debe añadir dominio IAI a su whitelist corporativa' },
       { title: 'Socios corporativos activos sin HubSpot', type: 'Bug', detail: 'Concepción Ramos Fernández y otros casos sincronizados a HubSpot (07/05)' },
-      { title: 'Admin portal: agregar socios corporativos a empresa', type: 'Ajuste', detail: 'Cubierto con funcionalidad de suplantación de admin' }
+      { title: 'Admin portal: agregar socios corporativos a empresa', type: 'Ajuste', detail: 'Cubierto con funcionalidad de suplantación de admin' },
+      { title: 'Permisos para aparecer en el listado del curso', type: 'Bug', detail: 'Activados a todos los usuarios en producción (Jon 07/05)' },
+      { title: 'Teléfonos no migrados', type: 'Bug', detail: '+2.196 teléfonos actualizados desde IMIS (Jon 07/05)' },
+      { title: 'SYNC-HS-CONTACT-ASSOC: sincronización empresa-contacto', type: 'Bug', detail: 'Workflow n8n publicado: actualiza current_company_id al asignar/desasociar empresa en HubSpot (Jon 07/05)' },
+      { title: 'Bajas socios corporativos — selección tipo de baja', type: 'Ajuste', detail: 'Workflow n8n CORP-DOWNGRADE-01 publicado: detecta cambio tipo_socio_corporativo en HubSpot y actualiza estado en portal (Jon 08/05)' }
     ],
     producto: [
       { title: '#2 Faltan reuniones y foros en eventos', type: 'Bug', detail: 'Sincronizado' },
@@ -548,7 +552,10 @@ const data = {
       { title: 'Devolver completado (sub capacidad) API WordPress', type: 'Ajuste', detail: 'Hecho' },
       { title: 'Eventos con info incompleta en HubSpot (País, Ciudad, Capacidad)', type: 'Bug', detail: 'Migración 24/03 dejó venue_city/venue_country/max_capacity nulos en 2.545 de 2.563 productos. Recuperados desde imis_raw: 878 ciudades, 979 países, 684 capacidades. 1.088 productos actualizados en HubSpot (06/05)' },
       { title: 'Aumenta capacidad, pero no actualiza en portal', type: 'Bug', detail: 'max_capacity recuperado de IMIS y sincronizado en Supabase + HubSpot (06/05)' },
-      { title: 'Opción Campus Virtual en menú se mueve', type: 'Bug', detail: 'Corregido' }
+      { title: 'Opción Campus Virtual en menú se mueve', type: 'Bug', detail: 'Corregido' },
+      { title: 'WordPress muestra COMPLETO cuando no hay aforo disponible', type: 'Ajuste', detail: 'auditoresinternos.es devuelve "COMPLETO" cuando la capacidad está agotada (Jon 07/05)' },
+      { title: 'Interlineado muy corto en WordPress', type: 'Bug', detail: 'HTML mejorado, información del curso visible correctamente — coordinado con See the Change (Jon 08/05)' },
+      { title: 'Re-inscripción con créditos tras cancelación', type: 'Bug', detail: 'Re-inscripción ya funciona correctamente tras cancelación con créditos (Jon 08/05)' }
     ],
     inscripciones: [
       { title: '#3 Buscador Campus filtra solo por una fecha', type: 'Bug', detail: 'Ajustado' },
@@ -587,7 +594,8 @@ const data = {
       { title: 'Cursos finalizados aparecen Pendientes en Portal', type: 'Bug', detail: '88 registros corregidos + fix en fn_check_certificate_conditions' },
       { title: 'Diplomas eLearning no visibles', type: 'Bug', detail: 'Emilio Arrate (earrate@pentavida.cl) y Ana Cristina Soto Fallas (asotof@bncr.fi.cr) — diplomas generados manualmente (07/05)' },
       { title: 'Participantes pre-migración aparecen como Pendiente', type: 'Bug', detail: 'Adrián Serrano Garrido (aserrano@mutuauniversal.net) — estado de asistencia corregido (07/05)' },
-      { title: 'B.6.1 Horas formativas — revisión global', type: 'Ajuste', detail: 'Pantalla revisada y datos de horas CPE corregidos (07/05)' }
+      { title: 'B.6.1 Horas formativas — revisión global', type: 'Ajuste', detail: 'Pantalla revisada y datos de horas CPE corregidos (07/05)' },
+      { title: 'Inscripción urgente — Jason Mark Hay (Grupo Fuertes)', type: 'Aclaración', detail: 'jason.hay@grupofuertes.com — contacto creado en HubSpot, company_member y rol socio-corporativo asignados en Supabase; inscripción realizada desde Portal Admin (08/05)' }
     ],
     facturacion: [
       { title: '#14 No se puede actualizar tramo empresa desde portal', type: 'Aclaración', detail: 'Se hace desde HubSpot' },
@@ -637,23 +645,20 @@ const data = {
     socios: [
       { title: '🚨 Inscribir a otra persona sigue sin funcionar', type: 'Bug', priority: 'Alta', target: '12/05', detail: 'Reapertura de #28 — usuarios registrados no ven la opción "inscribir a otra persona" para sus compañeros' },
       { title: '🚨 Fusiones de perfiles no funciona', type: 'Bug', priority: 'Alta', target: '15/05', detail: 'Nicolas Federico Delarroca (nicolas.delarroca@symrise.com fusionado con n.delarroca@gmail.com)' },
-      { title: 'Permisos para aparecer en el listado', type: 'Bug', priority: 'Alta', target: '11/05', detail: 'Mayoría de usuarios no tienen el permiso de aparecer en el listado del curso. En la migración se acordó activarlo a todos. Requiere fix masivo' },
       { title: 'Código de ética obligatorio para todos los usuarios', type: 'Ajuste', priority: 'Media', target: '15/05', detail: 'Campo Supabase + forzar aceptación al login' },
       { title: 'Reenviar invitación a eventos no aceptadas', type: 'Ajuste', priority: 'Media', target: '12/05', detail: 'Definir desde Portal Admin vs HubSpot' },
       { title: 'Creacion empresa en HubSpot', type: 'Ajuste', priority: 'Media', target: '13/05', detail: 'Detalle de campos por categoría' },
       { title: 'Segregar Admin y Super Admin', type: 'Ajuste', priority: 'Media', target: '20/05', detail: 'Dividir funciones; cambios solo desde Super Admin' },
-      { title: 'Bajas socios corporativos — selección tipo de baja', type: 'Ajuste', priority: 'Media', target: '22/05', detail: 'Desplegable al dar de baja: "Dar de baja de socio y mantenerlo en la empresa" vs "Dar de baja de la empresa"' },
       { title: 'Admin portal: usuarios registrados en listado de socios', type: 'Ajuste', priority: 'Media', target: '18/05', detail: 'Añadir tab de usuarios registrados no socios al listado de socios en Portal Admin' },
       { title: 'Al crear empresa, añadir sector afín', type: 'Ajuste', priority: 'Media', target: '18/05', detail: 'En el flujo de aprobación/creación de empresa, incluir campo sector afín' },
       { title: 'Alta socio: aclarar crédito formativo contiene impuesto', type: 'Aclaración', priority: 'Baja', target: '11/05', detail: 'En la cuota generada' }
     ],
     producto: [
       { title: 'Adaptar pagina de campus (resumen + documentos)', type: 'Ajuste', priority: 'Media', target: '15/05', detail: 'Habilitar Resumen y Documentos para Moodle' },
-      { title: 'Interlineado muy corto en Wordpress', type: 'Bug', priority: 'Baja', target: '11/05', detail: 'Enviar email a See the Change' },
+      { title: 'Bloquear mensajes y emails a cursos tipo In house', type: 'Ajuste', priority: 'Media', target: null, detail: 'No enviar comunicaciones automáticas (emails, notificaciones de inscripción) para cursos de tipo In House' },
       { title: 'A.3.2 Imagen cabecera del curso inconsistente', type: 'Aclaración', priority: 'Baja', target: '15/05', detail: 'Revisar con cliente' }
     ],
     inscripciones: [
-      { title: '🚨 Inscripción urgente — Jason Mark Hay (Grupo Fuertes)', type: 'Aclaración', priority: 'Alta', target: '08/05', detail: 'jason.hay@grupofuertes.com → curso Estrategia, Objetivos y Apetito de Riesgo (inminente, no pueden hacerlo desde IAI)' },
       { title: 'D.1.1 No recibe correo confirmación inscripción (HubSpot)', type: 'Bug', priority: 'Alta', target: '12/05', detail: 'Revisar integración y disparo del email' },
       { title: 'Conexión nirestream Horas Certificado', type: 'Ajuste', priority: 'Media', target: '15/05', detail: 'Certificado mínimo 85% visionado' },
       { title: 'Eventos con DNI requerido (ampliar)', type: 'Ajuste', priority: 'Media', target: '22/05', detail: 'Campos personalizados por evento, no solo DNI' },
@@ -665,7 +670,9 @@ const data = {
     facturacion: [
       { title: '🚨 Créditos formativos — cancelación parcial no refleja horas en "Usadas"', type: 'Bug', priority: 'Alta', target: null, detail: 'Inscripción con 2 cancelaciones previas no devuelve horas correctamente (Belinda, 05/05) — pendiente investigar flujo de créditos en cancelación' },
       { title: '🚨 Créditos formativos — ajuste manual para cursos especiales', type: 'Ajuste', priority: 'Alta', target: '15/05', detail: 'Telefónica: aplicar créditos a COSO CI/ERM/ASG-UE; añadir cancelación parcial de horas + campo texto de comentario' },
-      { title: 'Admin poder usar código de descuento', type: 'Ajuste', priority: 'Media', target: '15/05', detail: 'promo_code en bulk-invite-event (RPC listo)' }
+      { title: 'Admin poder usar código de descuento', type: 'Ajuste', priority: 'Media', target: '15/05', detail: 'promo_code en bulk-invite-event (RPC listo)' },
+      { title: 'Revisión facturación cambio de tramos', type: 'Aclaración', priority: 'Media', target: null, detail: 'Flujo: cambio desde HubSpot; tramo inferior no genera factura, tramo superior genera factura por incremento prorrateado al resto del año (Jon 07/05) — pendiente validar con Belinda' },
+      { title: 'Revisión facturación alta de socios', type: 'Aclaración', priority: 'Baja', target: null, detail: 'Revisar flujo completo de facturación al dar de alta nuevos socios corporativos e individuales' }
     ],
     ux: [
       { title: 'Email comunicaciones — Diferenciado del principal', type: 'Ajuste', priority: 'Media', target: '13/05', detail: 'Alternativo para automatizados/marketing; CC: servicioscliente@iai.es (confirmado Tracy, Teams 05/05)' },
