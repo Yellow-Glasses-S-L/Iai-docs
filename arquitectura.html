@@ -59,25 +59,25 @@ var NODES = {
   usuarios:  { x:30,  y:15,  w:130, h:46, icon:"👤", label:"Socios",       sub:"Individuales y corporativos", color:"#64748b" },
   admin:     { x:260, y:15,  w:130, h:46, icon:"🏛️", label:"Admin IAI",    sub:"Gestión interna",             color:"#f43f5e" },
 
-  portal:    { x:30,  y:95,  w:290, h:72, icon:"🟣", label:"Portal WeWeb", sub:"Dashboard · Accesos · Carrito · Corp. · Admin", color:"#8b5cf6", big:true },
+  portal:    { x:30,  y:95,  w:290, h:72, icon:"🟣", label:"Portal WeWeb", sub:"Dashboard · Accesos · Carrito · Corp. · Admin", color:"#8b5cf6", big:true, url:"https://portal.auditoresinternos.es" },
 
-  redsys:    { x:335, y:105, w:75,  h:52, icon:"💳", label:"Redsys",       sub:"TPV pago",                    color:"#f59e0b" },
+  redsys:    { x:335, y:105, w:75,  h:52, icon:"💳", label:"Redsys",       sub:"TPV pago",                    color:"#f59e0b", url:"https://sis.redsys.es/sis/realizarPago" },
 
   supabase:  { x:30,  y:220, w:175, h:90, icon:"🟢", label:"Supabase",     sub:"BD · Auth · Edge Fn · Storage · Créditos formativos", color:"#10b981", big:true,
-    detail:"Motor operativo. Master de: autenticación, inscripciones, pagos, diplomas, créditos formativos y saldos." },
+    detail:"Motor operativo. Master de: autenticación, inscripciones, pagos, diplomas, créditos formativos y saldos.", url:"https://uanjdkakzitoxczzzkgy.supabase.co" },
   n8n:       { x:225, y:220, w:185, h:90, icon:"🔴", label:"n8n",          sub:"Sync · Webhooks · Cron · Workflows", color:"#ef4444", big:true,
-    detail:"Integrador. Sincroniza Supabase ↔ HubSpot bidireccionalmente. Publica a WordPress y Moodle. Gestiona cron jobs." },
+    detail:"Integrador. Sincroniza Supabase ↔ HubSpot bidireccionalmente. Publica a WordPress y Moodle. Gestiona cron jobs.", url:"https://automation.auditoresinternos.es" },
 
   hubspot:   { x:55,  y:380, w:250, h:72, icon:"🟠", label:"HubSpot CRM", sub:"Contactos · Productos · Deals · Comunicaciones", color:"#f97316", big:true,
-    detail:"Cerebro de negocio. Master de: productos, empresas, tramos, membresías, deals, datos maestros." },
+    detail:"Cerebro de negocio. Master de: productos, empresas, tramos, membresías, deals, datos maestros.", url:"https://app-eu1.hubspot.com" },
 
-  wordpress: { x:10,  y:500, w:120, h:50, icon:"🌐", label:"WordPress",   sub:"Web pública",    color:"#3b82f6" },
-  moodle:    { x:148, y:500, w:120, h:50, icon:"📚", label:"Moodle",      sub:"Campus virtual",  color:"#06b6d4" },
-  bc:        { x:286, y:500, w:124, h:50, icon:"📄", label:"Bus. Central", sub:"Contabilidad",   color:"#6366f1" },
+  wordpress: { x:10,  y:500, w:120, h:50, icon:"🌐", label:"WordPress",   sub:"Web pública",    color:"#3b82f6", url:"https://auditoresinternos.es" },
+  moodle:    { x:148, y:500, w:120, h:50, icon:"📚", label:"Moodle",      sub:"Campus virtual",  color:"#06b6d4", url:"https://campus.auditoresinternos.es" },
+  bc:        { x:286, y:500, w:124, h:50, icon:"📄", label:"Bus. Central", sub:"Contabilidad",   color:"#6366f1", url:"https://businesscentral.dynamics.com" },
 
-  nirestream:{ x:10,  y:568, w:120, h:42, icon:"📺", label:"Nirestream",  sub:"Streaming",       color:"#a855f7", phase2:true },
-  publicac:  { x:148, y:568, w:120, h:42, icon:"📖", label:"Publicaciones",sub:"PDFs protegidos", color:"#3b82f6" },
-  interno:   { x:286, y:568, w:124, h:42, icon:"🛠️", label:"Interno",     sub:"Admin + Reporting",color:"#f43f5e" },
+  nirestream:{ x:10,  y:568, w:120, h:50, icon:"📺", label:"Nirestream",  sub:"Streaming",       color:"#a855f7", phase2:true, url:"https://auditoresinternos.tv" },
+  publicac:  { x:148, y:568, w:120, h:50, icon:"📖", label:"Publicaciones",sub:"PDFs protegidos", color:"#3b82f6" },
+  interno:   { x:286, y:568, w:124, h:50, icon:"🛠️", label:"Interno",     sub:"Admin + Reporting",color:"#f43f5e" },
 };
 
 /* ═══════════════════════════════════════════
@@ -180,6 +180,8 @@ function NodeBox({ id, node, isActive, isSelected, onClick }) {
       <text x={node.x+30} y={node.y+(node.big?20:18)} fill={sel?c:"#e2e8f0"} fontSize={node.big?11:10} fontWeight="600" fontFamily="DM Mono,monospace">{node.label}</text>
       {/* Sub */}
       {node.sub && <text x={node.x+14} y={node.y+(node.big?36:33)} fill="#64748b" fontSize="7" fontFamily="DM Sans,sans-serif">{node.sub}</text>}
+      {/* URL hostname */}
+      {node.url && <text x={node.x+14} y={node.y+(node.big?51:43)} fill="#64748b" fontSize={node.big?"7":"6"} fontFamily="DM Mono,monospace">{(function(){try{return new URL(node.url).hostname}catch(e){return node.url}})()}</text>}
       {/* Phase 2 badge */}
       {node.phase2 && (
         <g>
@@ -226,6 +228,13 @@ function DetailPanel({ nodeId, node, onClose }) {
         </div>
       </div>
       {node.detail && <p style={{fontSize:12,color:"#94a3b8",lineHeight:1.6,marginBottom:8}}>{node.detail}</p>}
+      {/* URL */}
+      {node.url && (
+        <div style={{marginBottom:10}}>
+          <div style={{fontSize:9,fontWeight:700,color:"#475569",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5,fontFamily:"DM Mono,monospace"}}>URL</div>
+          <a href={node.url} target="_blank" rel="noopener noreferrer" style={{fontSize:11,color:c,fontFamily:"DM Mono,monospace",textDecoration:"none",wordBreak:"break-all"}}>{node.url}</a>
+        </div>
+      )}
       {/* Connections */}
       <div style={{fontSize:9,fontWeight:700,color:"#475569",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5,fontFamily:"DM Mono,monospace"}}>Conexiones</div>
       <div style={{display:"flex",flexDirection:"column",gap:3}}>
@@ -312,7 +321,7 @@ function App() {
 
         {/* ═══ SVG DIAGRAM ═══ */}
         <div style={{background:"#0f172a",borderRadius:16,border:"1px solid #1e293b",overflow:"hidden"}}>
-          <svg viewBox="0 0 420 630" style={{width:"100%",height:"auto",display:"block"}}>
+          <svg viewBox="0 0 420 650" style={{width:"100%",height:"auto",display:"block"}}>
             <defs>
               {Object.keys(markerColors).map(function(key){
                 return (
@@ -347,7 +356,7 @@ function App() {
             </g>
 
             {/* Legend at bottom */}
-            <g transform="translate(10,598)">
+            <g transform="translate(10,628)">
               <line x1="0" y1="8" x2="18" y2="8" stroke="#64748b" strokeWidth="1.5"/>
               <text x="22" y="11" fill="#64748b" fontSize="7" fontFamily="DM Mono,monospace">Directo</text>
               <line x1="80" y1="8" x2="98" y2="8" stroke="#64748b" strokeWidth="1.5" strokeDasharray="5 3"/>
@@ -410,3 +419,4 @@ ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(
 </script>
 </body>
 </html>
+
