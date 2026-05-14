@@ -391,7 +391,7 @@ header {
         <p>Post-migración Portal · Notion + Teams + Design Review</p>
       </div>
     </div>
-    <div class="update-info">Actualización: 08/05/2026</div>
+    <div class="update-info">Actualización: 14/05/2026</div>
   </div>
 </header>
 
@@ -400,12 +400,12 @@ header {
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">30</div>
+      <div class="counter-num" style="color: var(--pending);">26</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">140</div>
+      <div class="counter-num" style="color: var(--resolved);">144</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -536,6 +536,8 @@ const data = {
       { title: 'Telefónica — 3 contraseñas temporales generadas', type: 'Bug', detail: 'Contraseñas temporales aplicadas a 3 usuarios. ⚠️ Emails de reset pendientes — Telefónica debe añadir dominio IAI a su whitelist corporativa' },
       { title: 'Socios corporativos activos sin HubSpot', type: 'Bug', detail: 'Concepción Ramos Fernández y otros casos sincronizados a HubSpot (07/05)' },
       { title: 'Admin portal: agregar socios corporativos a empresa', type: 'Ajuste', detail: 'Cubierto con funcionalidad de suplantación de admin' },
+      { title: 'Inscribir a otra persona (reapertura #28)', type: 'Bug', detail: 'Fix desplegado: cualquier usuario con membresía activa en empresa puede inscribir compañeros (Jon 08/05)' },
+      { title: 'Reenviar invitación a eventos no aceptadas', type: 'Ajuste', detail: 'Utilidad añadida desde Portal Admin (Jon 12/05)' },
       { title: 'Permisos para aparecer en el listado del curso', type: 'Bug', detail: 'Activados a todos los usuarios en producción (Jon 07/05)' },
       { title: 'Teléfonos no migrados', type: 'Bug', detail: '+2.196 teléfonos actualizados desde IMIS (Jon 07/05)' },
       { title: 'SYNC-HS-CONTACT-ASSOC: sincronización empresa-contacto', type: 'Bug', detail: 'Workflow n8n publicado: actualiza current_company_id al asignar/desasociar empresa en HubSpot (Jon 07/05)' },
@@ -640,15 +642,15 @@ const data = {
       { title: 'A.1.2 Cierre de sesión desincronizado Portal ↔ WordPress', type: 'Aclaración', detail: 'Arquitectura adoptada: sliding window independiente por sistema (Portal 1h/8h admin, WordPress 1h, Moodle 4h). Moodle 4h en producción con aviso 10 min antes' },
       { title: 'Listado de usuarios', type: 'Ajuste', detail: 'URLs HubSpot, Portal Admin, Dev Apps, n8n integradas en listado admin' },
       { title: 'A.1.2 Sesión inactiva WordPress — sliding window 1h', type: 'Ajuste', detail: 'Mensaje enviado a SeeTheChange para configurar expiración tras 1h sin actividad' },
-      { title: 'A.1.2 Sesión inactiva WeWeb — workflow On app load', type: 'Ajuste', detail: 'Workflow global On app load implementado: tracking actividad + refresh automático token + logout por inactividad según rol (1h usuarios / 8h admin)' }
+      { title: 'A.1.2 Sesión inactiva WeWeb — workflow On app load', type: 'Ajuste', detail: 'Workflow global On app load implementado: tracking actividad + refresh automático token + logout por inactividad según rol (1h usuarios / 8h admin)' },
+      { title: 'Email comunicaciones — Diferenciado del principal', type: 'Ajuste', detail: 'Mapeo consolidado: servicioscliente@iai.es (altas/bajas socio), formacion@iai.es (inscripciones/eventos), noreply@iai.es (auth). CC activado (Jon 13/05)' },
+      { title: 'Añadir datos a la arquitectura', type: 'Aclaración', detail: 'URLs y Endpoints de integración documentados (13/05)' }
     ]
   },
   pending: {
     socios: [
-      { title: '🚨 Inscribir a otra persona sigue sin funcionar', type: 'Bug', priority: 'Alta', target: '12/05', detail: 'Reapertura de #28 — usuarios registrados no ven la opción "inscribir a otra persona" para sus compañeros' },
       { title: '🚨 Fusiones de perfiles no funciona', type: 'Bug', priority: 'Alta', target: '15/05', detail: 'Nicolas Federico Delarroca (nicolas.delarroca@symrise.com fusionado con n.delarroca@gmail.com)' },
       { title: 'Código de ética obligatorio para todos los usuarios', type: 'Ajuste', priority: 'Media', target: '15/05', detail: 'Campo Supabase + forzar aceptación al login' },
-      { title: 'Reenviar invitación a eventos no aceptadas', type: 'Ajuste', priority: 'Media', target: '12/05', detail: 'Definir desde Portal Admin vs HubSpot' },
       { title: 'Creacion empresa en HubSpot', type: 'Ajuste', priority: 'Media', target: '13/05', detail: 'Detalle de campos por categoría' },
       { title: 'Segregar Admin y Super Admin', type: 'Ajuste', priority: 'Media', target: '20/05', detail: 'Dividir funciones; cambios solo desde Super Admin' },
       { title: 'Admin portal: usuarios registrados en listado de socios', type: 'Ajuste', priority: 'Media', target: '18/05', detail: 'Añadir tab de usuarios registrados no socios al listado de socios en Portal Admin' },
@@ -675,11 +677,9 @@ const data = {
       { title: 'Revisión facturación alta de socios', type: 'Aclaración', priority: 'Baja', target: null, detail: 'Revisar flujo completo de facturación al dar de alta nuevos socios corporativos e individuales' }
     ],
     ux: [
-      { title: 'Email comunicaciones — Diferenciado del principal', type: 'Ajuste', priority: 'Media', target: '13/05', detail: 'Alternativo para automatizados/marketing; CC: servicioscliente@iai.es (confirmado Tracy, Teams 05/05)' },
       { title: 'Email en copia (CC) en flujos no-auth', type: 'Ajuste', priority: 'Media', target: '15/05', detail: 'IAI dará email copia (eventos, cursos, invitaciones socios corp)' },
       { title: 'Agregar campo personalizado en el registro de usuarios', type: 'Ajuste', priority: 'Baja', target: '22/05', detail: 'Custom field con label editable' },
       { title: 'Clear filters', type: 'Ajuste', priority: 'Baja', target: '17/05', detail: 'Agregar botón' },
-      { title: 'Añadir datos a la arquitectura', type: 'Aclaración', priority: 'Baja', target: '13/05', detail: 'URLs y Endpoints de integración' },
       { title: 'Añadir descarga CSV de usuarios en listado de usuarios', type: 'Ajuste', priority: 'Baja', target: '22/05', detail: 'Exportar listado de usuarios a CSV desde Portal Admin' },
       { title: 'Pantalla de certificaciones', type: 'Ajuste', priority: 'Baja', target: '22/05', detail: 'Ver certificaciones por usuario + filtrar por tipo; añadir certificaciones desde admin para otros usuarios' },
       { title: 'Valorar panel de notificaciones centralizado', type: 'Ajuste', priority: 'Baja', target: '22/05', detail: 'Panel centralizado para notificaciones de cambios (para See The Change y otros)' }
