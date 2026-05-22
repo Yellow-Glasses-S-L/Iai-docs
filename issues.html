@@ -433,12 +433,12 @@ header {
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">39</div>
+      <div class="counter-num" style="color: var(--pending);">47</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">182</div>
+      <div class="counter-num" style="color: var(--resolved);">185</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -697,7 +697,8 @@ const data = {
       { title: 'D.1.1 No recibe correo confirmación inscripción HubSpot', type: 'Bug', detail: 'Resuelto. Sub-tarea derivada: FU-1 (usuarios marcados comunicaciones)' },
       { title: 'Precio incorrecto en frontend', type: 'Bug', detail: 'Resuelto.' },
       { title: 'Revisión facturación cambio de tramos', type: 'Aclaración', detail: 'Proceso revisado y validado' },
-      { title: 'Tarifa socio corp en boletín a no-socios', type: 'Bug', detail: 'Eukeni Hierro (Kutxabank, proforma HS-502628836579). Resuelto.' }
+      { title: 'Tarifa socio corp en boletín a no-socios', type: 'Bug', detail: 'Eukeni Hierro (Kutxabank, proforma HS-502628836579). Resuelto.' },
+      { title: 'Remitente de prefacturas configurado en belinda.rodriguez@iai.es', type: 'Ajuste', detail: 'Workflow HubSpot configurado para que las prefacturas salgan desde el buzón de Belinda' }
     ],
     ux: [
       { title: '#10 Documentos Esfera Consejeros no disponibles', type: 'Bug', detail: 'Perfiles WordPress revisados' },
@@ -731,7 +732,9 @@ const data = {
       { title: 'Dominio antiguo iai-portal.es reemplazado por portal.auditoresinternos.es', type: 'Bug', detail: 'Edge function antigua enviaba a dominio inexistente. Cambiada' },
       { title: 'Remitente atencionalsocio@iai.es corregido a atencionsocio@iai.es', type: 'Bug', detail: 'Email de crédito formativo salía con remitente erróneo. Corregido en remitente, reply-to y enlaces' },
       { title: 'Saludos email sin apellido — solo nombre', type: 'Ajuste', detail: 'Saludos cambian a "Hola, [Nombre]," (sin apellido)' },
-      { title: 'CC a buzones IAI en notificaciones', type: 'Ajuste', detail: 'servicioscliente@ a sí mismo; atencionsocio@ y formacion@ a sí mismos + servicioscliente. Emails sensibles (tokens, OTPs, reset) sin CC' }
+      { title: 'CC a buzones IAI en notificaciones', type: 'Ajuste', detail: 'servicioscliente@ a sí mismo; atencionsocio@ y formacion@ a sí mismos + servicioscliente. Emails sensibles (tokens, OTPs, reset) sin CC' },
+      { title: 'Diseño: texto navbar socio individual → corporativo', type: 'Ajuste', detail: 'Diseño cerrado. Implementación frontend pendiente como tarea separada' },
+      { title: 'Diseño: rediseño tarjeta números socios y créditos', type: 'Ajuste', detail: 'Diseño cerrado. Implementación frontend pendiente como tarea separada' }
     ]
   },
   pending: {
@@ -746,7 +749,8 @@ const data = {
       { title: 'Bugs flujo ALTA-SOCIO-01 — Eurofirms + TSK', type: 'Bug', priority: 'Alta', target: '25/05', detail: 'Agrupa N-S1 + N-S3. Workflow ALTA-SOCIO-01 falla en aprobación alta socio corp desde portal. Casos: Judit Sánchez (Eurofirms) + Ana Bernardo (TSK)' },
       { title: 'Acceso corporativo masivo — Telefónica + BNCR', type: 'Ajuste', priority: 'Media', target: '29/05', detail: 'Agrupa N-S4 + N-S5. Resets + whitelist email por dominio corp. Telefónica: 3 usuarios. BNCR: 7 contraseñas + whitelist dominio iai.es' },
       { title: 'Altas/bajas de socios para instituto global', type: 'Ajuste', priority: 'Alta', target: '27/05', detail: 'Flujo de alta y baja de socios adaptado para instituto global' },
-      { title: 'Auditoría calidad datos socios — cuadre general + consejeros', type: 'Aclaración', priority: 'Media', target: '25/06', detail: 'Agrupa N-D2 + N-D3. Cuadre SP↔HS de socios + foco en discrepancias del listado consejeros.' }
+      { title: 'Auditoría calidad datos socios — cuadre general + consejeros', type: 'Aclaración', priority: 'Media', target: '25/06', detail: 'Agrupa N-D2 + N-D3. Cuadre SP↔HS de socios + foco en discrepancias del listado consejeros.' },
+      { title: 'Preparar acceso/copia de BBDD iMIS para entrega a IAI', type: 'Ajuste', priority: 'Media', target: '28/05', detail: 'Cliente quiere evaluar los datos disponibles antes de pedir copia oficial al equipo iMIS' }
     ],
     producto: [
       { title: 'Adaptar página campus (Resumen + Documentos para Moodle)', type: 'Ajuste', priority: 'Media', target: '27/05', detail: 'Habilitar secciones Resumen y Documentos para cursos Moodle.' },
@@ -756,7 +760,8 @@ const data = {
       { title: 'Ponentes en cursos finalizados deben aparecer completados pero sin diploma', type: 'Ajuste', priority: 'Media', target: '25/05', detail: 'Definir comportamiento exacto para ponentes en cursos finalizados.' },
       { title: 'Fecha de fin = fecha inicio + 90 días', type: 'Ajuste', priority: 'Media', target: '26/05', detail: 'Regla de catálogo: fecha fin de cursos/eventos = fecha inicio + 90 días por defecto.' },
       { title: 'Cabecera de curso — consistencia + flexibilidad', type: 'Bug', priority: 'Media', target: '29/05', detail: 'Agrupa E-P3 + N-P8. Bug consistencia A.3.2 imagen cabecera + mejora flexibilidad para añadir cabecera (meeting 21/05)' },
-      { title: 'Decidir cómo alojar el Moodle antiguo', type: 'Aclaración', priority: 'Baja', target: '29/05', detail: 'Infraestructura Moodle legacy pendiente de decisión.' }
+      { title: 'Decidir cómo alojar el Moodle antiguo', type: 'Aclaración', priority: 'Baja', target: '29/05', detail: 'Infraestructura Moodle legacy pendiente de decisión.' },
+      { title: 'Preparar acceso/copia del Moodle antiguo para entrega a IAI', type: 'Ajuste', priority: 'Media', target: '28/05', detail: 'Diferente a la decisión de alojamiento futuro. Aquí solo proveer copia/acceso' }
     ],
     inscripciones: [
       { title: 'Conexión nirestream Horas Certificado (mínimo 85% visionado)', type: 'Ajuste', priority: 'Media', target: '28/05', detail: 'Integración con nirestream para verificar mínimo 85% de visionado antes de emitir certificado' },
@@ -772,7 +777,13 @@ const data = {
       { title: 'Admin poder usar código de descuento (RPC listo, falta bulk-invite)', type: 'Ajuste', priority: 'Media', target: '29/05', detail: 'promo_code en bulk-invite-event. RPC ya listo.' },
       { title: 'Revisión facturación alta de socios', type: 'Aclaración', priority: 'Alta', target: '26/05', detail: 'Revisar flujo completo de facturación al dar de alta nuevos socios corporativos e individuales' },
       { title: 'Consumo de créditos — identificar a qué bolsa corresponde', type: 'Aclaración', priority: 'Baja', target: '28/05', detail: 'Derivado de E-F1. Identificar qué bolsa de horas se descuenta en cada consumo.' },
-      { title: 'Exportar listados de horas compradas/usadas', type: 'Ajuste', priority: 'Baja', target: '27/05', detail: 'Portal sin botón exportar.' }
+      { title: 'Exportar listados de horas compradas/usadas', type: 'Ajuste', priority: 'Baja', target: '27/05', detail: 'Portal sin botón exportar.' },
+      { title: '🚨 Bug RGPD: prefactura se envía por error al asistente', type: 'Bug', priority: 'Alta', target: '25/05', detail: 'Naturgy (HS-504061479108) + CreditAndorra (HS-503645681902). Fix desplegado 22/05, pendiente verificación' },
+      { title: 'Texto del cuerpo del email de prefactura sin actualizar', type: 'Ajuste', priority: 'Alta', target: '26/05', detail: 'Permisos del perfil que actualiza el texto en HubSpot a revisar' },
+      { title: 'Listado de asistentes muestra nombre/email del inscriptor en vez del asistente', type: 'Bug', priority: 'Alta', target: '25/05', detail: 'Comparado con CSV real del mes de mayo. Bug en la vista/query del listado' },
+      { title: 'Ajuste manual de horas en formaciones sin asignación directa', type: 'Ajuste', priority: 'Media', target: '27/05', detail: 'Caso Telefónica/COSO. Aplicar horas a inscripciones que no permiten asignación directa' },
+      { title: 'Trazabilidad: identificar qué bolsa/crédito formativo se aplica en cada inscripción', type: 'Ajuste', priority: 'Baja', target: '03/06', detail: 'Mostrar ID de bolsa en cada línea de inscripción consumidora' },
+      { title: 'Pack Lunes (evento) no entran Pedidos en BC', type: 'Bug', priority: 'Media', target: '29/05', detail: 'Facturación manual hasta resolver. Tipología pack lunes sin flujo BC' }
     ],
     ux: [
       { title: 'Campo personalizado editable en registro de usuarios', type: 'Ajuste', priority: 'Baja', target: '27/05', detail: 'Custom field con label editable en el registro de usuarios' },
@@ -781,8 +792,8 @@ const data = {
       { title: 'Pantalla certificaciones (ver/añadir por usuario, filtrar tipo)', type: 'Ajuste', priority: 'Baja', target: '05/06', detail: 'Ver certificaciones por usuario + filtrar por tipo; añadir certificaciones desde admin para otros usuarios.' },
       { title: 'Panel notificaciones centralizado + preview de emails', type: 'Ajuste', priority: 'Baja', target: null, detail: 'Panel centralizado para notificaciones de cambios + preview de emails.' },
       { title: 'Campana de notificaciones', type: 'Ajuste', priority: 'Alta', target: '27/05', detail: 'Icono campana en portal con notificaciones en tiempo real.' },
-      { title: 'Texto en navbar: socio individual → corporativo (Diseño)', type: 'Ajuste', priority: 'Media', target: '22/05', detail: 'Rediseño texto navbar.' },
-      { title: 'Números de socios y créditos (Diseño/rediseño)', type: 'Ajuste', priority: 'Media', target: '22/05', detail: 'Rediseño visualización números de socios y créditos.' }
+      { title: 'Frontend: aplicar nuevo texto navbar socio individual → corporativo', type: 'Ajuste', priority: 'Media', target: '27/05', detail: 'Implementación frontend del diseño cerrado' },
+      { title: 'Frontend: aplicar rediseño tarjeta números socios y créditos', type: 'Ajuste', priority: 'Media', target: '27/05', detail: 'Implementación frontend del diseño cerrado' }
     ]
   }
 };
