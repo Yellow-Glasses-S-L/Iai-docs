@@ -391,7 +391,7 @@ header {
         <p>Post-migración Portal · Notion + Teams + Design Review</p>
       </div>
     </div>
-    <div class="update-info">Actualización: 14/05/2026</div>
+    <div class="update-info">Actualización: 22/05/2026</div>
   </div>
 </header>
 
@@ -400,12 +400,12 @@ header {
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">26</div>
+      <div class="counter-num" style="color: var(--pending);">39</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">144</div>
+      <div class="counter-num" style="color: var(--resolved);">182</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -415,7 +415,7 @@ header {
     </div>
     <div class="counter-card" data-tab="iai" onclick="switchTab('iai')">
       <div class="counter-icon">📋</div>
-      <div class="counter-num" style="color: var(--iai);">3</div>
+      <div class="counter-num" style="color: var(--iai);">6</div>
       <div class="counter-label">Para IAI</div>
     </div>
   </div>
@@ -485,6 +485,21 @@ header {
       <p>Email IMIS: <code>gregfernandez@gruposantander.com</code>. Activo en IMIS como socio corporativo, NO existe en HubSpot ni Supabase.</p>
       <div class="meta">Acción IAI · Verificar alta</div>
     </div>
+    <div class="iai-card">
+      <h3>📋 Marketing contacts HubSpot sin lista de comunicaciones — IAI decide</h3>
+      <p>Hay contactos marcados como marketing en HubSpot que no están asociados a ninguna lista de comunicaciones. IAI debe decidir cómo gestionarlos.</p>
+      <div class="meta">Acción IAI · Decisión pendiente</div>
+    </div>
+    <div class="iai-card">
+      <h3>📋 Recordatorio encuesta pausado — IAI debe aclarar requisitos por curso</h3>
+      <p>El envío automático de recordatorio de encuesta está pausado. IAI debe definir qué cursos y bajo qué condiciones deben activarse los recordatorios.</p>
+      <div class="meta">Acción IAI · Aclaración pendiente</div>
+    </div>
+    <div class="iai-card">
+      <h3>📋 Gemma Gomez Carrasco (Grifols) — IAI debe facilitar email corp</h3>
+      <p>La usuaria Gemma Gomez Carrasco (iMIS ID 1013987, empresa Grifols) no tiene email corporativo registrado. IAI debe facilitar el email correcto para poder completar el alta.</p>
+      <div class="meta">Acción IAI · Facilitar email corporativo</div>
+    </div>
   </div>
 
 </div>
@@ -542,7 +557,22 @@ const data = {
       { title: 'Teléfonos no migrados', type: 'Bug', detail: '+2.196 teléfonos actualizados desde IMIS (Jon 07/05)' },
       { title: 'SYNC-HS-CONTACT-ASSOC: sincronización empresa-contacto', type: 'Bug', detail: 'Workflow n8n publicado: actualiza current_company_id al asignar/desasociar empresa en HubSpot (Jon 07/05)' },
       { title: 'Bajas socios corporativos — selección tipo de baja', type: 'Ajuste', detail: 'Workflow n8n CORP-DOWNGRADE-01 publicado: detecta cambio tipo_socio_corporativo en HubSpot y actualiza estado en portal (Jon 08/05)' },
-      { title: 'Alta socio: aclarar crédito formativo contiene impuesto', type: 'Aclaración', detail: 'Aclarado con IAI: el crédito formativo incluye IVA en la cuota generada (11/05)' }
+      { title: 'Alta socio: aclarar crédito formativo contiene impuesto', type: 'Aclaración', detail: 'Aclarado con IAI: el crédito formativo incluye IVA en la cuota generada (11/05)' },
+      { title: 'Admin portal: tab de usuarios registrados no socios', type: 'Ajuste', detail: 'Tab añadido en listado de socios' },
+      { title: 'Socios corp activos no aparecían en HubSpot', type: 'Bug', detail: 'Concepción Ramos (Mapfre) + casos similares sincronizados' },
+      { title: 'Trigger notificación falsa de baja (121 socios)', type: 'Bug', detail: 'Notif desactivada. Distinguir reasignación rol vs baja real' },
+      { title: 'BAJA-SOCIO-CORP-01 fix + backfill', type: 'Bug', detail: 'Workflow corregido (member_type, es_miembro_, fecha_de_baja). 101 bajas históricas backfill' },
+      { title: 'Sync marketing_consent bidireccional', type: 'Ajuste', detail: 'Toggle portal escribe HS, cambios HS llegan al portal. Validado' },
+      { title: '9 notificaciones email+in-app desplegadas (Fase 2)', type: 'Ajuste', detail: 'Solicitud horas, autorización, rechazada, crédito agotado/sin usar, curso próximo, certificado, recordatorio invitación, encuesta (pausado)' },
+      { title: '7 notificaciones gestión socios (Fase 3)', type: 'Ajuste', detail: 'Designación gestor/representante, alta/denegación alta, alta corp, alta/baja afiliado, cambio condición socio corp' },
+      { title: '8 socios corp sin email iMIS dados de alta', type: 'Ajuste', detail: 'Santi facilitó emails. 8 creados HS+SP rol socio-corporativo' },
+      { title: '3 socios reactivados (status R) dados de alta', type: 'Ajuste', detail: 'Salvador Di Stefano + Margarita Prat Rodrigo (Romain Fonsanou descartado)' },
+      { title: '4 socios borrados de HS recreados', type: 'Bug', detail: 'Fluidra, Grupo Fuertes, Forvis Mazars. Recomendación: no borrar manualmente' },
+      { title: 'Luis Da Costa (Medvida) dado de alta', type: 'Bug', detail: 'iMIS A, HS marcaba baja por paid_through caducado' },
+      { title: '2 consejeros + Alfredo García Valdés en HS', type: 'Ajuste', detail: 'Mario Lara (ESADE), Bernard Cortijo (CIRSA) + Alfredo García Valdés' },
+      { title: '4 contactos de test eliminados', type: 'Ajuste', detail: 'Fatima14 Test14, Milagros Garcia Morado, CONSUELO CALLE 1, Fátima Roldán Test45' },
+      { title: 'Backfill sectores/naturaleza/sector afín contactos', type: 'Ajuste', detail: 'Archivo Limpia_Contactos V3 Sectores Nuevos.xlsx aplicado' },
+      { title: '622 productos presenciales Madrid sin venue asignados a Sede del IAI', type: 'Ajuste', detail: 'Backfill: productos presenciales en Madrid sin dirección reciben "Sede del IAI" como venue' }
     ],
     producto: [
       { title: '#2 Faltan reuniones y foros en eventos', type: 'Bug', detail: 'Sincronizado' },
@@ -558,7 +588,11 @@ const data = {
       { title: 'Opción Campus Virtual en menú se mueve', type: 'Bug', detail: 'Corregido' },
       { title: 'WordPress muestra COMPLETO cuando no hay aforo disponible', type: 'Ajuste', detail: 'auditoresinternos.es devuelve "COMPLETO" cuando la capacidad está agotada (Jon 07/05)' },
       { title: 'Interlineado muy corto en WordPress', type: 'Bug', detail: 'HTML mejorado, información del curso visible correctamente — coordinado con See the Change (Jon 08/05)' },
-      { title: 'Re-inscripción con créditos tras cancelación', type: 'Bug', detail: 'Re-inscripción ya funciona correctamente tras cancelación con créditos (Jon 08/05)' }
+      { title: 'Re-inscripción con créditos tras cancelación', type: 'Bug', detail: 'Re-inscripción ya funciona correctamente tras cancelación con créditos (Jon 08/05)' },
+      { title: 'Descarga de diplomas no funciona', type: 'Bug', detail: 'Resuelto' },
+      { title: 'Bloquear emails a cursos In House', type: 'Ajuste', detail: '80 productos marcados con inhouse=true. Cursos In House ya no envían email (campanita del portal sigue llegando)' },
+      { title: 'Modalidad, horario y lugar en emails confirmación inscripción', type: 'Ajuste', detail: 'Confirmaciones de inscripción a cursos ahora muestran modalidad, horario y lugar (antes solo en invitaciones a eventos)' },
+      { title: 'Jornada no se creaba/aparecía en WordPress', type: 'Bug', detail: 'Sync con WordPress corregido (meeting 21/05)' }
     ],
     inscripciones: [
       { title: '#3 Buscador Campus filtra solo por una fecha', type: 'Bug', detail: 'Ajustado' },
@@ -598,7 +632,8 @@ const data = {
       { title: 'Diplomas eLearning no visibles', type: 'Bug', detail: 'Emilio Arrate (earrate@pentavida.cl) y Ana Cristina Soto Fallas (asotof@bncr.fi.cr) — diplomas generados manualmente (07/05)' },
       { title: 'Participantes pre-migración aparecen como Pendiente', type: 'Bug', detail: 'Adrián Serrano Garrido (aserrano@mutuauniversal.net) — estado de asistencia corregido (07/05)' },
       { title: 'B.6.1 Horas formativas — revisión global', type: 'Ajuste', detail: 'Pantalla revisada y datos de horas CPE corregidos (07/05)' },
-      { title: 'Inscripción urgente — Jason Mark Hay (Grupo Fuertes)', type: 'Aclaración', detail: 'jason.hay@grupofuertes.com — contacto creado en HubSpot, company_member y rol socio-corporativo asignados en Supabase; inscripción realizada desde Portal Admin (08/05)' }
+      { title: 'Inscripción urgente — Jason Mark Hay (Grupo Fuertes)', type: 'Aclaración', detail: 'jason.hay@grupofuertes.com — contacto creado en HubSpot, company_member y rol socio-corporativo asignados en Supabase; inscripción realizada desde Portal Admin (08/05)' },
+      { title: 'Notificación confirmación a invitados duplicada', type: 'Bug', detail: 'Trigger corregido' }
     ],
     facturacion: [
       { title: '#14 No se puede actualizar tramo empresa desde portal', type: 'Aclaración', detail: 'Se hace desde HubSpot' },
@@ -617,7 +652,18 @@ const data = {
       { title: 'Créditos formativos — doble descuento post-migración ADIF', type: 'Bug', detail: 'Allocation de Elena Fernandez (IMIS-81729, 8h) eliminada. Balance: 62h→70h' },
       { title: 'Créditos formativos — allocation faltante Exolum', type: 'Bug', detail: 'Allocation de 6h creada para Marta Fernandez (IMIS-81781). Balance: 16h→10h' },
       { title: 'Emails inventados sesión anterior (Rita Estevez + Ramón Aznar)', type: 'Bug', detail: 'rita.estevez@isdefe.es → estevezluanarita@gmail.com; raznar@fincasloscercados.com → ramon.aznar.pascua@gmail.com. Corregido en HubSpot y Supabase auth+profiles' },
-      { title: 'Créditos formativos — cancelación parcial no refleja horas en "Usadas"', type: 'Bug', detail: 'Fix en dos funciones que hacían INSERT WHERE NOT EXISTS sin filtrar por status — canceladas contaban como duplicado. Corregido coherente con partial unique index. event-registration-check y bulk-invite-event ya filtraban correctamente (Jon 08/05)' }
+      { title: 'Créditos formativos — cancelación parcial no refleja horas en "Usadas"', type: 'Bug', detail: 'Fix en dos funciones que hacían INSERT WHERE NOT EXISTS sin filtrar por status — canceladas contaban como duplicado. Corregido coherente con partial unique index. event-registration-check y bulk-invite-event ya filtraban correctamente (Jon 08/05)' },
+      { title: 'Créditos Telefónica COSO — cancelación parcial + comentario', type: 'Ajuste', detail: 'Aplicado. Sub-tarea derivada: E-F5 (consumo créditos → qué bolsa)' },
+      { title: 'Prefactura sobrescribe denominación social en BC', type: 'Bug', detail: 'CaixaBank, CNMC, ACA, DIA Retail recuperados' },
+      { title: 'Prefacturas no llegan a Belinda (CC + Enviados)', type: 'Bug', detail: 'Activado 19/05, pendiente verificación recepción' },
+      { title: 'Email del inscriptor no vuelca en BC', type: 'Bug', detail: 'Resuelto' },
+      { title: 'COSO CI/ERM cuenta contable BC', type: 'Ajuste', detail: 'Cuenta contable aplicada' },
+      { title: 'COSO CI/ERM bloqueo inscripciones liberado', type: 'Bug', detail: 'Bug "Tipo de formación = Acreditación COSO"' },
+      { title: 'Bolsa horas Telefónica S.A. 460h creada', type: 'Ajuste', detail: 'Solicitud Belinda 29/04. HubSpot ID 503159820492, coste 0' },
+      { title: 'D.1.1 No recibe correo confirmación inscripción HubSpot', type: 'Bug', detail: 'Resuelto. Sub-tarea derivada: FU-1 (usuarios marcados comunicaciones)' },
+      { title: 'Precio incorrecto en frontend', type: 'Bug', detail: 'Reportado en reunión facturación 19/05. Tracy confirma resuelto 21/05' },
+      { title: 'Revisión facturación cambio de tramos', type: 'Aclaración', detail: 'Proceso revisado y validado' },
+      { title: 'Tarifa socio corp en boletín a no-socios', type: 'Bug', detail: 'Eukeni Hierro (Kutxabank, proforma HS-502628836579). Belinda+Laura 18/05. Resuelto 22/05' }
     ],
     ux: [
       { title: '#10 Documentos Esfera Consejeros no disponibles', type: 'Bug', detail: 'Perfiles WordPress revisados' },
@@ -644,45 +690,65 @@ const data = {
       { title: 'A.1.2 Sesión inactiva WordPress — sliding window 1h', type: 'Ajuste', detail: 'Mensaje enviado a SeeTheChange para configurar expiración tras 1h sin actividad' },
       { title: 'A.1.2 Sesión inactiva WeWeb — workflow On app load', type: 'Ajuste', detail: 'Workflow global On app load implementado: tracking actividad + refresh automático token + logout por inactividad según rol (1h usuarios / 8h admin)' },
       { title: 'Email comunicaciones — Diferenciado del principal', type: 'Ajuste', detail: 'Mapeo consolidado: servicioscliente@iai.es (altas/bajas socio), formacion@iai.es (inscripciones/eventos), noreply@iai.es (auth). CC activado (Jon 13/05)' },
-      { title: 'Añadir datos a la arquitectura', type: 'Aclaración', detail: 'URLs y Endpoints de integración documentados (13/05)' }
+      { title: 'Añadir datos a la arquitectura', type: 'Aclaración', detail: 'URLs y Endpoints de integración documentados (13/05)' },
+      { title: 'Email CC en flujos no-auth', type: 'Ajuste', detail: 'Implementado' },
+      { title: 'B.1.2 Filtro fecha histórico corregido', type: 'Bug', detail: 'Filtro "hasta fecha X" no incluía último día. Belinda confirma 19/05' },
+      { title: 'Encoding &oacute; en asuntos emails de cursos', type: 'Bug', detail: 'Asuntos rotos llegaban con &oacute; en lugar de "ó". Corregido' },
+      { title: 'Dominio antiguo iai-portal.es reemplazado por portal.auditoresinternos.es', type: 'Bug', detail: 'Edge function antigua enviaba a dominio inexistente. Cambiada' },
+      { title: 'Remitente atencionalsocio@iai.es corregido a atencionsocio@iai.es', type: 'Bug', detail: 'Email de crédito formativo salía con remitente erróneo. Corregido en remitente, reply-to y enlaces' },
+      { title: 'Saludos email sin apellido — solo nombre', type: 'Ajuste', detail: 'Saludos cambian a "Hola, [Nombre]," (sin apellido)' },
+      { title: 'CC a buzones IAI en notificaciones', type: 'Ajuste', detail: 'servicioscliente@ a sí mismo; atencionsocio@ y formacion@ a sí mismos + servicioscliente. Emails sensibles (tokens, OTPs, reset) sin CC' }
     ]
   },
   pending: {
     socios: [
-      { title: '🚨 Fusiones de perfiles no funciona', type: 'Bug', priority: 'Alta', target: '15/05', detail: 'Nicolas Federico Delarroca (nicolas.delarroca@symrise.com fusionado con n.delarroca@gmail.com)' },
-      { title: 'Código de ética obligatorio para todos los usuarios', type: 'Ajuste', priority: 'Media', target: '15/05', detail: 'Campo Supabase + forzar aceptación al login' },
-      { title: 'Creacion empresa en HubSpot', type: 'Ajuste', priority: 'Media', target: '13/05', detail: 'Detalle de campos por categoría' },
-      { title: 'Segregar Admin y Super Admin', type: 'Ajuste', priority: 'Media', target: '20/05', detail: 'Dividir funciones; cambios solo desde Super Admin' },
-      { title: 'Admin portal: usuarios registrados en listado de socios', type: 'Ajuste', priority: 'Media', target: '18/05', detail: 'Añadir tab de usuarios registrados no socios al listado de socios en Portal Admin' },
-      { title: 'Al crear empresa, añadir sector afín', type: 'Ajuste', priority: 'Media', target: '18/05', detail: 'En el flujo de aprobación/creación de empresa, incluir campo sector afín' },
+      { title: '🚨 Fusiones de perfiles no funciona (Symrise: Nicolas Delarroca)', type: 'Bug', priority: 'Alta', target: '26/05', detail: 'Workflow ALTA-SOCIO-01 o fusión manual — nicolas.delarroca@symrise.com fusionado con n.delarroca@gmail.com' },
+      { title: 'Código de ética obligatorio para todos los usuarios', type: 'Ajuste', priority: 'Media', target: '25/05', detail: 'Campo Supabase + forzar aceptación al login. Tracy 21/05' },
+      { title: 'Creación empresa en HubSpot — detalle de campos por categoría', type: 'Ajuste', priority: 'Media', target: '27/05', detail: 'Definir qué campos son obligatorios/opcionales según categoría de empresa' },
+      { title: 'Segregar Admin y Super Admin', type: 'Ajuste', priority: 'Baja', target: null, detail: 'Dividir funciones; cambios sensibles solo desde Super Admin' },
+      { title: 'Al crear empresa, incluir campo sector afín en flujo aprobación', type: 'Ajuste', priority: 'Media', target: '23/05', detail: 'En el flujo de aprobación/creación de empresa, incluir campo sector afín. Tracy 21/05' },
+      { title: 'Invitación de alta no llega al miembro (Estrella Galicia)', type: 'Bug', priority: 'Media', target: '26/05', detail: 'Notificar cuando se añade el usuario directamente. Revisar. srodriguez→npequeno @estrellagalicia.es. Tracy 18/05' },
+      { title: 'Baja de Ana Belén Díaz Fernández desde portal no se refleja', type: 'Bug', priority: 'Alta', target: '25/05', detail: 'Reportado 21/05. Sin estado de baja ni fecha de baja en el sistema' },
+      { title: 'Bugs flujo ALTA-SOCIO-01 — Eurofirms + TSK', type: 'Bug', priority: 'Alta', target: '25/05', detail: 'Agrupa N-S1 + N-S3. Workflow ALTA-SOCIO-01 falla en aprobación alta socio corp desde portal. Casos: Judit Sánchez (Eurofirms) + Ana Bernardo (TSK)' },
+      { title: 'Acceso corporativo masivo — Telefónica + BNCR', type: 'Ajuste', priority: 'Media', target: '29/05', detail: 'Agrupa N-S4 + N-S5. Resets + whitelist email por dominio corp. Telefónica: 3 usuarios. BNCR: 7 contraseñas + whitelist dominio iai.es' },
+      { title: 'Altas/bajas de socios para instituto global', type: 'Ajuste', priority: 'Alta', target: '27/05', detail: 'Flujo de alta y baja de socios adaptado para instituto global' },
+      { title: 'Auditoría calidad datos socios — cuadre general + consejeros', type: 'Aclaración', priority: 'Media', target: '25/06', detail: 'Agrupa N-D2 + N-D3. Cuadre SP↔HS de socios + foco en discrepancias del listado consejeros. Reunión datos 20/05' }
     ],
     producto: [
-      { title: 'Adaptar pagina de campus (resumen + documentos)', type: 'Ajuste', priority: 'Media', target: '15/05', detail: 'Habilitar Resumen y Documentos para Moodle' },
-      { title: 'Bloquear mensajes y emails a cursos tipo In house', type: 'Ajuste', priority: 'Media', target: null, detail: 'No enviar comunicaciones automáticas (emails, notificaciones de inscripción) para cursos de tipo In House' },
-      { title: 'A.3.2 Imagen cabecera del curso inconsistente', type: 'Aclaración', priority: 'Baja', target: '15/05', detail: 'Revisar con cliente' }
+      { title: 'Adaptar página campus (Resumen + Documentos para Moodle)', type: 'Ajuste', priority: 'Media', target: '27/05', detail: 'Habilitar secciones Resumen y Documentos para cursos Moodle. Tracy 21/05' },
+      { title: 'Diplomas eLearning manuales: 2 casos pendientes', type: 'Bug', priority: 'Media', target: '28/05', detail: 'Emilio Arrate "Segregación de funciones" + Ana Cristina Soto "Normas Globales". Javier 06/05' },
+      { title: 'Modalidad evento no aparece en correo (Foro DAIs químico/farmacéutico)', type: 'Bug', priority: 'Media', target: '29/05', detail: 'Tracy añadió "VIRTUAL" manualmente al texto. Tracy 18/05' },
+      { title: 'Añadir cuestionario retribuciones de ponentes', type: 'Ajuste', priority: 'Baja', target: '04/06', detail: 'Meeting 21/05. Formulario/cuestionario de retribuciones para ponentes' },
+      { title: 'Ponentes en cursos finalizados deben aparecer completados pero sin diploma', type: 'Ajuste', priority: 'Media', target: '25/05', detail: 'Meeting 21/05. Hablar con Tracy para definir comportamiento exacto' },
+      { title: 'Fecha de fin = fecha inicio + 90 días', type: 'Ajuste', priority: 'Media', target: '26/05', detail: 'Meeting 21/05. Regla de catálogo: fecha fin de cursos/eventos = fecha inicio + 90 días por defecto' },
+      { title: 'Cabecera de curso — consistencia + flexibilidad', type: 'Bug', priority: 'Media', target: '29/05', detail: 'Agrupa E-P3 + N-P8. Bug consistencia A.3.2 imagen cabecera + mejora flexibilidad para añadir cabecera (meeting 21/05)' },
+      { title: 'Decidir cómo alojar el Moodle antiguo', type: 'Aclaración', priority: 'Baja', target: '29/05', detail: 'Infraestructura Moodle legacy. Reunión datos 20/05' }
     ],
     inscripciones: [
-      { title: 'D.1.1 No recibe correo confirmación inscripción (HubSpot)', type: 'Bug', priority: 'Alta', target: '12/05', detail: 'Revisar integración y disparo del email' },
-      { title: 'Conexión nirestream Horas Certificado', type: 'Ajuste', priority: 'Media', target: '15/05', detail: 'Certificado mínimo 85% visionado' },
-      { title: 'Eventos con DNI requerido (ampliar)', type: 'Ajuste', priority: 'Media', target: '22/05', detail: 'Campos personalizados por evento, no solo DNI' },
-      { title: 'Inscripciones DSV: 18 personas', type: 'Aclaración', priority: 'Media', target: null, detail: 'Pendiente validar con IAI' },
-      { title: 'Crear formulario Alergias HubSpot', type: 'Ajuste', priority: 'Baja', target: '22/05', detail: 'Formulario + enviar en ciertos eventos' },
-      { title: 'Impresión Cartel de Mesa', type: 'Ajuste', priority: 'Baja', target: '14/05', detail: 'Cursos presenciales' },
-      { title: 'B.1.2 Filtro por fecha del mes actual por defecto', type: 'Ajuste', priority: 'Baja', target: '13/05', detail: 'Listado admin' }
+      { title: 'Conexión nirestream Horas Certificado (mínimo 85% visionado)', type: 'Ajuste', priority: 'Media', target: '28/05', detail: 'Integración con nirestream para verificar mínimo 85% de visionado antes de emitir certificado' },
+      { title: 'Inscripciones DSV: 18 personas (validar con IAI)', type: 'Aclaración', priority: 'Media', target: '27/05', detail: 'Pendiente validar con IAI la inscripción de 18 personas de DSV' },
+      { title: 'Campos personalizables por evento (DNI, alergias, etc.)', type: 'Ajuste', priority: 'Baja', target: '05/06', detail: 'Agrupa E-I3 + E-I5. Feature campos custom configurables por evento: DNI (E-I3) + formulario Alergias HubSpot (E-I5)' },
+      { title: 'Impresión Cartel de Mesa para cursos presenciales', type: 'Ajuste', priority: 'Alta', target: '29/05', detail: 'Meeting 21/05 subió prioridad. Esperando medidas y fotos del cliente' },
+      { title: 'B.1.2 Filtro fecha mes actual por defecto en listado admin', type: 'Ajuste', priority: 'Baja', target: '29/05', detail: 'Listado admin debe filtrar por mes actual por defecto. Tracy 21/05' },
+      { title: 'Inscripciones Moodle no sincronizan (7 casos)', type: 'Bug', priority: 'Alta', target: '26/05', detail: 'Repsol/IOC + 5 Kutxabank "Ética Empresarial". Workaround manual aplicado, falta causa raíz. Atención al Socio 19/05' },
+      { title: 'bulk-invite-event COSO: default payment_method=credits falla', type: 'Bug', priority: 'Alta', target: '26/05', detail: 'Reabierto 21/05. Productos con accepts_training_credits=false fallan con PRODUCT_NOT_CREDIT_ELIGIBLE' },
+      { title: 'Usuario-cliente de empresa no puede inscribir a compañeros', type: 'Bug', priority: 'Alta', target: '25/05', detail: 'Meeting 21/05. Caso específico distinto del antiguo #28 (socio-corporativo) ya resuelto. Aquí el rol es usuario-cliente' }
     ],
     facturacion: [
-      { title: '🚨 Créditos formativos — ajuste manual para cursos especiales', type: 'Ajuste', priority: 'Alta', target: '15/05', detail: 'Telefónica: aplicar créditos a COSO CI/ERM/ASG-UE; añadir cancelación parcial de horas + campo texto de comentario' },
-      { title: 'Admin poder usar código de descuento', type: 'Ajuste', priority: 'Media', target: '15/05', detail: 'promo_code en bulk-invite-event (RPC listo)' },
-      { title: 'Revisión facturación cambio de tramos', type: 'Aclaración', priority: 'Media', target: null, detail: 'Flujo: cambio desde HubSpot; tramo inferior no genera factura, tramo superior genera factura por incremento prorrateado al resto del año (Jon 07/05) — pendiente validar con Belinda' },
-      { title: 'Revisión facturación alta de socios', type: 'Aclaración', priority: 'Baja', target: null, detail: 'Revisar flujo completo de facturación al dar de alta nuevos socios corporativos e individuales' }
+      { title: 'Admin poder usar código de descuento (RPC listo, falta bulk-invite)', type: 'Ajuste', priority: 'Media', target: '29/05', detail: 'promo_code en bulk-invite-event. RPC ya listo. Tracy 21/05' },
+      { title: 'Revisión facturación alta de socios', type: 'Aclaración', priority: 'Alta', target: '26/05', detail: 'Revisar flujo completo de facturación al dar de alta nuevos socios corporativos e individuales' },
+      { title: 'Consumo de créditos — identificar a qué bolsa corresponde', type: 'Aclaración', priority: 'Baja', target: '28/05', detail: 'Derivado de E-F1. Tracy 21/05 (Jon confirmar). Identificar qué bolsa de horas se descuenta en cada consumo' },
+      { title: 'Exportar listados de horas compradas/usadas', type: 'Ajuste', priority: 'Baja', target: '27/05', detail: 'Portal sin botón exportar. Belinda 19/05. Tracy 21/05' }
     ],
     ux: [
-      { title: 'Email en copia (CC) en flujos no-auth', type: 'Ajuste', priority: 'Media', target: '15/05', detail: 'IAI dará email copia (eventos, cursos, invitaciones socios corp)' },
-      { title: 'Agregar campo personalizado en el registro de usuarios', type: 'Ajuste', priority: 'Baja', target: '22/05', detail: 'Custom field con label editable' },
-      { title: 'Clear filters', type: 'Ajuste', priority: 'Baja', target: '17/05', detail: 'Agregar botón' },
-      { title: 'Añadir descarga CSV de usuarios en listado de usuarios', type: 'Ajuste', priority: 'Baja', target: '22/05', detail: 'Exportar listado de usuarios a CSV desde Portal Admin' },
-      { title: 'Pantalla de certificaciones', type: 'Ajuste', priority: 'Baja', target: '22/05', detail: 'Ver certificaciones por usuario + filtrar por tipo; añadir certificaciones desde admin para otros usuarios' },
-      { title: 'Valorar panel de notificaciones centralizado', type: 'Ajuste', priority: 'Baja', target: '22/05', detail: 'Panel centralizado para notificaciones de cambios (para See The Change y otros)' }
+      { title: 'Campo personalizado editable en registro de usuarios', type: 'Ajuste', priority: 'Baja', target: '27/05', detail: 'Custom field con label editable en el registro de usuarios' },
+      { title: 'Botón Clear filters', type: 'Ajuste', priority: 'Baja', target: '29/05', detail: 'Agregar botón para limpiar filtros activos. Tracy 21/05' },
+      { title: 'Descarga XLSX usuarios desde Portal Admin', type: 'Ajuste', priority: 'Alta', target: '23/05', detail: 'Exportar listado de usuarios a XLSX desde Portal Admin. Tracy 21/05' },
+      { title: 'Pantalla certificaciones (ver/añadir por usuario, filtrar tipo)', type: 'Ajuste', priority: 'Baja', target: '05/06', detail: 'Ver certificaciones por usuario + filtrar por tipo; añadir certificaciones desde admin para otros usuarios. Tracy 21/05' },
+      { title: 'Panel notificaciones centralizado + preview de emails', type: 'Ajuste', priority: 'Baja', target: null, detail: 'Panel centralizado para notificaciones de cambios + preview de emails. Tracy 21/05 (Jon confirmar)' },
+      { title: 'Campana de notificaciones', type: 'Ajuste', priority: 'Alta', target: '27/05', detail: 'Icono campana en portal con notificaciones en tiempo real. Tracy 21/05' },
+      { title: 'Texto en navbar: socio individual → corporativo (Diseño)', type: 'Ajuste', priority: 'Media', target: '22/05', detail: 'Rediseño texto navbar. Rebeca 21/05' },
+      { title: 'Números de socios y créditos (Diseño/rediseño)', type: 'Ajuste', priority: 'Media', target: '22/05', detail: 'Rediseño visualización números de socios y créditos. Rebeca 21/05' }
     ]
   }
 };
@@ -772,12 +838,11 @@ function switchTab(tab) {
 
 function parseDateForSort(target) {
   if (!target) return Infinity;
-  // target is like "08/05" — parse as day/month, use current year
   const parts = target.split('/');
   if (parts.length !== 2) return Infinity;
   const d = parseInt(parts[0], 10);
   const m = parseInt(parts[1], 10);
-  return m * 100 + d; // simple numeric sort: month * 100 + day
+  return m * 100 + d;
 }
 
 function formatDateLabel(target) {
@@ -791,14 +856,10 @@ function formatDateLabel(target) {
 
 function buildRoadmap() {
   const container = document.getElementById('roadmap-content');
-
-  // Collect all pending items with their proc key
   let allItems = [];
   for (const [key, items] of Object.entries(data.pending)) {
     items.forEach(it => allItems.push({ ...it, _proc: key }));
   }
-
-  // Group by target
   const groups = {};
   const noDate = [];
   allItems.forEach(item => {
@@ -809,12 +870,8 @@ function buildRoadmap() {
       noDate.push(item);
     }
   });
-
-  // Sort dates chronologically
   const sortedDates = Object.keys(groups).sort((a, b) => parseDateForSort(a) - parseDateForSort(b));
-
   let html = '';
-
   sortedDates.forEach((date, idx) => {
     const items = groups[date];
     const isLast = idx === sortedDates.length - 1 && noDate.length === 0;
@@ -828,7 +885,6 @@ function buildRoadmap() {
       </div>
     </div>`;
   });
-
   if (noDate.length > 0) {
     html += `<div class="roadmap-group">
       <div class="roadmap-date-col">
@@ -839,7 +895,6 @@ function buildRoadmap() {
       </div>
     </div>`;
   }
-
   container.innerHTML = html || '<div class="empty">No hay ítems pendientes.</div>';
 }
 
