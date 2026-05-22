@@ -433,12 +433,12 @@ header {
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">47</div>
+      <div class="counter-num" style="color: var(--pending);">46</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">185</div>
+      <div class="counter-num" style="color: var(--resolved);">189</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -606,7 +606,8 @@ const data = {
       { title: '2 consejeros + Alfredo García Valdés en HS', type: 'Ajuste', detail: 'Mario Lara (ESADE), Bernard Cortijo (CIRSA) + Alfredo García Valdés' },
       { title: '4 contactos de test eliminados', type: 'Ajuste', detail: 'Fatima14 Test14, Milagros Garcia Morado, CONSUELO CALLE 1, Fátima Roldán Test45' },
       { title: 'Backfill sectores/naturaleza/sector afín contactos', type: 'Ajuste', detail: 'Archivo Limpia_Contactos V3 Sectores Nuevos.xlsx aplicado' },
-      { title: '622 productos presenciales Madrid sin venue asignados a Sede del IAI', type: 'Ajuste', detail: 'Backfill: productos presenciales en Madrid sin dirección reciben "Sede del IAI" como venue' }
+      { title: '622 productos presenciales Madrid sin venue asignados a Sede del IAI', type: 'Ajuste', detail: 'Backfill: productos presenciales en Madrid sin dirección reciben "Sede del IAI" como venue' },
+      { title: 'Al crear empresa, incluir campo sector afín en flujo aprobación', type: 'Ajuste', completed_at: '22/05', detail: 'Campo sector afín integrado en el flujo de aprobación de alta de empresa' }
     ],
     producto: [
       { title: '#2 Faltan reuniones y foros en eventos', type: 'Bug', detail: 'Sincronizado' },
@@ -626,7 +627,8 @@ const data = {
       { title: 'Descarga de diplomas no funciona', type: 'Bug', detail: 'Resuelto' },
       { title: 'Bloquear emails a cursos In House', type: 'Ajuste', detail: '80 productos marcados con inhouse=true. Cursos In House ya no envían email (campanita del portal sigue llegando)' },
       { title: 'Modalidad, horario y lugar en emails confirmación inscripción', type: 'Ajuste', detail: 'Confirmaciones de inscripción a cursos ahora muestran modalidad, horario y lugar (antes solo en invitaciones a eventos)' },
-      { title: 'Jornada no se creaba/aparecía en WordPress', type: 'Bug', detail: 'Sync con WordPress corregido.' }
+      { title: 'Jornada no se creaba/aparecía en WordPress', type: 'Bug', detail: 'Sync con WordPress corregido.' },
+      { title: 'Click en uno de los lunes llevaba al pack en vez del evento concreto', type: 'Bug', completed_at: '22/05', detail: 'Navegación en "Mis eventos": al pulsar un lunes individual redirigía al pack contenedor. Corregido para abrir el evento concreto' }
     ],
     inscripciones: [
       { title: '#3 Buscador Campus filtra solo por una fecha', type: 'Bug', detail: 'Ajustado' },
@@ -667,7 +669,8 @@ const data = {
       { title: 'Participantes pre-migración aparecen como Pendiente', type: 'Bug', detail: 'Adrián Serrano Garrido (aserrano@mutuauniversal.net) — estado de asistencia corregido (07/05)' },
       { title: 'B.6.1 Horas formativas — revisión global', type: 'Ajuste', detail: 'Pantalla revisada y datos de horas CPE corregidos (07/05)' },
       { title: 'Inscripción urgente — Jason Mark Hay (Grupo Fuertes)', type: 'Aclaración', detail: 'jason.hay@grupofuertes.com — contacto creado en HubSpot, company_member y rol socio-corporativo asignados en Supabase; inscripción realizada desde Portal Admin (08/05)' },
-      { title: 'Notificación confirmación a invitados duplicada', type: 'Bug', detail: 'Trigger corregido' }
+      { title: 'Notificación confirmación a invitados duplicada', type: 'Bug', detail: 'Trigger corregido' },
+      { title: 'Precio sin IVA en sección de pago hasta recargar página', type: 'Bug', completed_at: '22/05', detail: 'Bug visual del checkout: el precio total se mostraba sin IVA hasta recarga manual o cambio de método de pago. Reproducido en "Jornadas de Auditoría Interna presenciales 2026"' }
     ],
     facturacion: [
       { title: '#14 No se puede actualizar tramo empresa desde portal', type: 'Aclaración', detail: 'Se hace desde HubSpot' },
@@ -734,7 +737,8 @@ const data = {
       { title: 'Saludos email sin apellido — solo nombre', type: 'Ajuste', detail: 'Saludos cambian a "Hola, [Nombre]," (sin apellido)' },
       { title: 'CC a buzones IAI en notificaciones', type: 'Ajuste', detail: 'servicioscliente@ a sí mismo; atencionsocio@ y formacion@ a sí mismos + servicioscliente. Emails sensibles (tokens, OTPs, reset) sin CC' },
       { title: 'Diseño: texto navbar socio individual → corporativo', type: 'Ajuste', completed_at: '22/05', detail: 'Diseño cerrado. Implementación frontend pendiente como tarea separada' },
-      { title: 'Diseño: rediseño tarjeta números socios y créditos', type: 'Ajuste', completed_at: '22/05', detail: 'Diseño cerrado. Implementación frontend pendiente como tarea separada' }
+      { title: 'Diseño: rediseño tarjeta números socios y créditos', type: 'Ajuste', completed_at: '22/05', detail: 'Diseño cerrado. Implementación frontend pendiente como tarea separada' },
+      { title: 'Texto "código promocional" aparecía cortado', type: 'Bug', completed_at: '22/05', detail: 'Ajuste visual del input de código promocional' }
     ]
   },
   pending: {
@@ -743,13 +747,12 @@ const data = {
       { title: 'Código de ética obligatorio para todos los usuarios', type: 'Ajuste', priority: 'Media', target: '25/05', detail: 'Campo Supabase + forzar aceptación al login.' },
       { title: 'Creación empresa en HubSpot — detalle de campos por categoría', type: 'Ajuste', priority: 'Media', target: '27/05', detail: 'Definir qué campos son obligatorios/opcionales según categoría de empresa' },
       { title: 'Segregar Admin y Super Admin', type: 'Ajuste', priority: 'Baja', target: null, detail: 'Dividir funciones; cambios sensibles solo desde Super Admin' },
-      { title: 'Al crear empresa, incluir campo sector afín en flujo aprobación', type: 'Ajuste', priority: 'Media', target: '25/05', detail: 'En el flujo de aprobación/creación de empresa, incluir campo sector afín.' },
       { title: 'Invitación de alta no llega al miembro (Estrella Galicia)', type: 'Bug', priority: 'Media', target: '26/05', detail: 'Notificar cuando se añade el usuario directamente. Revisar. srodriguez→npequeno @estrellagalicia.es.' },
       { title: 'Baja de Ana Belén Díaz Fernández desde portal no se refleja', type: 'Bug', priority: 'Alta', target: '25/05', detail: 'Sin estado de baja ni fecha de baja en el sistema.' },
       { title: 'Bugs flujo ALTA-SOCIO-01 — Eurofirms + TSK', type: 'Bug', priority: 'Alta', target: '25/05', detail: 'Agrupa N-S1 + N-S3. Workflow ALTA-SOCIO-01 falla en aprobación alta socio corp desde portal. Casos: Judit Sánchez (Eurofirms) + Ana Bernardo (TSK)' },
       { title: 'Acceso corporativo masivo — Telefónica + BNCR', type: 'Ajuste', priority: 'Media', target: '29/05', detail: 'Agrupa N-S4 + N-S5. Resets + whitelist email por dominio corp. Telefónica: 3 usuarios. BNCR: 7 contraseñas + whitelist dominio iai.es' },
       { title: 'Altas/bajas de socios para instituto global', type: 'Ajuste', priority: 'Alta', target: '27/05', detail: 'Flujo de alta y baja de socios adaptado para instituto global' },
-      { title: 'Auditoría calidad datos socios — cuadre general + consejeros', type: 'Aclaración', priority: 'Media', target: '25/06', detail: 'Agrupa N-D2 + N-D3. Cuadre SP↔HS de socios + foco en discrepancias del listado consejeros.' },
+      { title: 'Auditoría calidad datos socios — cuadre general + consejeros', type: 'Aclaración', priority: 'Media', target: '26/05', detail: 'Agrupa N-D2 + N-D3. Cuadre SP↔HS de socios + foco en discrepancias del listado consejeros.' },
       { title: 'Preparar acceso/copia de BBDD iMIS para entrega a IAI', type: 'Ajuste', priority: 'Media', target: '28/05', detail: 'Cliente quiere evaluar los datos disponibles antes de pedir copia oficial al equipo iMIS' }
     ],
     producto: [
