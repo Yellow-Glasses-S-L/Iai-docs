@@ -433,12 +433,12 @@ header {
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">46</div>
+      <div class="counter-num" style="color: var(--pending);">41</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">189</div>
+      <div class="counter-num" style="color: var(--resolved);">191</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -629,6 +629,8 @@ const data = {
       { title: 'Modalidad, horario y lugar en emails confirmación inscripción', type: 'Ajuste', detail: 'Confirmaciones de inscripción a cursos ahora muestran modalidad, horario y lugar (antes solo en invitaciones a eventos)' },
       { title: 'Jornada no se creaba/aparecía en WordPress', type: 'Bug', detail: 'Sync con WordPress corregido.' },
       { title: 'Click en uno de los lunes llevaba al pack en vez del evento concreto', type: 'Bug', completed_at: '22/05', detail: 'Navegación en "Mis eventos": al pulsar un lunes individual redirigía al pack contenedor. Corregido para abrir el evento concreto' }
+      { title: 'Modalidad evento no aparece en correo (Foro DAIs químico/farmacéutico)', type: 'Bug', completed_at: '25/05', detail: 'Configuración del evento corregida para mostrar modalidad virtual en email automático' },
+      { title: 'Ponentes en cursos finalizados deben aparecer completados pero sin diploma', type: 'Ajuste', completed_at: '25/05', detail: 'Estado completado para ponentes sin emisión de diploma' }
     ],
     inscripciones: [
       { title: '#3 Buscador Campus filtra solo por una fecha', type: 'Bug', detail: 'Ajustado' },
@@ -758,13 +760,10 @@ const data = {
     producto: [
       { title: 'Adaptar página campus (Resumen + Documentos para Moodle)', type: 'Ajuste', priority: 'Media', target: '27/05', detail: 'Habilitar secciones Resumen y Documentos para cursos Moodle.' },
       { title: 'Diplomas eLearning manuales: 2 casos pendientes', type: 'Bug', priority: 'Media', target: '28/05', detail: 'Emilio Arrate "Segregación de funciones" + Ana Cristina Soto "Normas Globales".' },
-      { title: 'Modalidad evento no aparece en correo (Foro DAIs químico/farmacéutico)', type: 'Bug', priority: 'Media', target: '29/05', detail: 'Modalidad no se incluye automáticamente en el email. "VIRTUAL" añadido manualmente como workaround.' },
       { title: 'Añadir cuestionario retribuciones de ponentes', type: 'Ajuste', priority: 'Baja', target: '04/06', detail: 'Formulario/cuestionario de retribuciones para ponentes.' },
-      { title: 'Ponentes en cursos finalizados deben aparecer completados pero sin diploma', type: 'Ajuste', priority: 'Media', target: '25/05', detail: 'Definir comportamiento exacto para ponentes en cursos finalizados.' },
       { title: 'Fecha de fin = fecha inicio + 90 días', type: 'Ajuste', priority: 'Media', target: '26/05', detail: 'Regla de catálogo: fecha fin de cursos/eventos = fecha inicio + 90 días por defecto.' },
       { title: 'Cabecera de curso — consistencia + flexibilidad', type: 'Bug', priority: 'Media', target: '29/05', detail: 'Agrupa E-P3 + N-P8. Bug consistencia A.3.2 imagen cabecera + mejora flexibilidad para añadir cabecera (meeting 21/05)' },
       { title: 'Decidir cómo alojar el Moodle antiguo', type: 'Aclaración', priority: 'Baja', target: '29/05', detail: 'Infraestructura Moodle legacy pendiente de decisión.' },
-      { title: 'Preparar acceso/copia del Moodle antiguo para entrega a IAI', type: 'Ajuste', priority: 'Media', target: '28/05', detail: 'Diferente a la decisión de alojamiento futuro. Aquí solo proveer copia/acceso' }
     ],
     inscripciones: [
       { title: 'Conexión nirestream Horas Certificado (mínimo 85% visionado)', type: 'Ajuste', priority: 'Media', target: '28/05', detail: 'Integración con nirestream para verificar mínimo 85% de visionado antes de emitir certificado' },
@@ -779,7 +778,6 @@ const data = {
     facturacion: [
       { title: 'Admin poder usar código de descuento (RPC listo, falta bulk-invite)', type: 'Ajuste', priority: 'Media', target: '29/05', detail: 'promo_code en bulk-invite-event. RPC ya listo.' },
       { title: 'Revisión facturación alta de socios', type: 'Aclaración', priority: 'Alta', target: '26/05', detail: 'Revisar flujo completo de facturación al dar de alta nuevos socios corporativos e individuales' },
-      { title: 'Consumo de créditos — identificar a qué bolsa corresponde', type: 'Aclaración', priority: 'Baja', target: '28/05', detail: 'Derivado de E-F1. Identificar qué bolsa de horas se descuenta en cada consumo.' },
       { title: 'Exportar listados de horas compradas/usadas', type: 'Ajuste', priority: 'Baja', target: '27/05', detail: 'Portal sin botón exportar.' },
       { title: '🚨 Bug RGPD: prefactura se envía por error al asistente', type: 'Bug', priority: 'Alta', target: '25/05', detail: 'Naturgy (HS-504061479108) + CreditAndorra (HS-503645681902). Fix desplegado 22/05, pendiente verificación' },
       { title: 'Texto del cuerpo del email de prefactura sin actualizar', type: 'Ajuste', priority: 'Alta', target: '26/05', detail: 'Permisos del perfil que actualiza el texto en HubSpot a revisar' },
@@ -789,7 +787,6 @@ const data = {
       { title: 'Pack Lunes (evento) no entran Pedidos en BC', type: 'Bug', priority: 'Media', target: '29/05', detail: 'Facturación manual hasta resolver. Tipología pack lunes sin flujo BC' }
     ],
     ux: [
-      { title: 'Campo personalizado editable en registro de usuarios', type: 'Ajuste', priority: 'Baja', target: '27/05', detail: 'Custom field con label editable en el registro de usuarios' },
       { title: 'Botón Clear filters', type: 'Ajuste', priority: 'Baja', target: '29/05', detail: 'Agregar botón para limpiar filtros activos.' },
       { title: 'Descarga XLSX usuarios desde Portal Admin', type: 'Ajuste', priority: 'Alta', target: '25/05', detail: 'Exportar listado de usuarios a XLSX desde Portal Admin.' },
       { title: 'Pantalla certificaciones (ver/añadir por usuario, filtrar tipo)', type: 'Ajuste', priority: 'Baja', target: '05/06', detail: 'Ver certificaciones por usuario + filtrar por tipo; añadir certificaciones desde admin para otros usuarios.' },
