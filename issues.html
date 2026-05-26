@@ -711,7 +711,9 @@ const data = {
       { title: 'Revisión facturación cambio de tramos', type: 'Aclaración', detail: 'Proceso revisado y validado' },
       { title: 'Tarifa socio corp en boletín a no-socios', type: 'Bug', detail: 'Eukeni Hierro (Kutxabank, proforma HS-502628836579). Resuelto.' },
       { title: 'Remitente de prefacturas configurado en belinda.rodriguez@iai.es', type: 'Ajuste', completed_at: '22/05', detail: 'Workflow HubSpot configurado para que las prefacturas salgan desde el buzón de Belinda' },
-      { title: '🚨 Bug RGPD: prefactura se envía por error al asistente', type: 'Bug', completed_at: '25/05', detail: 'Naturgy + CreditAndorra. Fix verificado y desplegado' }
+      { title: '🚨 Bug RGPD: prefactura se envía por error al asistente', type: 'Bug', completed_at: '25/05', detail: 'Naturgy + CreditAndorra. Fix verificado y desplegado' },
+      { title: 'Texto del cuerpo del email de prefactura sin actualizar', type: 'Ajuste', completed_at: '26/05', detail: 'Texto del cuerpo del email aplicado en el workflow HubSpot' },
+      { title: 'Listado de asistentes muestra nombre/email del inscriptor en vez del asistente', type: 'Bug', completed_at: '25/05', detail: 'Vista corregida para mostrar nombre y email del asistente real' }
     ],
     ux: [
       { title: '#10 Documentos Esfera Consejeros no disponibles', type: 'Bug', detail: 'Perfiles WordPress revisados' },
@@ -749,7 +751,8 @@ const data = {
       { title: 'Diseño: texto navbar socio individual → corporativo', type: 'Ajuste', completed_at: '22/05', detail: 'Diseño cerrado. Implementación frontend pendiente como tarea separada' },
       { title: 'Diseño: rediseño tarjeta números socios y créditos', type: 'Ajuste', completed_at: '22/05', detail: 'Diseño cerrado. Implementación frontend pendiente como tarea separada' },
       { title: 'Texto "código promocional" aparecía cortado', type: 'Bug', completed_at: '22/05', detail: 'Ajuste visual del input de código promocional' },
-      { title: 'Descarga XLSX usuarios desde Portal Admin', type: 'Ajuste', completed_at: '25/05', detail: 'Botón de descarga XLSX activo en el listado de usuarios admin' }
+      { title: 'Descarga XLSX usuarios desde Portal Admin', type: 'Ajuste', completed_at: '25/05', detail: 'Botón de descarga XLSX activo en el listado de usuarios admin' },
+      { title: 'Campana de notificaciones', type: 'Ajuste', completed_at: '27/05', detail: 'Componente desplegado en el portal' }
     ]
   },
   pending: {
@@ -784,8 +787,6 @@ const data = {
       { title: 'Admin poder usar código de descuento (RPC listo, falta bulk-invite)', type: 'Ajuste', priority: 'Media', target: '29/05', detail: 'promo_code en bulk-invite-event. RPC ya listo.' },
       { title: 'Revisión facturación alta de socios', type: 'Aclaración', priority: 'Alta', target: '26/05', detail: 'Revisar flujo completo de facturación al dar de alta nuevos socios corporativos e individuales' },
       { title: 'Exportar listados de horas compradas/usadas', type: 'Ajuste', priority: 'Baja', target: '27/05', detail: 'Portal sin botón exportar.' },
-      { title: 'Texto del cuerpo del email de prefactura sin actualizar', type: 'Ajuste', priority: 'Alta', target: '26/05', detail: 'Permisos del perfil que actualiza el texto en HubSpot a revisar' },
-      { title: 'Listado de asistentes muestra nombre/email del inscriptor en vez del asistente', type: 'Bug', priority: 'Alta', target: '25/05', detail: 'Comparado con CSV real del mes de mayo. Bug en la vista/query del listado' },
       { title: 'Ajuste manual de horas en formaciones sin asignación directa', type: 'Ajuste', priority: 'Media', target: '27/05', detail: 'Caso Telefónica/COSO. Aplicar horas a inscripciones que no permiten asignación directa' },
       { title: 'Trazabilidad: identificar qué bolsa/crédito formativo se aplica en cada inscripción', type: 'Ajuste', priority: 'Baja', target: '03/06', detail: 'Mostrar ID de bolsa en cada línea de inscripción consumidora' },
       { title: 'Pack Lunes (evento) no entran Pedidos en BC', type: 'Bug', priority: 'Media', target: '29/05', detail: 'Facturación manual hasta resolver. Tipología pack lunes sin flujo BC' }
@@ -794,7 +795,6 @@ const data = {
       { title: 'Botón Clear filters', type: 'Ajuste', priority: 'Baja', target: '29/05', detail: 'Agregar botón para limpiar filtros activos.' },
       { title: 'Pantalla certificaciones (ver/añadir por usuario, filtrar tipo)', type: 'Ajuste', priority: 'Baja', target: '05/06', detail: 'Ver certificaciones por usuario + filtrar por tipo; añadir certificaciones desde admin para otros usuarios.' },
       { title: 'Panel notificaciones centralizado + preview de emails', type: 'Ajuste', priority: 'Baja', target: null, detail: 'Panel centralizado para notificaciones de cambios + preview de emails.' },
-      { title: 'Campana de notificaciones', type: 'Ajuste', priority: 'Alta', target: '27/05', detail: 'Icono campana en portal con notificaciones en tiempo real.' },
       { title: 'Frontend: aplicar nuevo texto navbar socio individual → corporativo', type: 'Ajuste', priority: 'Media', target: '27/05', detail: 'Implementación frontend del diseño cerrado' },
       { title: 'Frontend: aplicar rediseño tarjeta números socios y créditos', type: 'Ajuste', priority: 'Media', target: '27/05', detail: 'Implementación frontend del diseño cerrado' }
     ]
