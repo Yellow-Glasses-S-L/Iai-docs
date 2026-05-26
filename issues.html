@@ -424,7 +424,7 @@ header {
         <p>Post-migración Portal · Notion + Teams + Design Review</p>
       </div>
     </div>
-    <div class="update-info">Actualización: 22/05/2026</div>
+    <div class="update-info">Actualización: 26/05/2026</div>
   </div>
 </header>
 
@@ -433,12 +433,12 @@ header {
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">41</div>
+      <div class="counter-num" style="color: var(--pending);">36</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">191</div>
+      <div class="counter-num" style="color: var(--resolved);">197</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -607,7 +607,10 @@ const data = {
       { title: '4 contactos de test eliminados', type: 'Ajuste', detail: 'Fatima14 Test14, Milagros Garcia Morado, CONSUELO CALLE 1, Fátima Roldán Test45' },
       { title: 'Backfill sectores/naturaleza/sector afín contactos', type: 'Ajuste', detail: 'Archivo Limpia_Contactos V3 Sectores Nuevos.xlsx aplicado' },
       { title: '622 productos presenciales Madrid sin venue asignados a Sede del IAI', type: 'Ajuste', detail: 'Backfill: productos presenciales en Madrid sin dirección reciben "Sede del IAI" como venue' },
-      { title: 'Al crear empresa, incluir campo sector afín en flujo aprobación', type: 'Ajuste', completed_at: '22/05', detail: 'Campo sector afín integrado en el flujo de aprobación de alta de empresa' }
+      { title: 'Al crear empresa, incluir campo sector afín en flujo aprobación', type: 'Ajuste', completed_at: '22/05', detail: 'Campo sector afín integrado en el flujo de aprobación de alta de empresa' },
+      { title: 'Código de ética obligatorio para todos los usuarios', type: 'Ajuste', completed_at: '26/05', detail: 'Trigger activa el flag al aprobar alta. Backfill aplicado a socios actuales' },
+      { title: 'Baja de Ana Belén Díaz Fernández desde portal no se refleja', type: 'Bug', completed_at: '26/05', detail: 'Flujo de baja corregido — estado y fecha de baja se actualizan correctamente al ejecutar desde el portal' },
+      { title: 'Bugs flujo ALTA-SOCIO-01 — Eurofirms + TSK', type: 'Bug', completed_at: '26/05', detail: 'Workflow ALTA-SOCIO-01 corregido. Casos validados: Judit Sánchez (Eurofirms) + Ana Bernardo (TSK)' }
     ],
     producto: [
       { title: '#2 Faltan reuniones y foros en eventos', type: 'Bug', detail: 'Sincronizado' },
@@ -672,7 +675,8 @@ const data = {
       { title: 'B.6.1 Horas formativas — revisión global', type: 'Ajuste', detail: 'Pantalla revisada y datos de horas CPE corregidos (07/05)' },
       { title: 'Inscripción urgente — Jason Mark Hay (Grupo Fuertes)', type: 'Aclaración', detail: 'jason.hay@grupofuertes.com — contacto creado en HubSpot, company_member y rol socio-corporativo asignados en Supabase; inscripción realizada desde Portal Admin (08/05)' },
       { title: 'Notificación confirmación a invitados duplicada', type: 'Bug', detail: 'Trigger corregido' },
-      { title: 'Precio sin IVA en sección de pago hasta recargar página', type: 'Bug', completed_at: '22/05', detail: 'Bug visual del checkout: el precio total se mostraba sin IVA hasta recarga manual o cambio de método de pago. Reproducido en "Jornadas de Auditoría Interna presenciales 2026"' }
+      { title: 'Precio sin IVA en sección de pago hasta recargar página', type: 'Bug', completed_at: '22/05', detail: 'Bug visual del checkout: el precio total se mostraba sin IVA hasta recarga manual o cambio de método de pago. Reproducido en "Jornadas de Auditoría Interna presenciales 2026"' },
+      { title: 'IVA en carrito no se aplicaba (socios y no socios)', type: 'Bug', completed_at: '25/05', detail: 'Carrito mostraba 0€ aunque la factura se generaba correcta. Fix cubre socios y no-socios; product_type también corregido para socio-corporativo' }
     ],
     facturacion: [
       { title: '#14 No se puede actualizar tramo empresa desde portal', type: 'Aclaración', detail: 'Se hace desde HubSpot' },
@@ -703,7 +707,8 @@ const data = {
       { title: 'Precio incorrecto en frontend', type: 'Bug', detail: 'Resuelto.' },
       { title: 'Revisión facturación cambio de tramos', type: 'Aclaración', detail: 'Proceso revisado y validado' },
       { title: 'Tarifa socio corp en boletín a no-socios', type: 'Bug', detail: 'Eukeni Hierro (Kutxabank, proforma HS-502628836579). Resuelto.' },
-      { title: 'Remitente de prefacturas configurado en belinda.rodriguez@iai.es', type: 'Ajuste', completed_at: '22/05', detail: 'Workflow HubSpot configurado para que las prefacturas salgan desde el buzón de Belinda' }
+      { title: 'Remitente de prefacturas configurado en belinda.rodriguez@iai.es', type: 'Ajuste', completed_at: '22/05', detail: 'Workflow HubSpot configurado para que las prefacturas salgan desde el buzón de Belinda' },
+      { title: '🚨 Bug RGPD: prefactura se envía por error al asistente', type: 'Bug', completed_at: '26/05', detail: 'Naturgy + CreditAndorra. Fix verificado y desplegado' }
     ],
     ux: [
       { title: '#10 Documentos Esfera Consejeros no disponibles', type: 'Bug', detail: 'Perfiles WordPress revisados' },
@@ -740,18 +745,16 @@ const data = {
       { title: 'CC a buzones IAI en notificaciones', type: 'Ajuste', detail: 'servicioscliente@ a sí mismo; atencionsocio@ y formacion@ a sí mismos + servicioscliente. Emails sensibles (tokens, OTPs, reset) sin CC' },
       { title: 'Diseño: texto navbar socio individual → corporativo', type: 'Ajuste', completed_at: '22/05', detail: 'Diseño cerrado. Implementación frontend pendiente como tarea separada' },
       { title: 'Diseño: rediseño tarjeta números socios y créditos', type: 'Ajuste', completed_at: '22/05', detail: 'Diseño cerrado. Implementación frontend pendiente como tarea separada' },
-      { title: 'Texto "código promocional" aparecía cortado', type: 'Bug', completed_at: '22/05', detail: 'Ajuste visual del input de código promocional' }
+      { title: 'Texto "código promocional" aparecía cortado', type: 'Bug', completed_at: '22/05', detail: 'Ajuste visual del input de código promocional' },
+      { title: 'Descarga XLSX usuarios desde Portal Admin', type: 'Ajuste', completed_at: '26/05', detail: 'Botón de descarga XLSX activo en el listado de usuarios admin' }
     ]
   },
   pending: {
     socios: [
       { title: '🚨 Fusiones de perfiles no funciona (Symrise: Nicolas Delarroca)', type: 'Bug', priority: 'Alta', target: '26/05', detail: 'Workflow ALTA-SOCIO-01 o fusión manual — nicolas.delarroca@symrise.com fusionado con n.delarroca@gmail.com' },
-      { title: 'Código de ética obligatorio para todos los usuarios', type: 'Ajuste', priority: 'Media', target: '25/05', detail: 'Campo Supabase + forzar aceptación al login.' },
       { title: 'Creación empresa en HubSpot — detalle de campos por categoría', type: 'Ajuste', priority: 'Media', target: '27/05', detail: 'Definir qué campos son obligatorios/opcionales según categoría de empresa' },
       { title: 'Segregar Admin y Super Admin', type: 'Ajuste', priority: 'Baja', target: null, detail: 'Dividir funciones; cambios sensibles solo desde Super Admin' },
       { title: 'Invitación de alta no llega al miembro (Estrella Galicia)', type: 'Bug', priority: 'Media', target: '26/05', detail: 'Notificar cuando se añade el usuario directamente. Revisar. srodriguez→npequeno @estrellagalicia.es.' },
-      { title: 'Baja de Ana Belén Díaz Fernández desde portal no se refleja', type: 'Bug', priority: 'Alta', target: '25/05', detail: 'Sin estado de baja ni fecha de baja en el sistema.' },
-      { title: 'Bugs flujo ALTA-SOCIO-01 — Eurofirms + TSK', type: 'Bug', priority: 'Alta', target: '25/05', detail: 'Agrupa N-S1 + N-S3. Workflow ALTA-SOCIO-01 falla en aprobación alta socio corp desde portal. Casos: Judit Sánchez (Eurofirms) + Ana Bernardo (TSK)' },
       { title: 'Acceso corporativo masivo — Telefónica + BNCR', type: 'Ajuste', priority: 'Media', target: '29/05', detail: 'Agrupa N-S4 + N-S5. Resets + whitelist email por dominio corp. Telefónica: 3 usuarios. BNCR: 7 contraseñas + whitelist dominio iai.es' },
       { title: 'Altas/bajas de socios para instituto global', type: 'Ajuste', priority: 'Alta', target: '27/05', detail: 'Flujo de alta y baja de socios adaptado para instituto global' },
       { title: 'Auditoría calidad datos socios — cuadre general + consejeros', type: 'Aclaración', priority: 'Media', target: '26/05', detail: 'Agrupa N-D2 + N-D3. Cuadre SP↔HS de socios + foco en discrepancias del listado consejeros.' },
@@ -779,7 +782,6 @@ const data = {
       { title: 'Admin poder usar código de descuento (RPC listo, falta bulk-invite)', type: 'Ajuste', priority: 'Media', target: '29/05', detail: 'promo_code en bulk-invite-event. RPC ya listo.' },
       { title: 'Revisión facturación alta de socios', type: 'Aclaración', priority: 'Alta', target: '26/05', detail: 'Revisar flujo completo de facturación al dar de alta nuevos socios corporativos e individuales' },
       { title: 'Exportar listados de horas compradas/usadas', type: 'Ajuste', priority: 'Baja', target: '27/05', detail: 'Portal sin botón exportar.' },
-      { title: '🚨 Bug RGPD: prefactura se envía por error al asistente', type: 'Bug', priority: 'Alta', target: '25/05', detail: 'Naturgy (HS-504061479108) + CreditAndorra (HS-503645681902). Fix desplegado 22/05, pendiente verificación' },
       { title: 'Texto del cuerpo del email de prefactura sin actualizar', type: 'Ajuste', priority: 'Alta', target: '26/05', detail: 'Permisos del perfil que actualiza el texto en HubSpot a revisar' },
       { title: 'Listado de asistentes muestra nombre/email del inscriptor en vez del asistente', type: 'Bug', priority: 'Alta', target: '25/05', detail: 'Comparado con CSV real del mes de mayo. Bug en la vista/query del listado' },
       { title: 'Ajuste manual de horas en formaciones sin asignación directa', type: 'Ajuste', priority: 'Media', target: '27/05', detail: 'Caso Telefónica/COSO. Aplicar horas a inscripciones que no permiten asignación directa' },
@@ -788,7 +790,6 @@ const data = {
     ],
     ux: [
       { title: 'Botón Clear filters', type: 'Ajuste', priority: 'Baja', target: '29/05', detail: 'Agregar botón para limpiar filtros activos.' },
-      { title: 'Descarga XLSX usuarios desde Portal Admin', type: 'Ajuste', priority: 'Alta', target: '25/05', detail: 'Exportar listado de usuarios a XLSX desde Portal Admin.' },
       { title: 'Pantalla certificaciones (ver/añadir por usuario, filtrar tipo)', type: 'Ajuste', priority: 'Baja', target: '05/06', detail: 'Ver certificaciones por usuario + filtrar por tipo; añadir certificaciones desde admin para otros usuarios.' },
       { title: 'Panel notificaciones centralizado + preview de emails', type: 'Ajuste', priority: 'Baja', target: null, detail: 'Panel centralizado para notificaciones de cambios + preview de emails.' },
       { title: 'Campana de notificaciones', type: 'Ajuste', priority: 'Alta', target: '27/05', detail: 'Icono campana en portal con notificaciones en tiempo real.' },
