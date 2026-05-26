@@ -433,12 +433,12 @@ header {
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">36</div>
+      <div class="counter-num" style="color: var(--pending);">34</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">197</div>
+      <div class="counter-num" style="color: var(--resolved);">199</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -608,9 +608,10 @@ const data = {
       { title: 'Backfill sectores/naturaleza/sector afín contactos', type: 'Ajuste', detail: 'Archivo Limpia_Contactos V3 Sectores Nuevos.xlsx aplicado' },
       { title: '622 productos presenciales Madrid sin venue asignados a Sede del IAI', type: 'Ajuste', detail: 'Backfill: productos presenciales en Madrid sin dirección reciben "Sede del IAI" como venue' },
       { title: 'Al crear empresa, incluir campo sector afín en flujo aprobación', type: 'Ajuste', completed_at: '22/05', detail: 'Campo sector afín integrado en el flujo de aprobación de alta de empresa' },
-      { title: 'Código de ética obligatorio para todos los usuarios', type: 'Ajuste', completed_at: '26/05', detail: 'Trigger activa el flag al aprobar alta. Backfill aplicado a socios actuales' },
-      { title: 'Baja de Ana Belén Díaz Fernández desde portal no se refleja', type: 'Bug', completed_at: '26/05', detail: 'Flujo de baja corregido — estado y fecha de baja se actualizan correctamente al ejecutar desde el portal' },
-      { title: 'Bugs flujo ALTA-SOCIO-01 — Eurofirms + TSK', type: 'Bug', completed_at: '26/05', detail: 'Workflow ALTA-SOCIO-01 corregido. Casos validados: Judit Sánchez (Eurofirms) + Ana Bernardo (TSK)' }
+      { title: 'Código de ética obligatorio para todos los usuarios', type: 'Ajuste', completed_at: '25/05', detail: 'Trigger activa el flag al aprobar alta. Backfill aplicado a socios actuales' },
+      { title: 'Baja de Ana Belén Díaz Fernández desde portal no se refleja', type: 'Bug', completed_at: '25/05', detail: 'Flujo de baja corregido — estado y fecha de baja se actualizan correctamente al ejecutar desde el portal' },
+      { title: 'Bugs flujo ALTA-SOCIO-01 — Eurofirms + TSK', type: 'Bug', completed_at: '25/05', detail: 'Workflow ALTA-SOCIO-01 corregido. Casos validados: Judit Sánchez (Eurofirms) + Ana Bernardo (TSK)' },
+      { title: 'Invitación de alta no llega al miembro (Estrella Galicia)', type: 'Bug', completed_at: '26/05', detail: 'Caso srodriguez→npequeno @estrellagalicia.es. Trigger de invitación corregido' }
     ],
     producto: [
       { title: '#2 Faltan reuniones y foros en eventos', type: 'Bug', detail: 'Sincronizado' },
@@ -633,7 +634,8 @@ const data = {
       { title: 'Jornada no se creaba/aparecía en WordPress', type: 'Bug', detail: 'Sync con WordPress corregido.' },
       { title: 'Click en uno de los lunes llevaba al pack en vez del evento concreto', type: 'Bug', completed_at: '22/05', detail: 'Navegación en "Mis eventos": al pulsar un lunes individual redirigía al pack contenedor. Corregido para abrir el evento concreto' },
       { title: 'Modalidad evento no aparece en correo (Foro DAIs químico/farmacéutico)', type: 'Bug', completed_at: '25/05', detail: 'Configuración del evento corregida para mostrar modalidad virtual en email automático' },
-      { title: 'Ponentes en cursos finalizados deben aparecer completados pero sin diploma', type: 'Ajuste', completed_at: '25/05', detail: 'Estado completado para ponentes sin emisión de diploma' }
+      { title: 'Ponentes en cursos finalizados deben aparecer completados pero sin diploma', type: 'Ajuste', completed_at: '25/05', detail: 'Estado completado para ponentes sin emisión de diploma' },
+      { title: 'Fecha de fin = fecha inicio + 90 días', type: 'Ajuste', completed_at: '26/05', detail: 'Regla aplicada al catálogo de cursos/eventos' }
     ],
     inscripciones: [
       { title: '#3 Buscador Campus filtra solo por una fecha', type: 'Bug', detail: 'Ajustado' },
@@ -708,7 +710,7 @@ const data = {
       { title: 'Revisión facturación cambio de tramos', type: 'Aclaración', detail: 'Proceso revisado y validado' },
       { title: 'Tarifa socio corp en boletín a no-socios', type: 'Bug', detail: 'Eukeni Hierro (Kutxabank, proforma HS-502628836579). Resuelto.' },
       { title: 'Remitente de prefacturas configurado en belinda.rodriguez@iai.es', type: 'Ajuste', completed_at: '22/05', detail: 'Workflow HubSpot configurado para que las prefacturas salgan desde el buzón de Belinda' },
-      { title: '🚨 Bug RGPD: prefactura se envía por error al asistente', type: 'Bug', completed_at: '26/05', detail: 'Naturgy + CreditAndorra. Fix verificado y desplegado' }
+      { title: '🚨 Bug RGPD: prefactura se envía por error al asistente', type: 'Bug', completed_at: '25/05', detail: 'Naturgy + CreditAndorra. Fix verificado y desplegado' }
     ],
     ux: [
       { title: '#10 Documentos Esfera Consejeros no disponibles', type: 'Bug', detail: 'Perfiles WordPress revisados' },
@@ -746,7 +748,7 @@ const data = {
       { title: 'Diseño: texto navbar socio individual → corporativo', type: 'Ajuste', completed_at: '22/05', detail: 'Diseño cerrado. Implementación frontend pendiente como tarea separada' },
       { title: 'Diseño: rediseño tarjeta números socios y créditos', type: 'Ajuste', completed_at: '22/05', detail: 'Diseño cerrado. Implementación frontend pendiente como tarea separada' },
       { title: 'Texto "código promocional" aparecía cortado', type: 'Bug', completed_at: '22/05', detail: 'Ajuste visual del input de código promocional' },
-      { title: 'Descarga XLSX usuarios desde Portal Admin', type: 'Ajuste', completed_at: '26/05', detail: 'Botón de descarga XLSX activo en el listado de usuarios admin' }
+      { title: 'Descarga XLSX usuarios desde Portal Admin', type: 'Ajuste', completed_at: '25/05', detail: 'Botón de descarga XLSX activo en el listado de usuarios admin' }
     ]
   },
   pending: {
@@ -754,7 +756,7 @@ const data = {
       { title: '🚨 Fusiones de perfiles no funciona (Symrise: Nicolas Delarroca)', type: 'Bug', priority: 'Alta', target: '26/05', detail: 'Workflow ALTA-SOCIO-01 o fusión manual — nicolas.delarroca@symrise.com fusionado con n.delarroca@gmail.com' },
       { title: 'Creación empresa en HubSpot — detalle de campos por categoría', type: 'Ajuste', priority: 'Media', target: '27/05', detail: 'Definir qué campos son obligatorios/opcionales según categoría de empresa' },
       { title: 'Segregar Admin y Super Admin', type: 'Ajuste', priority: 'Baja', target: null, detail: 'Dividir funciones; cambios sensibles solo desde Super Admin' },
-      { title: 'Invitación de alta no llega al miembro (Estrella Galicia)', type: 'Bug', priority: 'Media', target: '26/05', detail: 'Notificar cuando se añade el usuario directamente. Revisar. srodriguez→npequeno @estrellagalicia.es.' },
+
       { title: 'Acceso corporativo masivo — Telefónica + BNCR', type: 'Ajuste', priority: 'Media', target: '29/05', detail: 'Agrupa N-S4 + N-S5. Resets + whitelist email por dominio corp. Telefónica: 3 usuarios. BNCR: 7 contraseñas + whitelist dominio iai.es' },
       { title: 'Altas/bajas de socios para instituto global', type: 'Ajuste', priority: 'Alta', target: '27/05', detail: 'Flujo de alta y baja de socios adaptado para instituto global' },
       { title: 'Auditoría calidad datos socios — cuadre general + consejeros', type: 'Aclaración', priority: 'Media', target: '26/05', detail: 'Agrupa N-D2 + N-D3. Cuadre SP↔HS de socios + foco en discrepancias del listado consejeros.' },
@@ -764,7 +766,7 @@ const data = {
       { title: 'Adaptar página campus (Resumen + Documentos para Moodle)', type: 'Ajuste', priority: 'Media', target: '27/05', detail: 'Habilitar secciones Resumen y Documentos para cursos Moodle.' },
       { title: 'Diplomas eLearning manuales: 2 casos pendientes', type: 'Bug', priority: 'Media', target: '28/05', detail: 'Emilio Arrate "Segregación de funciones" + Ana Cristina Soto "Normas Globales".' },
       { title: 'Añadir cuestionario retribuciones de ponentes', type: 'Ajuste', priority: 'Baja', target: '04/06', detail: 'Formulario/cuestionario de retribuciones para ponentes.' },
-      { title: 'Fecha de fin = fecha inicio + 90 días', type: 'Ajuste', priority: 'Media', target: '26/05', detail: 'Regla de catálogo: fecha fin de cursos/eventos = fecha inicio + 90 días por defecto.' },
+
       { title: 'Cabecera de curso — consistencia + flexibilidad', type: 'Bug', priority: 'Media', target: '29/05', detail: 'Agrupa E-P3 + N-P8. Bug consistencia A.3.2 imagen cabecera + mejora flexibilidad para añadir cabecera (meeting 21/05)' },
       { title: 'Decidir cómo alojar el Moodle antiguo', type: 'Aclaración', priority: 'Baja', target: '29/05', detail: 'Infraestructura Moodle legacy pendiente de decisión.' },
     ],
