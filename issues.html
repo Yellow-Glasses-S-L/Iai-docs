@@ -433,12 +433,12 @@ header {
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">34</div>
+      <div class="counter-num" style="color: var(--pending);">33</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">199</div>
+      <div class="counter-num" style="color: var(--resolved);">200</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -678,7 +678,8 @@ const data = {
       { title: 'Inscripción urgente — Jason Mark Hay (Grupo Fuertes)', type: 'Aclaración', detail: 'jason.hay@grupofuertes.com — contacto creado en HubSpot, company_member y rol socio-corporativo asignados en Supabase; inscripción realizada desde Portal Admin (08/05)' },
       { title: 'Notificación confirmación a invitados duplicada', type: 'Bug', detail: 'Trigger corregido' },
       { title: 'Precio sin IVA en sección de pago hasta recargar página', type: 'Bug', completed_at: '22/05', detail: 'Bug visual del checkout: el precio total se mostraba sin IVA hasta recarga manual o cambio de método de pago. Reproducido en "Jornadas de Auditoría Interna presenciales 2026"' },
-      { title: 'IVA en carrito no se aplicaba (socios y no socios)', type: 'Bug', completed_at: '25/05', detail: 'Carrito mostraba 0€ aunque la factura se generaba correcta. Fix cubre socios y no-socios; product_type también corregido para socio-corporativo' }
+      { title: 'IVA en carrito no se aplicaba (socios y no socios)', type: 'Bug', completed_at: '25/05', detail: 'Carrito mostraba 0€ aunque la factura se generaba correcta. Fix cubre socios y no-socios; product_type también corregido para socio-corporativo' },
+      { title: 'Usuario-cliente de empresa no puede inscribir a compañeros', type: 'Bug', completed_at: '25/05', detail: 'Caso específico distinto del #28 (socio-corporativo). Aquí el rol usuario-cliente sin permiso. Permiso ampliado' }
     ],
     facturacion: [
       { title: '#14 No se puede actualizar tramo empresa desde portal', type: 'Aclaración', detail: 'Se hace desde HubSpot' },
@@ -777,8 +778,7 @@ const data = {
       { title: 'Impresión Cartel de Mesa para cursos presenciales', type: 'Ajuste', priority: 'Alta', target: '29/05', detail: 'Meeting 21/05 subió prioridad. Esperando medidas y fotos del cliente' },
       { title: 'B.1.2 Filtro fecha mes actual por defecto en listado admin', type: 'Ajuste', priority: 'Baja', target: '29/05', detail: 'Listado admin debe filtrar por mes actual por defecto.' },
       { title: 'Inscripciones Moodle no sincronizan (7 casos)', type: 'Bug', priority: 'Alta', target: '26/05', detail: 'Repsol/IOC + 5 Kutxabank "Ética Empresarial". Workaround manual aplicado, falta causa raíz.' },
-      { title: 'bulk-invite-event COSO: default payment_method=credits falla', type: 'Bug', priority: 'Alta', target: '26/05', detail: 'Reabierto — productos con accepts_training_credits=false fallan con PRODUCT_NOT_CREDIT_ELIGIBLE.' },
-      { title: 'Usuario-cliente de empresa no puede inscribir a compañeros', type: 'Bug', priority: 'Alta', target: '25/05', detail: 'Meeting 21/05. Caso específico distinto del antiguo #28 (socio-corporativo) ya resuelto. Aquí el rol es usuario-cliente' }
+      { title: 'bulk-invite-event COSO: default payment_method=credits falla', type: 'Bug', priority: 'Alta', target: '26/05', detail: 'Reabierto — productos con accepts_training_credits=false fallan con PRODUCT_NOT_CREDIT_ELIGIBLE.' }
     ],
     facturacion: [
       { title: 'Admin poder usar código de descuento (RPC listo, falta bulk-invite)', type: 'Ajuste', priority: 'Media', target: '29/05', detail: 'promo_code en bulk-invite-event. RPC ya listo.' },
