@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -402,6 +402,39 @@ header {
 .roadmap-card-detail { font-size: 11px; color: var(--muted); margin-top: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .roadmap-proc-icon { font-size: 10px; color: var(--muted); }
 
+.type-section {
+  margin-bottom: 20px;
+}
+.type-section:last-child {
+  margin-bottom: 0;
+}
+.type-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.type-section-header .count {
+  background: #f3f4f6;
+  color: var(--muted);
+  padding: 1px 7px;
+  border-radius: 9px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.type-section-header.bug { color: var(--bug); }
+.type-section-header.bug .count { background: #fef2f2; color: var(--bug); }
+.type-section-header.ajuste { color: var(--ajuste); }
+.type-section-header.ajuste .count { background: #eff6ff; color: var(--ajuste); }
+.type-section-header.aclaracion { color: var(--aclaracion); }
+.type-section-header.aclaracion .count { background: #f3f4f6; color: var(--aclaracion); }
 @media (max-width: 968px) {
   .hero { grid-template-columns: repeat(2, 1fr); }
   .synthesis-grid { grid-template-columns: repeat(2, 1fr); }
@@ -424,7 +457,7 @@ header {
         <p>Post-migración Portal · Notion + Teams + Design Review</p>
       </div>
     </div>
-    <div class="update-info">Actualización: 26/05/2026</div>
+    <div class="update-info">Actualización: 27/05/2026</div>
   </div>
 </header>
 
@@ -433,12 +466,12 @@ header {
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">33</div>
+      <div class="counter-num" style="color: var(--pending);">28</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">200</div>
+      <div class="counter-num" style="color: var(--resolved);">208</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -499,8 +532,8 @@ header {
     <div class="roadmap-wrapper">
       <div class="roadmap-filter">
         <span class="roadmap-filter-label">Vista</span>
-        <button class="chip active" id="roadmap-filter-all" onclick="setRoadmapFilter('all')">Todos</button>
-        <button class="chip" id="roadmap-filter-pending" onclick="setRoadmapFilter('pending')">Solo pendientes</button>
+        <button class="chip" id="roadmap-filter-all" onclick="setRoadmapFilter('all')">Todos</button>
+        <button class="chip active" id="roadmap-filter-pending" onclick="setRoadmapFilter('pending')">Solo pendientes</button>
         <button class="chip" id="roadmap-filter-completed" onclick="setRoadmapFilter('completed')">Solo completados</button>
       </div>
       <div class="roadmap-header">Ítems agrupados cronológicamente por fecha objetivo o fecha de cierre. Los pendientes sin fecha aparecen al final.</div>
@@ -611,7 +644,8 @@ const data = {
       { title: 'Código de ética obligatorio para todos los usuarios', type: 'Ajuste', completed_at: '25/05', detail: 'Trigger activa el flag al aprobar alta. Backfill aplicado a socios actuales' },
       { title: 'Baja de Ana Belén Díaz Fernández desde portal no se refleja', type: 'Bug', completed_at: '25/05', detail: 'Flujo de baja corregido — estado y fecha de baja se actualizan correctamente al ejecutar desde el portal' },
       { title: 'Bugs flujo ALTA-SOCIO-01 — Eurofirms + TSK', type: 'Bug', completed_at: '25/05', detail: 'Workflow ALTA-SOCIO-01 corregido. Casos validados: Judit Sánchez (Eurofirms) + Ana Bernardo (TSK)' },
-      { title: 'Invitación de alta no llega al miembro (Estrella Galicia)', type: 'Bug', completed_at: '26/05', detail: 'Caso srodriguez→npequeno @estrellagalicia.es. Trigger de invitación corregido' }
+      { title: 'Invitación de alta no llega al miembro (Estrella Galicia)', type: 'Bug', completed_at: '26/05', detail: 'Caso srodriguez→npequeno @estrellagalicia.es. Trigger de invitación corregido' },
+      { title: 'Histórico de actividades mostraba inscriptor en vez del participante real', type: 'Bug', completed_at: '26/05', detail: 'Vista COMPRA_CURSO corregida con JOIN a product_registrations. Aplica también al CSV descargable de asistentes' }
     ],
     producto: [
       { title: '#2 Faltan reuniones y foros en eventos', type: 'Bug', detail: 'Sincronizado' },
@@ -635,7 +669,9 @@ const data = {
       { title: 'Click en uno de los lunes llevaba al pack en vez del evento concreto', type: 'Bug', completed_at: '22/05', detail: 'Navegación en "Mis eventos": al pulsar un lunes individual redirigía al pack contenedor. Corregido para abrir el evento concreto' },
       { title: 'Modalidad evento no aparece en correo (Foro DAIs químico/farmacéutico)', type: 'Bug', completed_at: '29/05', detail: 'Configuración del evento corregida para mostrar modalidad virtual en email automático' },
       { title: 'Ponentes en cursos finalizados deben aparecer completados pero sin diploma', type: 'Ajuste', completed_at: '25/05', detail: 'Estado completado para ponentes sin emisión de diploma' },
-      { title: 'Fecha de fin = fecha inicio + 90 días', type: 'Ajuste', completed_at: '26/05', detail: 'Regla aplicada al catálogo de cursos/eventos' }
+      { title: 'Fecha de fin = fecha inicio + 90 días', type: 'Ajuste', completed_at: '26/05', detail: 'Regla aplicada al catálogo de cursos/eventos' },
+      { title: 'Botón certificado en eventos lunes sin acción + ocultar en pack', type: 'Bug', completed_at: '26/05', detail: 'Botón funcional con certificate_issued_at + is_pack=false. Packs de Lunes ocultan el botón cuando is_pack=true' },
+      { title: 'Jornadas: crédito formativo aplicable indebidamente', type: 'Bug', completed_at: '26/05', detail: 'Lógica de SYNC productos fuerza acepta_credito=false para jornadas' }
     ],
     inscripciones: [
       { title: '#3 Buscador Campus filtra solo por una fecha', type: 'Bug', detail: 'Ajustado' },
@@ -679,7 +715,8 @@ const data = {
       { title: 'Notificación confirmación a invitados duplicada', type: 'Bug', detail: 'Trigger corregido' },
       { title: 'Precio sin IVA en sección de pago hasta recargar página', type: 'Bug', completed_at: '22/05', detail: 'Bug visual del checkout: el precio total se mostraba sin IVA hasta recarga manual o cambio de método de pago. Reproducido en "Jornadas de Auditoría Interna presenciales 2026"' },
       { title: 'IVA en carrito no se aplicaba (socios y no socios)', type: 'Bug', completed_at: '25/05', detail: 'Carrito mostraba 0€ aunque la factura se generaba correcta. Fix cubre socios y no-socios; product_type también corregido para socio-corporativo' },
-      { title: 'Usuario-cliente de empresa no puede inscribir a compañeros', type: 'Bug', completed_at: '25/05', detail: 'Caso específico distinto del #28 (socio-corporativo). Aquí el rol usuario-cliente sin permiso. Permiso ampliado' }
+      { title: 'Usuario-cliente de empresa no puede inscribir a compañeros', type: 'Bug', completed_at: '25/05', detail: 'Caso específico distinto del #28 (socio-corporativo). Aquí el rol usuario-cliente sin permiso. Permiso ampliado' },
+      { title: 'bulk-invite-event COSO: default payment_method=credits falla', type: 'Bug', completed_at: '26/05', detail: 'Fix definitivo: productos con accepts_training_credits=false ya no fallan con PRODUCT_NOT_CREDIT_ELIGIBLE' }
     ],
     facturacion: [
       { title: '#14 No se puede actualizar tramo empresa desde portal', type: 'Aclaración', detail: 'Se hace desde HubSpot' },
@@ -713,7 +750,8 @@ const data = {
       { title: 'Remitente de prefacturas configurado en belinda.rodriguez@iai.es', type: 'Ajuste', completed_at: '22/05', detail: 'Workflow HubSpot configurado para que las prefacturas salgan desde el buzón de Belinda' },
       { title: '🚨 Bug RGPD: prefactura se envía por error al asistente', type: 'Bug', completed_at: '25/05', detail: 'Naturgy + CreditAndorra. Fix verificado y desplegado' },
       { title: 'Texto del cuerpo del email de prefactura sin actualizar', type: 'Ajuste', completed_at: '26/05', detail: 'Texto del cuerpo del email aplicado en el workflow HubSpot' },
-      { title: 'Listado de asistentes muestra nombre/email del inscriptor en vez del asistente', type: 'Bug', completed_at: '25/05', detail: 'Vista corregida para mostrar nombre y email del asistente real' }
+      { title: 'Listado de asistentes muestra nombre/email del inscriptor en vez del asistente', type: 'Bug', completed_at: '25/05', detail: 'Vista corregida para mostrar nombre y email del asistente real' },
+      { title: 'Ajuste manual de horas en formaciones sin asignación directa', type: 'Ajuste', completed_at: '27/05', detail: 'Caso Telefónica/COSO. Permite aplicar horas a formaciones que no permiten asignación directa' }
     ],
     ux: [
       { title: '#10 Documentos Esfera Consejeros no disponibles', type: 'Bug', detail: 'Perfiles WordPress revisados' },
@@ -776,12 +814,11 @@ const data = {
     ],
     inscripciones: [
       { title: 'Conexión nirestream Horas Certificado (mínimo 85% visionado)', type: 'Ajuste', priority: 'Media', target: '28/05', detail: 'Integración con nirestream para verificar mínimo 85% de visionado antes de emitir certificado' },
-      { title: 'Inscripciones DSV: 18 personas (validar con IAI)', type: 'Aclaración', priority: 'Media', target: '27/05', detail: 'Pendiente validar con IAI la inscripción de 18 personas de DSV' },
       { title: 'Campos personalizables por evento (DNI, alergias, etc.)', type: 'Ajuste', priority: 'Baja', target: '05/06', detail: 'Agrupa E-I3 + E-I5. Feature campos custom configurables por evento: DNI (E-I3) + formulario Alergias HubSpot (E-I5)' },
       { title: 'Impresión Cartel de Mesa para cursos presenciales', type: 'Ajuste', priority: 'Alta', target: '29/05', detail: 'Meeting 21/05 subió prioridad. Esperando medidas y fotos del cliente' },
       { title: 'B.1.2 Filtro fecha mes actual por defecto en listado admin', type: 'Ajuste', priority: 'Baja', target: '29/05', detail: 'Listado admin debe filtrar por mes actual por defecto.' },
       { title: 'Inscripciones Moodle no sincronizan (7 casos)', type: 'Bug', priority: 'Alta', target: '26/05', detail: 'Repsol/IOC + 5 Kutxabank "Ética Empresarial". Workaround manual aplicado, falta causa raíz.' },
-      { title: 'bulk-invite-event COSO: default payment_method=credits falla', type: 'Bug', priority: 'Alta', target: '26/05', detail: 'Reabierto — productos con accepts_training_credits=false fallan con PRODUCT_NOT_CREDIT_ELIGIBLE.' }
+      { title: 'Frontend inscripción admin en eventos: generación de deal y selección de facturación', type: 'Ajuste', priority: 'Alta', target: '28/05', detail: 'El back ya está listo. Falta replicar en frontend el flujo de selección de facturación equivalente al de campus' }
     ],
     facturacion: [
       { title: 'Admin poder usar código de descuento (RPC listo, falta bulk-invite)', type: 'Ajuste', priority: 'Media', target: '29/05', detail: 'promo_code en bulk-invite-event. RPC ya listo.' },
@@ -814,7 +851,7 @@ let activeProc = { resolved: 'all', pending: 'all' };
 let activeType = 'all';
 let activePriority = 'all';
 let searchQuery = '';
-let roadmapFilter = 'all';
+let roadmapFilter = 'pending';
 
 function setRoadmapFilter(value) {
   roadmapFilter = value;
@@ -956,9 +993,7 @@ function buildRoadmap() {
         <span class="${labelClass}"${labelStyle}>📅 ${formatDateLabel(date)}</span>
         ${!isLast ? '<div class="roadmap-line"></div>' : ''}
       </div>
-      <div class="roadmap-items">
-        ${items.map(item => renderRoadmapCard(item)).join('')}
-      </div>
+            ${renderRoadmapDateGroup(items)}
     </div>`;
   });
   if (noDate.length > 0) {
@@ -966,14 +1001,31 @@ function buildRoadmap() {
       <div class="roadmap-date-col">
         <span class="roadmap-date-label no-date">Sin fecha</span>
       </div>
-      <div class="roadmap-items">
-        ${noDate.map(item => renderRoadmapCard(item)).join('')}
-      </div>
+            ${renderRoadmapDateGroup(noDate)}
     </div>`;
   }
   container.innerHTML = html || '<div class="empty">No hay ítems con los filtros actuales.</div>';
 }
 
+function renderRoadmapDateGroup(items) {
+  const byType = { 'Bug': [], 'Ajuste': [], 'Aclaración': [] };
+  items.forEach(it => { if (byType[it.type]) byType[it.type].push(it); });
+  const typeMeta = [
+    { key: 'Bug', label: '🐛 Bugs', cls: 'bug' },
+    { key: 'Ajuste', label: '✏️ Ajustes', cls: 'ajuste' },
+    { key: 'Aclaración', label: '💬 Aclaraciones', cls: 'aclaracion' }
+  ];
+  let h = '';
+  typeMeta.forEach(({ key, label, cls }) => {
+    const its = byType[key];
+    if (its.length === 0) return;
+    h += `<div class="type-section">
+      <div class="type-section-header ${cls}">${label} <span class="count">${its.length}</span></div>
+      <div class="roadmap-items">${its.map(it => renderRoadmapCard(it)).join('')}</div>
+    </div>`;
+  });
+  return h || `<div class="roadmap-items">${items.map(it => renderRoadmapCard(it)).join('')}</div>`;
+}
 function renderRoadmapCard(item) {
   const isCompleted = item._state === 'completed';
   const prioClass = item.priority ? `prio-${item.priority.toLowerCase()}` : '';
@@ -1014,18 +1066,19 @@ function render() {
     const matchSearch = !searchQuery || (item.title + ' ' + (item.detail||'')).toLowerCase().includes(searchQuery.toLowerCase());
     return matchType && matchPrio && matchSearch;
   });
-  if (filtered.length === 0) {
-    container.innerHTML = `<div class="empty">No hay resultados con los filtros actuales.</div>`;
-    return;
-  }
-  let html = `<div class="cards">`;
+  // Agrupar filtered por type
+  const byType = { 'Bug': [], 'Ajuste': [], 'Aclaración': [] };
   filtered.forEach(item => {
+    if (byType[item.type]) byType[item.type].push(item);
+  });
+
+  function renderCard(item) {
     const procIcon = procMeta[item._proc]?.icon || '';
     const prioClass = item.priority ? `prio-${item.priority.toLowerCase()}` : '';
     const dateChip = (currentTab === 'pending' && item.target)
       ? `<div><span class="date-chip">📅 ${item.target}</span></div>`
       : '';
-    html += `<div class="card ${prioClass}">
+    return `<div class="card ${prioClass}">
       <div class="card-header">
         ${item.priority ? `<span class="badge-prio ${item.priority.toLowerCase()}">${item.priority === 'Alta' ? '🔴' : item.priority === 'Media' ? '🟡' : '🟢'} ${item.priority}</span>` : ''}
         <span class="badge ${classifyBadge(item.type)}">${item.type}</span>
@@ -1035,8 +1088,30 @@ function render() {
       ${item.detail && item.detail !== '—' ? `<div class="card-detail">${item.detail}</div>` : ''}
       ${dateChip}
     </div>`;
+  }
+
+  let html = '';
+  const typeMeta = [
+    { key: 'Bug', label: '🐛 Bugs', cls: 'bug' },
+    { key: 'Ajuste', label: '✏️ Ajustes', cls: 'ajuste' },
+    { key: 'Aclaración', label: '💬 Aclaraciones', cls: 'aclaracion' }
+  ];
+  typeMeta.forEach(({ key, label, cls }) => {
+    const items = byType[key];
+    if (items.length === 0) return;
+    html += `<div class="type-section">
+    <div class="type-section-header ${cls}">${label} <span class="count">${items.length}</span></div>
+    <div class="cards">`;
+    items.forEach(item => {
+      html += renderCard(item);
+    });
+    html += `</div></div>`;
   });
-  html += `</div>`;
+
+  if (!html) {
+    html = `<div class="empty">No hay resultados con los filtros actuales.</div>`;
+  }
+
   container.innerHTML = html;
 }
 
