@@ -1069,7 +1069,7 @@ function renderRoadmapDateGroup(items) {
   // Si solo hay un tipo presente, mantener layout simple sin columnas
   const presentTypes = typeMeta.filter(({ key }) => byType[key].length > 0);
   if (presentTypes.length <= 1) {
-    return `<div class="roadmap-items">${items.map(it => renderRoadmapCard(it)).join('''''')}</div>`;
+    return `<div class="roadmap-items">${items.map(it => renderRoadmapCard(it)).join('')}</div>`;
   }
   // Layout 3 columnas
   let h = '<div class="roadmap-type-columns">';
