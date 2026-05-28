@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -435,11 +435,62 @@ header {
 .type-section-header.ajuste .count { background: #eff6ff; color: var(--ajuste); }
 .type-section-header.aclaracion { color: var(--aclaracion); }
 .type-section-header.aclaracion .count { background: #f3f4f6; color: var(--aclaracion); }
+.roadmap-type-columns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 4px;
+}
+.roadmap-type-column {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.roadmap-type-column-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--border);
+}
+.roadmap-type-column-header.bug { color: var(--bug); border-bottom-color: #fecaca; }
+.roadmap-type-column-header.ajuste { color: var(--ajuste); border-bottom-color: #bfdbfe; }
+.roadmap-type-column-header.aclaracion { color: var(--aclaracion); border-bottom-color: #d1d5db; }
+.roadmap-type-column-header .count {
+  background: #f3f4f6;
+  color: var(--muted);
+  padding: 1px 7px;
+  border-radius: 9px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.roadmap-type-column-header.bug .count { background: #fef2f2; color: var(--bug); }
+.roadmap-type-column-header.ajuste .count { background: #eff6ff; color: var(--ajuste); }
+.roadmap-type-column-header.aclaracion .count { background: #f3f4f6; color: var(--aclaracion); }
+.roadmap-type-column-items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+.roadmap-type-column-empty {
+  font-size: 11px;
+  color: #d1d5db;
+  font-style: italic;
+  padding: 8px 0;
+}
 @media (max-width: 968px) {
   .hero { grid-template-columns: repeat(2, 1fr); }
   .synthesis-grid { grid-template-columns: repeat(2, 1fr); }
   .cards { grid-template-columns: 1fr; }
   .roadmap-card { width: 100%; }
+  .roadmap-type-columns { grid-template-columns: 1fr; gap: 12px; }
 }
 @media (max-width: 480px) {
   .hero { grid-template-columns: 1fr; }
@@ -457,7 +508,7 @@ header {
         <p>Post-migración Portal · Notion + Teams + Design Review</p>
       </div>
     </div>
-    <div class="update-info">Actualización: 27/05/2026</div>
+    <div class="update-info">Actualización: 28/05/2026</div>
   </div>
 </header>
 
@@ -466,7 +517,7 @@ header {
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">28</div>
+      <div class="counter-num" style="color: var(--pending);">29</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
@@ -802,7 +853,8 @@ const data = {
       { title: 'Acceso corporativo masivo — Telefónica + BNCR', type: 'Ajuste', priority: 'Media', target: '29/05', detail: 'Agrupa N-S4 + N-S5. Resets + whitelist email por dominio corp. Telefónica: 3 usuarios. BNCR: 7 contraseñas + whitelist dominio iai.es' },
       { title: 'Altas/bajas de socios para instituto global', type: 'Ajuste', priority: 'Alta', target: '27/05', detail: 'Flujo de alta y baja de socios adaptado para instituto global' },
       { title: 'Auditoría calidad datos socios — cuadre general + consejeros', type: 'Aclaración', priority: 'Media', target: '26/05', detail: 'Agrupa N-D2 + N-D3. Cuadre SP↔HS de socios + foco en discrepancias del listado consejeros.' },
-      { title: 'Preparar acceso/copia de BBDD iMIS para entrega a IAI', type: 'Ajuste', priority: 'Media', target: '28/05', detail: 'Cliente quiere evaluar los datos disponibles antes de pedir copia oficial al equipo iMIS' }
+      { title: 'Preparar acceso/copia de BBDD iMIS para entrega a IAI', type: 'Ajuste', priority: 'Media', target: '28/05', detail: 'Cliente quiere evaluar los datos disponibles antes de pedir copia oficial al equipo iMIS' },
+      { title: 'Naturalezas/sectores HubSpot incorrectos — revertir portal + actualizar enums HS + backfill', type: 'Ajuste', priority: 'Alta', target: '28/05', detail: 'Naturalezas (6): Cotizada / Familiar / Filial extranjera / No cotizada / ONG / Sector Público. Sectores (25). Backfill con Excel diciembre 2025' }
     ],
     producto: [
       { title: 'Adaptar página campus (Resumen + Documentos para Moodle)', type: 'Ajuste', priority: 'Media', target: '27/05', detail: 'Habilitar secciones Resumen y Documentos para cursos Moodle.' },
@@ -824,7 +876,6 @@ const data = {
       { title: 'Admin poder usar código de descuento (RPC listo, falta bulk-invite)', type: 'Ajuste', priority: 'Media', target: '29/05', detail: 'promo_code en bulk-invite-event. RPC ya listo.' },
       { title: 'Revisión facturación alta de socios', type: 'Aclaración', priority: 'Alta', target: '26/05', detail: 'Revisar flujo completo de facturación al dar de alta nuevos socios corporativos e individuales' },
       { title: 'Exportar listados de horas compradas/usadas', type: 'Ajuste', priority: 'Baja', target: '27/05', detail: 'Portal sin botón exportar.' },
-      { title: 'Ajuste manual de horas en formaciones sin asignación directa', type: 'Ajuste', priority: 'Media', target: '27/05', detail: 'Caso Telefónica/COSO. Aplicar horas a inscripciones que no permiten asignación directa' },
       { title: 'Trazabilidad: identificar qué bolsa/crédito formativo se aplica en cada inscripción', type: 'Ajuste', priority: 'Baja', target: '03/06', detail: 'Mostrar ID de bolsa en cada línea de inscripción consumidora' },
       { title: 'Pack Lunes (evento) no entran Pedidos en BC', type: 'Bug', priority: 'Media', target: '29/05', detail: 'Facturación manual hasta resolver. Tipología pack lunes sin flujo BC' }
     ],
@@ -1015,16 +1066,26 @@ function renderRoadmapDateGroup(items) {
     { key: 'Ajuste', label: '✏️ Ajustes', cls: 'ajuste' },
     { key: 'Aclaración', label: '💬 Aclaraciones', cls: 'aclaracion' }
   ];
-  let h = '';
+  // Si solo hay un tipo presente, mantener layout simple sin columnas
+  const presentTypes = typeMeta.filter(({ key }) => byType[key].length > 0);
+  if (presentTypes.length <= 1) {
+    return `<div class="roadmap-items">${items.map(it => renderRoadmapCard(it)).join('''''')}</div>`;
+  }
+  // Layout 3 columnas
+  let h = '<div class="roadmap-type-columns">';
   typeMeta.forEach(({ key, label, cls }) => {
     const its = byType[key];
-    if (its.length === 0) return;
-    h += `<div class="type-section">
-      <div class="type-section-header ${cls}">${label} <span class="count">${its.length}</span></div>
-      <div class="roadmap-items">${its.map(it => renderRoadmapCard(it)).join('')}</div>
+    h += `<div class="roadmap-type-column">
+      <div class="roadmap-type-column-header ${cls}">${label} <span class="count">${its.length}</span></div>
+      <div class="roadmap-type-column-items">${
+        its.length === 0
+          ? '<div class="roadmap-type-column-empty">—</div>'
+          : its.map(it => renderRoadmapCard(it)).join('')
+      }</div>
     </div>`;
   });
-  return h || `<div class="roadmap-items">${items.map(it => renderRoadmapCard(it)).join('')}</div>`;
+  h += '</div>';
+  return h;
 }
 function renderRoadmapCard(item) {
   const isCompleted = item._state === 'completed';
