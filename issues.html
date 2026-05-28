@@ -388,8 +388,6 @@ header {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 10px 12px;
-  width: calc(50% - 5px);
-  min-width: 200px;
   transition: all 0.15s;
   position: relative;
 }
@@ -517,12 +515,12 @@ header {
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">29</div>
+      <div class="counter-num" style="color: var(--pending);">27</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">208</div>
+      <div class="counter-num" style="color: var(--resolved);">210</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -586,6 +584,13 @@ header {
         <button class="chip" id="roadmap-filter-all" onclick="setRoadmapFilter('all')">Todos</button>
         <button class="chip active" id="roadmap-filter-pending" onclick="setRoadmapFilter('pending')">Solo pendientes</button>
         <button class="chip" id="roadmap-filter-completed" onclick="setRoadmapFilter('completed')">Solo completados</button>
+      </div>
+      <div class="roadmap-filter" id="roadmap-type-filter-chips">
+        <span class="roadmap-filter-label">Tipo</span>
+        <button class="chip active" id="roadmap-type-filter-all" onclick="setRoadmapTypeFilter('all')">Todos</button>
+        <button class="chip" id="roadmap-type-filter-bug" onclick="setRoadmapTypeFilter('Bug')">🐛 Bugs</button>
+        <button class="chip" id="roadmap-type-filter-ajuste" onclick="setRoadmapTypeFilter('Ajuste')">✏️ Ajustes</button>
+        <button class="chip" id="roadmap-type-filter-aclaracion" onclick="setRoadmapTypeFilter('Aclaración')">💬 Aclaraciones</button>
       </div>
       <div class="roadmap-header">Ítems agrupados cronológicamente por fecha objetivo o fecha de cierre. Los pendientes sin fecha aparecen al final.</div>
       <div id="roadmap-content"></div>
@@ -696,7 +701,9 @@ const data = {
       { title: 'Baja de Ana Belén Díaz Fernández desde portal no se refleja', type: 'Bug', completed_at: '25/05', detail: 'Flujo de baja corregido — estado y fecha de baja se actualizan correctamente al ejecutar desde el portal' },
       { title: 'Bugs flujo ALTA-SOCIO-01 — Eurofirms + TSK', type: 'Bug', completed_at: '25/05', detail: 'Workflow ALTA-SOCIO-01 corregido. Casos validados: Judit Sánchez (Eurofirms) + Ana Bernardo (TSK)' },
       { title: 'Invitación de alta no llega al miembro (Estrella Galicia)', type: 'Bug', completed_at: '26/05', detail: 'Caso srodriguez→npequeno @estrellagalicia.es. Trigger de invitación corregido' },
-      { title: 'Histórico de actividades mostraba inscriptor en vez del participante real', type: 'Bug', completed_at: '26/05', detail: 'Vista COMPRA_CURSO corregida con JOIN a product_registrations. Aplica también al CSV descargable de asistentes' }
+      { title: 'Histórico de actividades mostraba inscriptor en vez del participante real', type: 'Bug', completed_at: '26/05', detail: 'Vista COMPRA_CURSO corregida con JOIN a product_registrations. Aplica también al CSV descargable de asistentes' },
+      { title: '🚨 Fusiones de perfiles no funciona (Symrise: Nicolas Delarroca)', type: 'Bug', completed_at: '26/05', detail: 'Fusión de perfil corregida — Nicolas Delarroca consolidado' },
+      { title: 'Auditoría calidad datos socios — cuadre general + consejeros', type: 'Ajuste', completed_at: '26/05', detail: 'Cuadre Supabase ↔ HubSpot completado. Reporte de discrepancias generado para IAI' }
     ],
     producto: [
       { title: '#2 Faltan reuniones y foros en eventos', type: 'Bug', detail: 'Sincronizado' },
@@ -846,13 +853,11 @@ const data = {
   },
   pending: {
     socios: [
-      { title: '🚨 Fusiones de perfiles no funciona (Symrise: Nicolas Delarroca)', type: 'Bug', priority: 'Alta', target: '26/05', detail: 'Workflow ALTA-SOCIO-01 o fusión manual — nicolas.delarroca@symrise.com fusionado con n.delarroca@gmail.com' },
       { title: 'Creación empresa en HubSpot — detalle de campos por categoría', type: 'Ajuste', priority: 'Media', target: '27/05', detail: 'Definir qué campos son obligatorios/opcionales según categoría de empresa' },
       { title: 'Segregar Admin y Super Admin', type: 'Ajuste', priority: 'Baja', target: null, detail: 'Dividir funciones; cambios sensibles solo desde Super Admin' },
 
       { title: 'Acceso corporativo masivo — Telefónica + BNCR', type: 'Ajuste', priority: 'Media', target: '29/05', detail: 'Agrupa N-S4 + N-S5. Resets + whitelist email por dominio corp. Telefónica: 3 usuarios. BNCR: 7 contraseñas + whitelist dominio iai.es' },
       { title: 'Altas/bajas de socios para instituto global', type: 'Ajuste', priority: 'Alta', target: '27/05', detail: 'Flujo de alta y baja de socios adaptado para instituto global' },
-      { title: 'Auditoría calidad datos socios — cuadre general + consejeros', type: 'Aclaración', priority: 'Media', target: '26/05', detail: 'Agrupa N-D2 + N-D3. Cuadre SP↔HS de socios + foco en discrepancias del listado consejeros.' },
       { title: 'Preparar acceso/copia de BBDD iMIS para entrega a IAI', type: 'Ajuste', priority: 'Media', target: '28/05', detail: 'Cliente quiere evaluar los datos disponibles antes de pedir copia oficial al equipo iMIS' },
       { title: 'Naturalezas/sectores HubSpot incorrectos — revertir portal + actualizar enums HS + backfill', type: 'Ajuste', priority: 'Alta', target: '28/05', detail: 'Naturalezas (6): Cotizada / Familiar / Filial extranjera / No cotizada / ONG / Sector Público. Sectores (25). Backfill con Excel diciembre 2025' }
     ],
@@ -903,6 +908,7 @@ let activeType = 'all';
 let activePriority = 'all';
 let searchQuery = '';
 let roadmapFilter = 'pending';
+let roadmapTypeFilter = 'all';
 
 function setRoadmapFilter(value) {
   roadmapFilter = value;
@@ -910,6 +916,14 @@ function setRoadmapFilter(value) {
     const btn = document.getElementById(`roadmap-filter-${v}`);
     if (btn) btn.classList.toggle('active', v === value);
   });
+  buildRoadmap();
+}
+
+function setRoadmapTypeFilter(value) {
+  roadmapTypeFilter = value;
+  document.querySelectorAll('#roadmap-type-filter-chips .chip').forEach(c => c.classList.remove('active'));
+  const idMap = { all: 'all', Bug: 'bug', Ajuste: 'ajuste', 'Aclaración': 'aclaracion' };
+  document.getElementById('roadmap-type-filter-' + idMap[value]).classList.add('active');
   buildRoadmap();
 }
 
@@ -1019,6 +1033,9 @@ function buildRoadmap() {
   if (roadmapFilter !== 'all') {
     allItems = allItems.filter(it => it._state === roadmapFilter);
   }
+  if (roadmapTypeFilter !== 'all') {
+    allItems = allItems.filter(it => it.type === roadmapTypeFilter);
+  }
   const groups = {};
   const noDate = [];
   allItems.forEach(item => {
@@ -1066,12 +1083,6 @@ function renderRoadmapDateGroup(items) {
     { key: 'Ajuste', label: '✏️ Ajustes', cls: 'ajuste' },
     { key: 'Aclaración', label: '💬 Aclaraciones', cls: 'aclaracion' }
   ];
-  // Si solo hay un tipo presente, mantener layout simple sin columnas
-  const presentTypes = typeMeta.filter(({ key }) => byType[key].length > 0);
-  if (presentTypes.length <= 1) {
-    return `<div class="roadmap-items">${items.map(it => renderRoadmapCard(it)).join('')}</div>`;
-  }
-  // Layout 3 columnas
   let h = '<div class="roadmap-type-columns">';
   typeMeta.forEach(({ key, label, cls }) => {
     const its = byType[key];
