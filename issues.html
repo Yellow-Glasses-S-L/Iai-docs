@@ -483,7 +483,7 @@ header {
   font-size: 11px;
   color: #d1d5db;
   font-style: italic;
-  padding-top: 2px;
+  padding-top: 10px;
 }
 @media (max-width: 968px) {
   .hero { grid-template-columns: repeat(2, 1fr); }
@@ -517,12 +517,12 @@ header {
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">26</div>
+      <div class="counter-num" style="color: var(--pending);">23</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">211</div>
+      <div class="counter-num" style="color: var(--resolved);">214</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -705,7 +705,8 @@ const data = {
       { title: 'Invitación de alta no llega al miembro (Estrella Galicia)', type: 'Bug', completed_at: '26/05', detail: 'Caso srodriguez→npequeno @estrellagalicia.es. Trigger de invitación corregido' },
       { title: 'Histórico de actividades mostraba inscriptor en vez del participante real', type: 'Bug', completed_at: '26/05', detail: 'Vista COMPRA_CURSO corregida con JOIN a product_registrations. Aplica también al CSV descargable de asistentes' },
       { title: '🚨 Fusiones de perfiles no funciona (Symrise: Nicolas Delarroca)', type: 'Bug', completed_at: '26/05', detail: 'Fusión de perfil corregida — Nicolas Delarroca consolidado' },
-      { title: 'Auditoría calidad datos socios — cuadre general + consejeros', type: 'Ajuste', completed_at: '26/05', detail: 'Cuadre Supabase ↔ HubSpot completado. Reporte de discrepancias generado para IAI' }
+      { title: 'Auditoría calidad datos socios — cuadre general + consejeros', type: 'Ajuste', completed_at: '26/05', detail: 'Cuadre Supabase ↔ HubSpot completado. Reporte de discrepancias generado para IAI' },
+      { title: 'Preparar acceso/copia de BBDD iMIS para entrega a IAI', type: 'Ajuste', completed_at: '28/05', detail: 'Copia de BBDD iMIS preparada y entregada a IAI' }
     ],
     producto: [
       { title: '#2 Faltan reuniones y foros en eventos', type: 'Bug', detail: 'Sincronizado' },
@@ -726,6 +727,7 @@ const data = {
       { title: 'Bloquear emails a cursos In House', type: 'Ajuste', detail: '80 productos marcados con inhouse=true. Cursos In House ya no envían email (campanita del portal sigue llegando)' },
       { title: 'Modalidad, horario y lugar en emails confirmación inscripción', type: 'Ajuste', detail: 'Confirmaciones de inscripción a cursos ahora muestran modalidad, horario y lugar (antes solo en invitaciones a eventos)' },
       { title: 'Jornada no se creaba/aparecía en WordPress', type: 'Bug', detail: 'Sync con WordPress corregido.' },
+      { title: 'Decidir cómo alojar el Moodle antiguo', type: 'Ajuste', completed_at: '29/05', detail: 'Decisión arquitectónica tomada sobre hosting del Moodle legacy' },
       { title: 'Click en uno de los lunes llevaba al pack en vez del evento concreto', type: 'Bug', completed_at: '22/05', detail: 'Navegación en "Mis eventos": al pulsar un lunes individual redirigía al pack contenedor. Corregido para abrir el evento concreto' },
       { title: 'Modalidad evento no aparece en correo (Foro DAIs químico/farmacéutico)', type: 'Bug', completed_at: '29/05', detail: 'Configuración del evento corregida para mostrar modalidad virtual en email automático' },
       { title: 'Ponentes en cursos finalizados deben aparecer completados pero sin diploma', type: 'Ajuste', completed_at: '25/05', detail: 'Estado completado para ponentes sin emisión de diploma' },
@@ -812,7 +814,8 @@ const data = {
       { title: '🚨 Bug RGPD: prefactura se envía por error al asistente', type: 'Bug', completed_at: '25/05', detail: 'Naturgy + CreditAndorra. Fix verificado y desplegado' },
       { title: 'Texto del cuerpo del email de prefactura sin actualizar', type: 'Ajuste', completed_at: '26/05', detail: 'Texto del cuerpo del email aplicado en el workflow HubSpot' },
       { title: 'Listado de asistentes muestra nombre/email del inscriptor en vez del asistente', type: 'Bug', completed_at: '25/05', detail: 'Vista corregida para mostrar nombre y email del asistente real' },
-      { title: 'Ajuste manual de horas en formaciones sin asignación directa', type: 'Ajuste', completed_at: '27/05', detail: 'Caso Telefónica/COSO. Permite aplicar horas a formaciones que no permiten asignación directa' }
+      { title: 'Ajuste manual de horas en formaciones sin asignación directa', type: 'Ajuste', completed_at: '27/05', detail: 'Caso Telefónica/COSO. Permite aplicar horas a formaciones que no permiten asignación directa' },
+      { title: 'Revisión facturación alta de socios', type: 'Ajuste', completed_at: '26/05', detail: 'Proceso de facturación validado y operativo' }
     ],
     ux: [
       { title: '#10 Documentos Esfera Consejeros no disponibles', type: 'Bug', detail: 'Perfiles WordPress revisados' },
@@ -861,7 +864,6 @@ const data = {
 
       { title: 'Acceso corporativo masivo — Telefónica + BNCR', type: 'Ajuste', priority: 'Media', target: '29/05', detail: 'Agrupa N-S4 + N-S5. Resets + whitelist email por dominio corp. Telefónica: 3 usuarios. BNCR: 7 contraseñas + whitelist dominio iai.es' },
       { title: 'Altas/bajas de socios para instituto global', type: 'Ajuste', priority: 'Alta', target: '27/05', detail: 'Flujo de alta y baja de socios adaptado para instituto global' },
-      { title: 'Preparar acceso/copia de BBDD iMIS para entrega a IAI', type: 'Ajuste', priority: 'Media', target: '28/05', detail: 'Cliente quiere evaluar los datos disponibles antes de pedir copia oficial al equipo iMIS' },
       { title: 'Naturalezas/sectores HubSpot incorrectos — revertir portal + actualizar enums HS + backfill', type: 'Ajuste', priority: 'Alta', target: '28/05', detail: 'Naturalezas (6): Cotizada / Familiar / Filial extranjera / No cotizada / ONG / Sector Público. Sectores (25). Backfill con Excel diciembre 2025' }
     ],
     producto: [
@@ -870,7 +872,6 @@ const data = {
       { title: 'Añadir cuestionario retribuciones de ponentes', type: 'Ajuste', priority: 'Baja', target: '04/06', detail: 'Formulario/cuestionario de retribuciones para ponentes.' },
 
       { title: 'Cabecera de curso — consistencia + flexibilidad', type: 'Bug', priority: 'Media', target: '29/05', detail: 'Agrupa E-P3 + N-P8. Bug consistencia A.3.2 imagen cabecera + mejora flexibilidad para añadir cabecera (meeting 21/05)' },
-      { title: 'Decidir cómo alojar el Moodle antiguo', type: 'Aclaración', priority: 'Baja', target: '29/05', detail: 'Infraestructura Moodle legacy pendiente de decisión.' },
     ],
     inscripciones: [
       { title: 'Conexión nirestream Horas Certificado (mínimo 85% visionado)', type: 'Ajuste', priority: 'Media', target: '28/05', detail: 'Integración con nirestream para verificar mínimo 85% de visionado antes de emitir certificado. A la espera de respuesta de Nirestream' },
@@ -881,7 +882,6 @@ const data = {
     ],
     facturacion: [
       { title: 'Admin poder usar código de descuento (RPC listo, falta bulk-invite)', type: 'Ajuste', priority: 'Media', target: '29/05', detail: 'promo_code en bulk-invite-event. RPC ya listo.' },
-      { title: 'Revisión facturación alta de socios', type: 'Aclaración', priority: 'Alta', target: '26/05', detail: 'Revisar flujo completo de facturación al dar de alta nuevos socios corporativos e individuales' },
       { title: 'Exportar listados de horas compradas/usadas', type: 'Ajuste', priority: 'Baja', target: '27/05', detail: 'Portal sin botón exportar.' },
       { title: 'Trazabilidad: identificar qué bolsa/crédito formativo se aplica en cada inscripción', type: 'Ajuste', priority: 'Baja', target: '03/06', detail: 'Mostrar ID de bolsa en cada línea de inscripción consumidora' },
       { title: 'Pack Lunes (evento) no entran Pedidos en BC', type: 'Bug', priority: 'Media', target: '29/05', detail: 'Facturación manual hasta resolver. Tipología pack lunes sin flujo BC' }
