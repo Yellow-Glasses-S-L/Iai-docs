@@ -477,12 +477,13 @@ header {
   flex-direction: column;
   gap: 10px;
   flex: 1;
+  justify-content: flex-start;
 }
 .roadmap-type-column-empty {
   font-size: 11px;
   color: #d1d5db;
   font-style: italic;
-  padding: 8px 0;
+  padding-top: 2px;
 }
 @media (max-width: 968px) {
   .hero { grid-template-columns: repeat(2, 1fr); }
@@ -507,7 +508,7 @@ header {
         <p>Post-migración Portal · Notion + Teams + Design Review</p>
       </div>
     </div>
-    <div class="update-info">Actualización: 28/05/2026</div>
+    <div class="update-info">Actualización: 29/05/2026</div>
   </div>
 </header>
 
@@ -516,12 +517,12 @@ header {
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">27</div>
+      <div class="counter-num" style="color: var(--pending);">26</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">210</div>
+      <div class="counter-num" style="color: var(--resolved);">211</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -775,7 +776,8 @@ const data = {
       { title: 'Precio sin IVA en sección de pago hasta recargar página', type: 'Bug', completed_at: '22/05', detail: 'Bug visual del checkout: el precio total se mostraba sin IVA hasta recarga manual o cambio de método de pago. Reproducido en "Jornadas de Auditoría Interna presenciales 2026"' },
       { title: 'IVA en carrito no se aplicaba (socios y no socios)', type: 'Bug', completed_at: '25/05', detail: 'Carrito mostraba 0€ aunque la factura se generaba correcta. Fix cubre socios y no-socios; product_type también corregido para socio-corporativo' },
       { title: 'Usuario-cliente de empresa no puede inscribir a compañeros', type: 'Bug', completed_at: '25/05', detail: 'Caso específico distinto del #28 (socio-corporativo). Aquí el rol usuario-cliente sin permiso. Permiso ampliado' },
-      { title: 'bulk-invite-event COSO: default payment_method=credits falla', type: 'Bug', completed_at: '26/05', detail: 'Fix definitivo: productos con accepts_training_credits=false ya no fallan con PRODUCT_NOT_CREDIT_ELIGIBLE' }
+      { title: 'bulk-invite-event COSO: default payment_method=credits falla', type: 'Bug', completed_at: '26/05', detail: 'Fix definitivo: productos con accepts_training_credits=false ya no fallan con PRODUCT_NOT_CREDIT_ELIGIBLE' },
+      { title: 'Inscripciones Moodle no sincronizan (7 casos)', type: 'Bug', completed_at: '26/05', detail: 'Sync con Moodle corregido — los 7 casos (Repsol/IOC + 5 Kutxabank) regularizados' }
     ],
     facturacion: [
       { title: '#14 No se puede actualizar tramo empresa desde portal', type: 'Aclaración', detail: 'Se hace desde HubSpot' },
@@ -854,7 +856,7 @@ const data = {
   },
   pending: {
     socios: [
-      { title: 'Creación empresa en HubSpot — detalle de campos por categoría', type: 'Ajuste', priority: 'Media', target: '27/05', detail: 'Definir qué campos son obligatorios/opcionales según categoría de empresa' },
+      { title: 'Creación empresa en HubSpot — detalle de campos por categoría', type: 'Ajuste', priority: 'Media', target: '27/05', detail: 'Detalle de campos a configurar por categoría al crear empresa en HubSpot · Más implicaciones' },
       { title: 'Segregar Admin y Super Admin', type: 'Ajuste', priority: 'Baja', target: null, detail: 'Dividir funciones; cambios sensibles solo desde Super Admin' },
 
       { title: 'Acceso corporativo masivo — Telefónica + BNCR', type: 'Ajuste', priority: 'Media', target: '29/05', detail: 'Agrupa N-S4 + N-S5. Resets + whitelist email por dominio corp. Telefónica: 3 usuarios. BNCR: 7 contraseñas + whitelist dominio iai.es' },
@@ -871,11 +873,10 @@ const data = {
       { title: 'Decidir cómo alojar el Moodle antiguo', type: 'Aclaración', priority: 'Baja', target: '29/05', detail: 'Infraestructura Moodle legacy pendiente de decisión.' },
     ],
     inscripciones: [
-      { title: 'Conexión nirestream Horas Certificado (mínimo 85% visionado)', type: 'Ajuste', priority: 'Media', target: '28/05', detail: 'Integración con nirestream para verificar mínimo 85% de visionado antes de emitir certificado' },
+      { title: 'Conexión nirestream Horas Certificado (mínimo 85% visionado)', type: 'Ajuste', priority: 'Media', target: '28/05', detail: 'Integración con nirestream para verificar mínimo 85% de visionado antes de emitir certificado. A la espera de respuesta de Nirestream' },
       { title: 'Campos personalizables por evento (DNI, alergias, etc.)', type: 'Ajuste', priority: 'Baja', target: '05/06', detail: 'Agrupa E-I3 + E-I5. Feature campos custom configurables por evento: DNI (E-I3) + formulario Alergias HubSpot (E-I5)' },
       { title: 'Impresión Cartel de Mesa para cursos presenciales', type: 'Ajuste', priority: 'Alta', target: '29/05', detail: 'Meeting 21/05 subió prioridad. Esperando medidas y fotos del cliente' },
       { title: 'B.1.2 Filtro fecha mes actual por defecto en listado admin', type: 'Ajuste', priority: 'Baja', target: '29/05', detail: 'Listado admin debe filtrar por mes actual por defecto.' },
-      { title: 'Inscripciones Moodle no sincronizan (7 casos)', type: 'Bug', priority: 'Alta', target: '26/05', detail: 'Repsol/IOC + 5 Kutxabank "Ética Empresarial". Workaround manual aplicado, falta causa raíz.' },
       { title: 'Frontend inscripción admin en eventos: generación de deal y selección de facturación', type: 'Ajuste', priority: 'Alta', target: '28/05', detail: 'El back ya está listo. Falta replicar en frontend el flujo de selección de facturación equivalente al de campus' }
     ],
     facturacion: [
