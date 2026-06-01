@@ -509,7 +509,7 @@ header {
         <p>Post-migración Portal · Notion + Teams + Design Review</p>
       </div>
     </div>
-    <div class="update-info">Actualización: 29/05/2026</div>
+    <div class="update-info">Actualización: 01/06/2026</div>
   </div>
 </header>
 
@@ -518,12 +518,12 @@ header {
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">23</div>
+      <div class="counter-num" style="color: var(--pending);">22</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">214</div>
+      <div class="counter-num" style="color: var(--resolved);">215</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -707,7 +707,8 @@ const data = {
       { title: 'Histórico de actividades mostraba inscriptor en vez del participante real', type: 'Bug', completed_at: '26/05', detail: 'Vista COMPRA_CURSO corregida con JOIN a product_registrations. Aplica también al CSV descargable de asistentes' },
       { title: '🚨 Fusiones de perfiles no funciona (Symrise: Nicolas Delarroca)', type: 'Bug', completed_at: '26/05', detail: 'Fusión de perfil corregida — Nicolas Delarroca consolidado' },
       { title: 'Auditoría calidad datos socios — cuadre general + consejeros', type: 'Ajuste', completed_at: '26/05', detail: 'Cuadre Supabase ↔ HubSpot completado. Reporte de discrepancias generado para IAI' },
-      { title: 'Preparar acceso/copia de BBDD iMIS para entrega a IAI', type: 'Ajuste', completed_at: '28/05', detail: 'Copia de BBDD iMIS preparada y entregada a IAI' }
+      { title: 'Preparar acceso/copia de BBDD iMIS para entrega a IAI', type: 'Ajuste', completed_at: '28/05', detail: 'Copia de BBDD iMIS preparada y entregada a IAI' },
+      { title: 'Naturalezas/sectores HubSpot incorrectos — revertir portal + actualizar enums HS + backfill', type: 'Ajuste', completed_at: '28/05', detail: '6 naturalezas + 25 sectores actualizados en HubSpot. Portal revertido y backfill aplicado con Excel diciembre 2025' }
     ],
     producto: [
       { title: '#2 Faltan reuniones y foros en eventos', type: 'Bug', detail: 'Sincronizado' },
@@ -865,7 +866,6 @@ const data = {
 
       { title: 'Acceso corporativo masivo — Telefónica + BNCR', type: 'Ajuste', priority: 'Media', target: '29/05', detail: 'Agrupa N-S4 + N-S5. Resets + whitelist email por dominio corp. Telefónica: 3 usuarios. BNCR: 7 contraseñas + whitelist dominio iai.es' },
       { title: 'Altas/bajas de socios para instituto global', type: 'Ajuste', priority: 'Alta', target: '27/05', detail: 'Flujo de alta y baja de socios adaptado para instituto global' },
-      { title: 'Naturalezas/sectores HubSpot incorrectos — revertir portal + actualizar enums HS + backfill', type: 'Ajuste', priority: 'Alta', target: '28/05', detail: 'Naturalezas (6): Cotizada / Familiar / Filial extranjera / No cotizada / ONG / Sector Público. Sectores (25). Backfill con Excel diciembre 2025' }
     ],
     producto: [
       { title: 'Adaptar página campus (Resumen + Documentos para Moodle)', type: 'Ajuste', priority: 'Media', target: '27/05', detail: 'Habilitar secciones Resumen y Documentos para cursos Moodle.' },
@@ -1091,11 +1091,7 @@ function renderRoadmapDateGroup(items) {
     const its = byType[key];
     h += `<div class="roadmap-type-column">
       <div class="roadmap-type-column-header ${cls}">${label} <span class="count">${its.length}</span></div>
-      <div class="roadmap-type-column-items">${
-        its.length === 0
-          ? '<div class="roadmap-type-column-empty">—</div>'
-          : its.map(it => renderRoadmapCard(it)).join('')
-      }</div>
+      <div class="roadmap-type-column-items">${its.map(it => renderRoadmapCard(it)).join('')}</div>
     </div>`;
   });
   h += '</div>';
