@@ -349,6 +349,7 @@ header {
   display: flex;
   gap: 20px;
   margin-bottom: 28px;
+  align-items: flex-start;
 }
 .roadmap-date-col {
   width: 90px;
@@ -509,7 +510,7 @@ header {
         <p>Post-migración Portal · Notion + Teams + Design Review</p>
       </div>
     </div>
-    <div class="update-info">Actualización: 01/06/2026</div>
+    <div class="update-info">Actualización: 02/06/2026</div>
   </div>
 </header>
 
@@ -518,12 +519,12 @@ header {
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">22</div>
+      <div class="counter-num" style="color: var(--pending);">19</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">215</div>
+      <div class="counter-num" style="color: var(--resolved);">218</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -735,7 +736,8 @@ const data = {
       { title: 'Ponentes en cursos finalizados deben aparecer completados pero sin diploma', type: 'Ajuste', completed_at: '25/05', detail: 'Estado completado para ponentes sin emisión de diploma' },
       { title: 'Fecha de fin = fecha inicio + 90 días', type: 'Ajuste', completed_at: '26/05', detail: 'Regla aplicada al catálogo de cursos/eventos' },
       { title: 'Botón certificado en eventos lunes sin acción + ocultar en pack', type: 'Bug', completed_at: '26/05', detail: 'Botón funcional con certificate_issued_at + is_pack=false. Packs de Lunes ocultan el botón cuando is_pack=true' },
-      { title: 'Jornadas: crédito formativo aplicable indebidamente', type: 'Bug', completed_at: '26/05', detail: 'Lógica de SYNC productos fuerza acepta_credito=false para jornadas' }
+      { title: 'Jornadas: crédito formativo aplicable indebidamente', type: 'Bug', completed_at: '26/05', detail: 'Lógica de SYNC productos fuerza acepta_credito=false para jornadas' },
+      { title: 'Adaptar página campus (Resumen + Documentos para Moodle)', type: 'Ajuste', completed_at: '27/05', detail: 'Pestañas Resumen y Documentos habilitadas en la página de curso del campus' }
     ],
     inscripciones: [
       { title: '#3 Buscador Campus filtra solo por una fecha', type: 'Bug', detail: 'Ajustado' },
@@ -781,7 +783,9 @@ const data = {
       { title: 'IVA en carrito no se aplicaba (socios y no socios)', type: 'Bug', completed_at: '25/05', detail: 'Carrito mostraba 0€ aunque la factura se generaba correcta. Fix cubre socios y no-socios; product_type también corregido para socio-corporativo' },
       { title: 'Usuario-cliente de empresa no puede inscribir a compañeros', type: 'Bug', completed_at: '25/05', detail: 'Caso específico distinto del #28 (socio-corporativo). Aquí el rol usuario-cliente sin permiso. Permiso ampliado' },
       { title: 'bulk-invite-event COSO: default payment_method=credits falla', type: 'Bug', completed_at: '26/05', detail: 'Fix definitivo: productos con accepts_training_credits=false ya no fallan con PRODUCT_NOT_CREDIT_ELIGIBLE' },
-      { title: 'Inscripciones Moodle no sincronizan (7 casos)', type: 'Bug', completed_at: '26/05', detail: 'Sync con Moodle corregido — los 7 casos (Repsol/IOC + 5 Kutxabank) regularizados' }
+      { title: 'Inscripciones Moodle no sincronizan (7 casos)', type: 'Bug', completed_at: '26/05', detail: 'Sync con Moodle corregido — los 7 casos (Repsol/IOC + 5 Kutxabank) regularizados' },
+      { title: 'Impresión Cartel de Mesa para cursos presenciales', type: 'Ajuste', completed_at: '29/05', detail: 'Cartel de mesa implementado y disponible para cursos presenciales' },
+      { title: 'Frontend inscripción admin en eventos: generación de deal y selección de facturación', type: 'Ajuste', completed_at: '28/05', detail: 'Flujo de selección de facturación replicado en frontend, equivalente al de campus' }
     ],
     facturacion: [
       { title: '#14 No se puede actualizar tramo empresa desde portal', type: 'Aclaración', detail: 'Se hace desde HubSpot' },
@@ -868,7 +872,6 @@ const data = {
       { title: 'Altas/bajas de socios para instituto global', type: 'Ajuste', priority: 'Alta', target: '27/05', detail: 'Flujo de alta y baja de socios adaptado para instituto global' },
     ],
     producto: [
-      { title: 'Adaptar página campus (Resumen + Documentos para Moodle)', type: 'Ajuste', priority: 'Media', target: '27/05', detail: 'Habilitar secciones Resumen y Documentos para cursos Moodle.' },
       { title: 'Diplomas eLearning manuales: 2 casos pendientes', type: 'Bug', priority: 'Media', target: '28/05', detail: 'Emilio Arrate "Segregación de funciones" + Ana Cristina Soto "Normas Globales".' },
       { title: 'Añadir cuestionario retribuciones de ponentes', type: 'Ajuste', priority: 'Baja', target: '04/06', detail: 'Formulario/cuestionario de retribuciones para ponentes.' },
 
@@ -877,9 +880,7 @@ const data = {
     inscripciones: [
       { title: 'Conexión nirestream Horas Certificado (mínimo 85% visionado)', type: 'Ajuste', priority: 'Media', target: '28/05', detail: 'Integración con nirestream para verificar mínimo 85% de visionado antes de emitir certificado. A la espera de respuesta de Nirestream' },
       { title: 'Campos personalizables por evento (DNI, alergias, etc.)', type: 'Ajuste', priority: 'Baja', target: '05/06', detail: 'Agrupa E-I3 + E-I5. Feature campos custom configurables por evento: DNI (E-I3) + formulario Alergias HubSpot (E-I5)' },
-      { title: 'Impresión Cartel de Mesa para cursos presenciales', type: 'Ajuste', priority: 'Alta', target: '29/05', detail: 'Meeting 21/05 subió prioridad. Esperando medidas y fotos del cliente' },
       { title: 'B.1.2 Filtro fecha mes actual por defecto en listado admin', type: 'Ajuste', priority: 'Baja', target: '29/05', detail: 'Listado admin debe filtrar por mes actual por defecto.' },
-      { title: 'Frontend inscripción admin en eventos: generación de deal y selección de facturación', type: 'Ajuste', priority: 'Alta', target: '28/05', detail: 'El back ya está listo. Falta replicar en frontend el flujo de selección de facturación equivalente al de campus' }
     ],
     facturacion: [
       { title: 'Admin poder usar código de descuento (RPC listo, falta bulk-invite)', type: 'Ajuste', priority: 'Media', target: '29/05', detail: 'promo_code en bulk-invite-event. RPC ya listo.' },
