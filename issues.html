@@ -510,7 +510,7 @@ header {
         <p>Post-migración Portal · Notion + Teams + Design Review</p>
       </div>
     </div>
-    <div class="update-info">Actualización: 02/06/2026</div>
+    <div class="update-info">Actualización: 03/06/2026</div>
   </div>
 </header>
 
@@ -524,7 +524,7 @@ header {
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">218</div>
+      <div class="counter-num" style="color: var(--resolved);">222</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -709,7 +709,9 @@ const data = {
       { title: '🚨 Fusiones de perfiles no funciona (Symrise: Nicolas Delarroca)', type: 'Bug', completed_at: '26/05', detail: 'Fusión de perfil corregida — Nicolas Delarroca consolidado' },
       { title: 'Auditoría calidad datos socios — cuadre general + consejeros', type: 'Ajuste', completed_at: '26/05', detail: 'Cuadre Supabase ↔ HubSpot completado. Reporte de discrepancias generado para IAI' },
       { title: 'Preparar acceso/copia de BBDD iMIS para entrega a IAI', type: 'Ajuste', completed_at: '28/05', detail: 'Copia de BBDD iMIS preparada y entregada a IAI' },
-      { title: 'Naturalezas/sectores HubSpot incorrectos — revertir portal + actualizar enums HS + backfill', type: 'Ajuste', completed_at: '28/05', detail: '6 naturalezas + 25 sectores actualizados en HubSpot. Portal revertido y backfill aplicado con Excel diciembre 2025' }
+      { title: 'Naturalezas/sectores HubSpot incorrectos — revertir portal + actualizar enums HS + backfill', type: 'Ajuste', completed_at: '28/05', detail: '6 naturalezas + 25 sectores actualizados en HubSpot. Portal revertido y backfill aplicado con Excel diciembre 2025' },
+      { title: 'Listado de socios entregado a IAI para Asamblea General', type: 'Ajuste', completed_at: '03/06', detail: 'Censo entregado: 4.210 socios actuales + 104 altas + 85 bajas desde cierre iMIS. Cuentas YG y admins marcadas' },
+      { title: 'Sector/naturaleza HubSpot actualizado + Excel revisión IAI', type: 'Ajuste', completed_at: '01/06', detail: 'Catálogos sector (26) y naturaleza (6) actualizados en HubSpot y sincronizados con portal. Excel enviado a IAI con 63 sectores + 39 naturalezas pendientes de decisión' }
     ],
     producto: [
       { title: '#2 Faltan reuniones y foros en eventos', type: 'Bug', detail: 'Sincronizado' },
@@ -737,7 +739,8 @@ const data = {
       { title: 'Fecha de fin = fecha inicio + 90 días', type: 'Ajuste', completed_at: '26/05', detail: 'Regla aplicada al catálogo de cursos/eventos' },
       { title: 'Botón certificado en eventos lunes sin acción + ocultar en pack', type: 'Bug', completed_at: '26/05', detail: 'Botón funcional con certificate_issued_at + is_pack=false. Packs de Lunes ocultan el botón cuando is_pack=true' },
       { title: 'Jornadas: crédito formativo aplicable indebidamente', type: 'Bug', completed_at: '26/05', detail: 'Lógica de SYNC productos fuerza acepta_credito=false para jornadas' },
-      { title: 'Adaptar página campus (Resumen + Documentos para Moodle)', type: 'Ajuste', completed_at: '27/05', detail: 'Pestañas Resumen y Documentos habilitadas en la página de curso del campus' }
+      { title: 'Adaptar página campus (Resumen + Documentos para Moodle)', type: 'Ajuste', completed_at: '27/05', detail: 'Pestañas Resumen y Documentos habilitadas en la página de curso del campus' },
+      { title: 'Bug Moodle: cursos sincronizaban a Category 37 inexistente', type: 'Bug', completed_at: '01/06', detail: 'Fix en SYNC-WP-01: categoría se resuelve por modalidad (Presencial=61, Virtual=62, Blended=60, E-learning=34). No afecta a facturación BC' }
     ],
     inscripciones: [
       { title: '#3 Buscador Campus filtra solo por una fecha', type: 'Bug', detail: 'Ajustado' },
@@ -785,7 +788,8 @@ const data = {
       { title: 'bulk-invite-event COSO: default payment_method=credits falla', type: 'Bug', completed_at: '26/05', detail: 'Fix definitivo: productos con accepts_training_credits=false ya no fallan con PRODUCT_NOT_CREDIT_ELIGIBLE' },
       { title: 'Inscripciones Moodle no sincronizan (7 casos)', type: 'Bug', completed_at: '26/05', detail: 'Sync con Moodle corregido — los 7 casos (Repsol/IOC + 5 Kutxabank) regularizados' },
       { title: 'Impresión Cartel de Mesa para cursos presenciales', type: 'Ajuste', completed_at: '29/05', detail: 'Cartel de mesa implementado y disponible para cursos presenciales' },
-      { title: 'Frontend inscripción admin en eventos: generación de deal y selección de facturación', type: 'Ajuste', completed_at: '28/05', detail: 'Flujo de selección de facturación replicado en frontend, equivalente al de campus' }
+      { title: 'Frontend inscripción admin en eventos: generación de deal y selección de facturación', type: 'Ajuste', completed_at: '28/05', detail: 'Flujo de selección de facturación replicado en frontend, equivalente al de campus' },
+      { title: 'Inscripción admin: facturar a empresa no asociada al usuario', type: 'Ajuste', completed_at: '01/06', detail: 'Se guardan datos de empresa como memo de facturación en el deal sin crear empresa ni forzar vinculación. Permite facturar a empresas que no existen en HubSpot' }
     ],
     facturacion: [
       { title: '#14 No se puede actualizar tramo empresa desde portal', type: 'Aclaración', detail: 'Se hace desde HubSpot' },
