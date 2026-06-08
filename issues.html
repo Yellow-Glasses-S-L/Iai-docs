@@ -510,7 +510,7 @@ header {
         <p>Post-migración Portal · Notion + Teams + Design Review</p>
       </div>
     </div>
-    <div class="update-info">Actualización: 03/06/2026</div>
+    <div class="update-info">Actualización: 08/06/2026</div>
   </div>
 </header>
 
@@ -519,12 +519,12 @@ header {
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">19</div>
+      <div class="counter-num" style="color: var(--pending);">17</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">222</div>
+      <div class="counter-num" style="color: var(--resolved);">233</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -711,7 +711,9 @@ const data = {
       { title: 'Preparar acceso/copia de BBDD iMIS para entrega a IAI', type: 'Ajuste', completed_at: '28/05', detail: 'Copia de BBDD iMIS preparada y entregada a IAI' },
       { title: 'Naturalezas/sectores HubSpot incorrectos — revertir portal + actualizar enums HS + backfill', type: 'Ajuste', completed_at: '28/05', detail: '6 naturalezas + 25 sectores actualizados en HubSpot. Portal revertido y backfill aplicado con Excel diciembre 2025' },
       { title: 'Listado de socios entregado a IAI para Asamblea General', type: 'Ajuste', completed_at: '03/06', detail: 'Censo entregado: 4.210 socios actuales + 104 altas + 85 bajas desde cierre iMIS. Cuentas YG y admins marcadas' },
-      { title: 'Sector/naturaleza HubSpot actualizado + Excel revisión IAI', type: 'Ajuste', completed_at: '01/06', detail: 'Catálogos sector (26) y naturaleza (6) actualizados en HubSpot y sincronizados con portal. Excel enviado a IAI con 63 sectores + 39 naturalezas pendientes de decisión' }
+      { title: 'Sector/naturaleza HubSpot actualizado + Excel revisión IAI', type: 'Ajuste', completed_at: '01/06', detail: 'Catálogos sector (26) y naturaleza (6) actualizados en HubSpot y sincronizados con portal. Excel enviado a IAI con 63 sectores + 39 naturalezas pendientes de decisión' },
+      { title: 'Bug alta socios individuales: deal/HS sync', type: 'Bug', completed_at: '05/06', detail: 'Flujo de alta individual no actualizaba perfil en HubSpot ni creaba deal/line items. Corregido. Validado con caso testigo' },
+      { title: 'Catálogo sector afín separado en tabla propia', type: 'Ajuste', completed_at: '05/06', detail: 'sector_afín extraído a catalog_company_affine_sectors (29 valores). FK actualizadas en companies y membership_applications' }
     ],
     producto: [
       { title: '#2 Faltan reuniones y foros en eventos', type: 'Bug', detail: 'Sincronizado' },
@@ -740,7 +742,9 @@ const data = {
       { title: 'Botón certificado en eventos lunes sin acción + ocultar en pack', type: 'Bug', completed_at: '26/05', detail: 'Botón funcional con certificate_issued_at + is_pack=false. Packs de Lunes ocultan el botón cuando is_pack=true' },
       { title: 'Jornadas: crédito formativo aplicable indebidamente', type: 'Bug', completed_at: '26/05', detail: 'Lógica de SYNC productos fuerza acepta_credito=false para jornadas' },
       { title: 'Adaptar página campus (Resumen + Documentos para Moodle)', type: 'Ajuste', completed_at: '27/05', detail: 'Pestañas Resumen y Documentos habilitadas en la página de curso del campus' },
-      { title: 'Bug Moodle: cursos sincronizaban a Category 37 inexistente', type: 'Bug', completed_at: '01/06', detail: 'Fix en SYNC-WP-01: categoría se resuelve por modalidad (Presencial=61, Virtual=62, Blended=60, E-learning=34). No afecta a facturación BC' }
+      { title: 'Bug Moodle: cursos sincronizaban a Category 37 inexistente', type: 'Bug', completed_at: '01/06', detail: 'Fix en SYNC-WP-01: categoría se resuelve por modalidad (Presencial=61, Virtual=62, Blended=60, E-learning=34). No afecta a facturación BC' },
+      { title: 'Moodle: cursos COSO sin categoría sincronizados', type: 'Bug', completed_at: '03/06', detail: 'Acreditación COSO CI, COSO ERM y CERTIFICADO ASG-UE sin categoría Moodle. Sincronización completada. IAI confirmó visualización en campus' },
+      { title: 'Moodle: e-learning con formato mosaico forzado', type: 'Bug', completed_at: '04/06', detail: 'Workflow sync forzaba formato Mosaicos en todos los e-learning impidiendo cambio admin. Flujo corregido para no imponer formato' }
     ],
     inscripciones: [
       { title: '#3 Buscador Campus filtra solo por una fecha', type: 'Bug', detail: 'Ajustado' },
@@ -789,7 +793,10 @@ const data = {
       { title: 'Inscripciones Moodle no sincronizan (7 casos)', type: 'Bug', completed_at: '26/05', detail: 'Sync con Moodle corregido — los 7 casos (Repsol/IOC + 5 Kutxabank) regularizados' },
       { title: 'Impresión Cartel de Mesa para cursos presenciales', type: 'Ajuste', completed_at: '29/05', detail: 'Cartel de mesa implementado y disponible para cursos presenciales' },
       { title: 'Frontend inscripción admin en eventos: generación de deal y selección de facturación', type: 'Ajuste', completed_at: '28/05', detail: 'Flujo de selección de facturación replicado en frontend, equivalente al de campus' },
-      { title: 'Inscripción admin: facturar a empresa no asociada al usuario', type: 'Ajuste', completed_at: '01/06', detail: 'Se guardan datos de empresa como memo de facturación en el deal sin crear empresa ni forzar vinculación. Permite facturar a empresas que no existen en HubSpot' }
+      { title: 'Inscripción admin: facturar a empresa no asociada al usuario', type: 'Ajuste', completed_at: '01/06', detail: 'Se guardan datos de empresa como memo de facturación en el deal sin crear empresa ni forzar vinculación. Permite facturar a empresas que no existen en HubSpot' },
+      { title: 'Email notif: tipos COSO/ASG no marcados como virtual', type: 'Bug', completed_at: '05/06', detail: 'Tipos Acreditación COSO Control Interno, COSO ERM y CERTIFICADO ASG-UE generaban emails con modalidad errónea. Ahora se fuerza virtual=true para esos tipos' },
+      { title: 'Email notif: ignorar productos inhouse', type: 'Ajuste', completed_at: '05/06', detail: 'Notificaciones de email se disparaban para inscripciones inhouse. Corregido para que se ignoren' },
+      { title: 'Cupón de descuento aplicable a todos los productos con precio', type: 'Bug', completed_at: '05/06', detail: 'Condición isTraining limitaba cupones a product_type_id=6 (formaciones). Corregido: todos los productos con precio admiten cupón, excluyendo tipos 1/2/3/4 (cuotas/crédito formativo/bolsa horas)' }
     ],
     facturacion: [
       { title: '#14 No se puede actualizar tramo empresa desde portal', type: 'Aclaración', detail: 'Se hace desde HubSpot' },
@@ -825,7 +832,10 @@ const data = {
       { title: 'Texto del cuerpo del email de prefactura sin actualizar', type: 'Ajuste', completed_at: '26/05', detail: 'Texto del cuerpo del email aplicado en el workflow HubSpot' },
       { title: 'Listado de asistentes muestra nombre/email del inscriptor en vez del asistente', type: 'Bug', completed_at: '25/05', detail: 'Vista corregida para mostrar nombre y email del asistente real' },
       { title: 'Ajuste manual de horas en formaciones sin asignación directa', type: 'Ajuste', completed_at: '27/05', detail: 'Caso Telefónica/COSO. Permite aplicar horas a formaciones que no permiten asignación directa' },
-      { title: 'Revisión facturación alta de socios', type: 'Ajuste', completed_at: '26/05', detail: 'Proceso de facturación validado y operativo' }
+      { title: 'Revisión facturación alta de socios', type: 'Ajuste', completed_at: '26/05', detail: 'Proceso de facturación validado y operativo' },
+      { title: 'Trazabilidad: identificar qué bolsa/crédito formativo se aplica en cada inscripción', type: 'Ajuste', completed_at: '03/06', detail: 'Backend completo (user_purchases + get_user_activity_history exponen bolsa_id, bolsa_short_code, credits_granted) y binding WeWeb terminado' },
+      { title: 'Admin poder usar código de descuento', type: 'Ajuste', completed_at: '29/05', detail: 'Funcionalidad integrada en el flujo de inscripción admin' },
+      { title: 'Factura asociada a empresa incorrecta cuando deal no tenía company', type: 'Bug', completed_at: '08/06', detail: 'Flujo de facturación hacía query de companies y asociaba la primera coincidencia. Corregido para no asignar empresa cuando el deal no tiene una vinculada' }
     ],
     ux: [
       { title: '#10 Documentos Esfera Consejeros no disponibles', type: 'Bug', detail: 'Perfiles WordPress revisados' },
@@ -864,7 +874,8 @@ const data = {
       { title: 'Diseño: rediseño tarjeta números socios y créditos', type: 'Ajuste', completed_at: '22/05', detail: 'Diseño cerrado. Implementación frontend pendiente como tarea separada' },
       { title: 'Texto "código promocional" aparecía cortado', type: 'Bug', completed_at: '22/05', detail: 'Ajuste visual del input de código promocional' },
       { title: 'Descarga XLSX usuarios desde Portal Admin', type: 'Ajuste', completed_at: '25/05', detail: 'Botón de descarga XLSX activo en el listado de usuarios admin' },
-      { title: 'Campana de notificaciones', type: 'Ajuste', completed_at: '27/05', detail: 'Componente desplegado en el portal' }
+      { title: 'Campana de notificaciones', type: 'Ajuste', completed_at: '27/05', detail: 'Componente desplegado en el portal' },
+      { title: 'Sesión WeWeb expira correctamente y redirige a login', type: 'Bug', completed_at: '08/06', detail: 'Workflow check inactivity ajustado. Cierra el gap del 401 mid-session que dejaba al usuario flotando sin redirect' }
     ]
   },
   pending: {
@@ -887,9 +898,7 @@ const data = {
       { title: 'B.1.2 Filtro fecha mes actual por defecto en listado admin', type: 'Ajuste', priority: 'Baja', target: '29/05', detail: 'Listado admin debe filtrar por mes actual por defecto.' },
     ],
     facturacion: [
-      { title: 'Admin poder usar código de descuento (RPC listo, falta bulk-invite)', type: 'Ajuste', priority: 'Media', target: '29/05', detail: 'promo_code en bulk-invite-event. RPC ya listo.' },
       { title: 'Exportar listados de horas compradas/usadas', type: 'Ajuste', priority: 'Baja', target: '27/05', detail: 'Portal sin botón exportar.' },
-      { title: 'Trazabilidad: identificar qué bolsa/crédito formativo se aplica en cada inscripción', type: 'Ajuste', priority: 'Baja', target: '03/06', detail: 'Mostrar ID de bolsa en cada línea de inscripción consumidora' },
       { title: 'Pack Lunes (evento) no entran Pedidos en BC', type: 'Bug', priority: 'Media', target: '29/05', detail: 'Facturación manual hasta resolver. Tipología pack lunes sin flujo BC' }
     ],
     ux: [
