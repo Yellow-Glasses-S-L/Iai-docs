@@ -477,7 +477,6 @@ header {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  flex: 1;
   justify-content: flex-start;
 }
 .roadmap-type-column-empty {
@@ -519,12 +518,12 @@ header {
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">17</div>
+      <div class="counter-num" style="color: var(--pending);">16</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">233</div>
+      <div class="counter-num" style="color: var(--resolved);">234</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -744,7 +743,8 @@ const data = {
       { title: 'Adaptar página campus (Resumen + Documentos para Moodle)', type: 'Ajuste', completed_at: '27/05', detail: 'Pestañas Resumen y Documentos habilitadas en la página de curso del campus' },
       { title: 'Bug Moodle: cursos sincronizaban a Category 37 inexistente', type: 'Bug', completed_at: '01/06', detail: 'Fix en SYNC-WP-01: categoría se resuelve por modalidad (Presencial=61, Virtual=62, Blended=60, E-learning=34). No afecta a facturación BC' },
       { title: 'Moodle: cursos COSO sin categoría sincronizados', type: 'Bug', completed_at: '03/06', detail: 'Acreditación COSO CI, COSO ERM y CERTIFICADO ASG-UE sin categoría Moodle. Sincronización completada. IAI confirmó visualización en campus' },
-      { title: 'Moodle: e-learning con formato mosaico forzado', type: 'Bug', completed_at: '04/06', detail: 'Workflow sync forzaba formato Mosaicos en todos los e-learning impidiendo cambio admin. Flujo corregido para no imponer formato' }
+      { title: 'Moodle: e-learning con formato mosaico forzado', type: 'Bug', completed_at: '04/06', detail: 'Workflow sync forzaba formato Mosaicos en todos los e-learning impidiendo cambio admin. Flujo corregido para no imponer formato' },
+      { title: 'Diplomas eLearning manuales: 2 casos pendientes', type: 'Bug', completed_at: '28/05', detail: 'Emilio Arrate "Segregación de funciones" + Ana Cristina Soto "Normas Globales" — diplomas emitidos manualmente' }
     ],
     inscripciones: [
       { title: '#3 Buscador Campus filtra solo por una fecha', type: 'Bug', detail: 'Ajustado' },
@@ -883,11 +883,10 @@ const data = {
       { title: 'Creación empresa en HubSpot — detalle de campos por categoría', type: 'Ajuste', priority: 'Media', target: '27/05', detail: 'Detalle de campos a configurar por categoría al crear empresa en HubSpot · Más implicaciones' },
       { title: 'Segregar Admin y Super Admin', type: 'Ajuste', priority: 'Baja', target: null, detail: 'Dividir funciones; cambios sensibles solo desde Super Admin' },
 
-      { title: 'Acceso corporativo masivo — Telefónica + BNCR', type: 'Ajuste', priority: 'Media', target: '29/05', detail: 'Agrupa N-S4 + N-S5. Resets + whitelist email por dominio corp. Telefónica: 3 usuarios. BNCR: 7 contraseñas + whitelist dominio iai.es' },
+      { title: 'Acceso corporativo masivo — Telefónica + BNCR', type: 'Ajuste', priority: 'Media', target: null, detail: 'Agrupa N-S4 + N-S5. Resets + whitelist email por dominio corp. Telefónica: 3 usuarios. BNCR: 7 contraseñas + whitelist dominio iai.es' },
       { title: 'Altas/bajas de socios para instituto global', type: 'Ajuste', priority: 'Alta', target: '27/05', detail: 'Flujo de alta y baja de socios adaptado para instituto global' },
     ],
     producto: [
-      { title: 'Diplomas eLearning manuales: 2 casos pendientes', type: 'Bug', priority: 'Media', target: '28/05', detail: 'Emilio Arrate "Segregación de funciones" + Ana Cristina Soto "Normas Globales".' },
       { title: 'Añadir cuestionario retribuciones de ponentes', type: 'Ajuste', priority: 'Baja', target: '04/06', detail: 'Formulario/cuestionario de retribuciones para ponentes.' },
 
       { title: 'Cabecera de curso — consistencia + flexibilidad', type: 'Bug', priority: 'Media', target: '29/05', detail: 'Agrupa E-P3 + N-P8. Bug consistencia A.3.2 imagen cabecera + mejora flexibilidad para añadir cabecera (meeting 21/05)' },
