@@ -716,7 +716,8 @@ const data = {
       { title: 'Listado de socios entregado a IAI para Asamblea General', type: 'Ajuste', completed_at: '03/06', detail: 'Censo entregado: 4.210 socios actuales + 104 altas + 85 bajas desde cierre iMIS. Cuentas YG y admins marcadas' },
       { title: 'Sector/naturaleza HubSpot actualizado + Excel revisión IAI', type: 'Ajuste', completed_at: '01/06', detail: 'Catálogos sector (26) y naturaleza (6) actualizados en HubSpot y sincronizados con portal. Excel enviado a IAI con 63 sectores + 39 naturalezas pendientes de decisión' },
       { title: 'Bug alta socios individuales: deal/HS sync', type: 'Bug', completed_at: '05/06', detail: 'Flujo de alta individual no actualizaba perfil en HubSpot ni creaba deal/line items. Corregido. Validado con caso testigo' },
-      { title: 'Catálogo sector afín separado en tabla propia', type: 'Ajuste', completed_at: '05/06', detail: 'sector_afín extraído a catalog_company_affine_sectors (29 valores). FK actualizadas en companies y membership_applications' }
+      { title: 'Catálogo sector afín separado en tabla propia', type: 'Ajuste', completed_at: '05/06', detail: 'sector_afín extraído a catalog_company_affine_sectors (29 valores). FK actualizadas en companies y membership_applications' },
+      { title: 'Concepción Ramos Fernández (MAPFRE) reactivada como socia', type: 'Ajuste', completed_at: '08/06', detail: 'Caso pendiente desde mayo. Dada de alta con datos históricos (DNI, fecha incorporación, dirección) y vinculada a MAPFRE' }
     ],
     producto: [
       { title: '#2 Faltan reuniones y foros en eventos', type: 'Bug', detail: 'Sincronizado' },
@@ -800,7 +801,8 @@ const data = {
       { title: 'Inscripción admin: facturar a empresa no asociada al usuario', type: 'Ajuste', completed_at: '01/06', detail: 'Se guardan datos de empresa como memo de facturación en el deal sin crear empresa ni forzar vinculación. Permite facturar a empresas que no existen en HubSpot' },
       { title: 'Email notif: tipos COSO/ASG no marcados como virtual', type: 'Bug', completed_at: '05/06', detail: 'Tipos Acreditación COSO Control Interno, COSO ERM y CERTIFICADO ASG-UE generaban emails con modalidad errónea. Ahora se fuerza virtual=true para esos tipos' },
       { title: 'Email notif: ignorar productos inhouse', type: 'Ajuste', completed_at: '05/06', detail: 'Notificaciones de email se disparaban para inscripciones inhouse. Corregido para que se ignoren' },
-      { title: 'Cupón de descuento aplicable a todos los productos con precio', type: 'Bug', completed_at: '05/06', detail: 'Condición isTraining limitaba cupones a product_type_id=6 (formaciones). Corregido: todos los productos con precio admiten cupón, excluyendo tipos 1/2/3/4 (cuotas/crédito formativo/bolsa horas)' }
+      { title: 'Cupón de descuento aplicable a todos los productos con precio', type: 'Bug', completed_at: '05/06', detail: 'Condición isTraining limitaba cupones a product_type_id=6 (formaciones). Corregido: todos los productos con precio admiten cupón, excluyendo tipos 1/2/3/4 (cuotas/crédito formativo/bolsa horas)' },
+      { title: 'Cursos expirados: invitados aparecían como undefined y no contabilizaban', type: 'Bug', completed_at: '09/06', detail: 'Status expired no mostraba correctamente los invitados. Corregido' }
     ],
     facturacion: [
       { title: '#14 No se puede actualizar tramo empresa desde portal', type: 'Aclaración', detail: 'Se hace desde HubSpot' },
@@ -840,7 +842,8 @@ const data = {
       { title: 'Trazabilidad: identificar qué bolsa/crédito formativo se aplica en cada inscripción', type: 'Ajuste', completed_at: '03/06', detail: 'Backend completo (user_purchases + get_user_activity_history exponen bolsa_id, bolsa_short_code, credits_granted) y binding WeWeb terminado' },
       { title: 'Admin poder usar código de descuento', type: 'Ajuste', completed_at: '29/05', detail: 'Funcionalidad integrada en el flujo de inscripción admin' },
       { title: 'Factura asociada a empresa incorrecta cuando deal no tenía company', type: 'Bug', completed_at: '08/06', detail: 'Flujo de facturación hacía query de companies y asociaba la primera coincidencia. Corregido para no asignar empresa cuando el deal no tiene una vinculada' },
-      { title: 'Exportar listados de horas compradas/usadas', type: 'Ajuste', completed_at: '27/05', detail: 'Botón de exportar añadido a la vista de horas compradas/usadas' }
+      { title: 'Exportar listados de horas compradas/usadas', type: 'Ajuste', completed_at: '27/05', detail: 'Botón de exportar añadido a la vista de horas compradas/usadas' },
+      { title: 'Descarga horas usadas/compradas para admin habilitada', type: 'Ajuste', completed_at: '08/06', detail: 'Funcionalidad adicional: descarga de horas también desde panel admin' }
     ],
     ux: [
       { title: '#10 Documentos Esfera Consejeros no disponibles', type: 'Bug', detail: 'Perfiles WordPress revisados' },
@@ -890,6 +893,7 @@ const data = {
 
       { title: 'Acceso corporativo masivo — Telefónica + BNCR', type: 'Ajuste', priority: 'Media', target: null, detail: 'Agrupa N-S4 + N-S5. Resets + whitelist email por dominio corp. Telefónica: 3 usuarios. BNCR: 7 contraseñas + whitelist dominio iai.es' },
       { title: 'Altas/bajas de socios para instituto global', type: 'Ajuste', priority: 'Alta', target: '27/05', detail: 'Flujo de alta y baja de socios adaptado para instituto global' },
+      { title: 'Form alta corp: check "¿soy representante?" + flujo invitación si no', type: 'Ajuste', priority: 'Media', target: null, detail: 'Si no es representante, email al representante real para que complete el registro' },
     ],
     producto: [
       { title: 'Añadir cuestionario retribuciones de ponentes', type: 'Ajuste', priority: 'Baja', target: '04/06', detail: 'Formulario/cuestionario de retribuciones para ponentes.' },
