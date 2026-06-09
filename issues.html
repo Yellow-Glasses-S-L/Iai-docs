@@ -350,6 +350,7 @@ header {
   gap: 20px;
   margin-bottom: 28px;
   align-items: flex-start;
+  align-content: flex-start;
 }
 .roadmap-date-col {
   width: 90px;
@@ -440,11 +441,14 @@ header {
   gap: 16px;
   margin-top: 4px;
   align-items: start;
+  align-content: start;
+  align-self: start;
 }
 .roadmap-type-column {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  align-self: start;
 }
 .roadmap-type-column-header {
   display: flex;
@@ -509,7 +513,7 @@ header {
         <p>Post-migración Portal · Notion + Teams + Design Review</p>
       </div>
     </div>
-    <div class="update-info">Actualización: 08/06/2026</div>
+    <div class="update-info">Actualización: 09/06/2026</div>
   </div>
 </header>
 
@@ -518,12 +522,12 @@ header {
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">16</div>
+      <div class="counter-num" style="color: var(--pending);">15</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">234</div>
+      <div class="counter-num" style="color: var(--resolved);">235</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -835,7 +839,8 @@ const data = {
       { title: 'Revisión facturación alta de socios', type: 'Ajuste', completed_at: '26/05', detail: 'Proceso de facturación validado y operativo' },
       { title: 'Trazabilidad: identificar qué bolsa/crédito formativo se aplica en cada inscripción', type: 'Ajuste', completed_at: '03/06', detail: 'Backend completo (user_purchases + get_user_activity_history exponen bolsa_id, bolsa_short_code, credits_granted) y binding WeWeb terminado' },
       { title: 'Admin poder usar código de descuento', type: 'Ajuste', completed_at: '29/05', detail: 'Funcionalidad integrada en el flujo de inscripción admin' },
-      { title: 'Factura asociada a empresa incorrecta cuando deal no tenía company', type: 'Bug', completed_at: '08/06', detail: 'Flujo de facturación hacía query de companies y asociaba la primera coincidencia. Corregido para no asignar empresa cuando el deal no tiene una vinculada' }
+      { title: 'Factura asociada a empresa incorrecta cuando deal no tenía company', type: 'Bug', completed_at: '08/06', detail: 'Flujo de facturación hacía query de companies y asociaba la primera coincidencia. Corregido para no asignar empresa cuando el deal no tiene una vinculada' },
+      { title: 'Exportar listados de horas compradas/usadas', type: 'Ajuste', completed_at: '27/05', detail: 'Botón de exportar añadido a la vista de horas compradas/usadas' }
     ],
     ux: [
       { title: '#10 Documentos Esfera Consejeros no disponibles', type: 'Bug', detail: 'Perfiles WordPress revisados' },
@@ -897,7 +902,6 @@ const data = {
       { title: 'B.1.2 Filtro fecha mes actual por defecto en listado admin', type: 'Ajuste', priority: 'Baja', target: '29/05', detail: 'Listado admin debe filtrar por mes actual por defecto.' },
     ],
     facturacion: [
-      { title: 'Exportar listados de horas compradas/usadas', type: 'Ajuste', priority: 'Baja', target: '27/05', detail: 'Portal sin botón exportar.' },
       { title: 'Pack Lunes (evento) no entran Pedidos en BC', type: 'Bug', priority: 'Media', target: '29/05', detail: 'Facturación manual hasta resolver. Tipología pack lunes sin flujo BC' }
     ],
     ux: [
