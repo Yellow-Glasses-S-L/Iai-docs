@@ -527,7 +527,7 @@ header {
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">235</div>
+      <div class="counter-num" style="color: var(--resolved);">239</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -717,7 +717,8 @@ const data = {
       { title: 'Sector/naturaleza HubSpot actualizado + Excel revisión IAI', type: 'Ajuste', completed_at: '01/06', detail: 'Catálogos sector (26) y naturaleza (6) actualizados en HubSpot y sincronizados con portal. Excel enviado a IAI con 63 sectores + 39 naturalezas pendientes de decisión' },
       { title: 'Bug alta socios individuales: deal/HS sync', type: 'Bug', completed_at: '05/06', detail: 'Flujo de alta individual no actualizaba perfil en HubSpot ni creaba deal/line items. Corregido. Validado con caso testigo' },
       { title: 'Catálogo sector afín separado en tabla propia', type: 'Ajuste', completed_at: '05/06', detail: 'sector_afín extraído a catalog_company_affine_sectors (29 valores). FK actualizadas en companies y membership_applications' },
-      { title: 'Concepción Ramos Fernández (MAPFRE) reactivada como socia', type: 'Ajuste', completed_at: '08/06', detail: 'Caso pendiente desde mayo. Dada de alta con datos históricos (DNI, fecha incorporación, dirección) y vinculada a MAPFRE' }
+      { title: 'Concepción Ramos Fernández (MAPFRE) reactivada como socia', type: 'Ajuste', completed_at: '08/06', detail: 'Caso pendiente desde mayo. Dada de alta con datos históricos (DNI, fecha incorporación, dirección) y vinculada a MAPFRE' },
+      { title: 'Altas/bajas de socios para instituto global', type: 'Ajuste', completed_at: '27/05', detail: 'Flujo de altas/bajas adaptado para usuarios pertenecientes al instituto global' }
     ],
     producto: [
       { title: '#2 Faltan reuniones y foros en eventos', type: 'Bug', detail: 'Sincronizado' },
@@ -892,7 +893,6 @@ const data = {
       { title: 'Segregar Admin y Super Admin', type: 'Ajuste', priority: 'Baja', target: null, detail: 'Dividir funciones; cambios sensibles solo desde Super Admin' },
 
       { title: 'Acceso corporativo masivo — Telefónica + BNCR', type: 'Ajuste', priority: 'Media', target: null, detail: 'Agrupa N-S4 + N-S5. Resets + whitelist email por dominio corp. Telefónica: 3 usuarios. BNCR: 7 contraseñas + whitelist dominio iai.es' },
-      { title: 'Altas/bajas de socios para instituto global', type: 'Ajuste', priority: 'Alta', target: '27/05', detail: 'Flujo de alta y baja de socios adaptado para instituto global' },
       { title: 'Form alta corp: check "¿soy representante?" + flujo invitación si no', type: 'Ajuste', priority: 'Media', target: null, detail: 'Si no es representante, email al representante real para que complete el registro' },
     ],
     producto: [
