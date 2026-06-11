@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IAI · Automatizaciones del Ecosistema</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --bg:#f8fafc;--surface:#ffffff;--border:#e2e8f0;--text:#0f172a;--text-2:#475569;--text-3:#94a3b8;
+      --orange:#f97316;--orange-l:#fff7ed;--orange-b:#fed7aa;
+      --green:#10b981;--green-l:#ecfdf5;--green-b:#a7f3d0;
+      --yellow:#f59e0b;--yellow-l:#fffbeb;--yellow-b:#fde68a;
+      --blue:#3b82f6;--blue-l:#eff6ff;--blue-b:#bfdbfe;
+      --purple:#8b5cf6;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{min-height:100%;background:var(--bg);font-family:'DM Sans',system-ui,sans-serif;color:var(--text)}
+    .page{max-width:860px;margin:0 auto;padding:40px 20px 80px}
+
+    /* HEADER */
+    .header{margin-bottom:24px}
+    .header-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+    .logo{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+    .logo-dot{width:9px;height:9px;border-radius:99px;background:var(--orange)}
+    .logo-text{font-size:12px;font-weight:500;color:var(--text-3);font-family:'DM Mono',monospace;letter-spacing:0.04em}
+    h1{font-size:24px;font-weight:600;letter-spacing:-0.03em;line-height:1.2}
+    .subtitle{font-size:13px;color:var(--text-2);margin-top:3px;max-width:600px}
+    .date-pill{font-size:11px;font-family:'DM Mono',monospace;color:var(--text-3);background:var(--border);padding:4px 10px;border-radius:99px;white-space:nowrap;align-self:flex-start;margin-top:4px}
+    .back-link{text-decoration:none;color:var(--text-3);font-size:13px;display:inline-flex;align-items:center;gap:5px;margin-bottom:10px}
+    .back-link:hover{color:var(--text-2)}
+
+    /* INTRO CALLOUT */
+    .callout{background:var(--orange-l);border:1px solid var(--orange-b);border-left:3px solid var(--orange);border-radius:0 10px 10px 0;padding:14px 18px;margin-bottom:28px}
+    .callout p{font-size:13px;color:#9a3412;line-height:1.6}
+
+    /* SECTION */
+    .sec{margin-bottom:26px}
+    .sec-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+    .sec-line{flex:1;height:1px;background:var(--border)}
+    .sec-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-3);font-family:'DM Mono',monospace;white-space:nowrap}
+    .sec-num{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;background:var(--orange);color:#fff;font-size:11px;font-weight:600;font-family:'DM Mono',monospace;flex-shrink:0}
+
+    /* CARD */
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 22px}
+    .card+.card{margin-top:10px}
+    .card h3{font-size:14px;font-weight:600;margin-bottom:10px;color:var(--text)}
+
+    /* FEAT LIST */
+    ul.feat{list-style:none}
+    ul.feat li{position:relative;padding-left:20px;margin-bottom:9px;font-size:13px;line-height:1.6;color:var(--text-2)}
+    ul.feat li:last-child{margin-bottom:0}
+    ul.feat li::before{content:"";position:absolute;left:0;top:7px;width:7px;height:7px;background:var(--orange);border-radius:2px}
+    ul.feat li b{color:var(--text);font-weight:600}
+
+    /* DIAGRAM */
+    .diagram{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:20px 22px;font-family:'DM Mono',monospace;font-size:12.5px;line-height:1.9;overflow-x:auto;margin-bottom:14px;white-space:pre}
+    .diagram .y{color:var(--orange);font-weight:600}
+
+    /* TABLE */
+    table.piezas{width:100%;border-collapse:collapse;font-size:13px}
+    table.piezas td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text-2);line-height:1.5}
+    table.piezas tr:last-child td{border-bottom:none}
+    table.piezas td.k{font-weight:600;color:var(--text);width:230px}
+    table.piezas code{font-family:'DM Mono',monospace;font-size:12px;background:var(--bg);padding:1px 5px;border-radius:4px;color:var(--text-2)}
+
+    .note{font-size:12.5px;color:var(--text-2);line-height:1.6;margin-top:12px;padding:10px 14px;background:var(--bg);border-radius:8px;border:1px solid var(--border)}
+    .note b{color:var(--text)}
+
+    /* STEPS (cycle) */
+    ol.steps{list-style:none;counter-reset:s;margin:4px 0}
+    ol.steps li{counter-increment:s;position:relative;padding-left:38px;margin-bottom:11px;font-size:13px;line-height:1.55;color:var(--text-2)}
+    ol.steps li:last-child{margin-bottom:0}
+    ol.steps li::before{content:counter(s,decimal-leading-zero);position:absolute;left:0;top:-1px;font-family:'DM Mono',monospace;font-weight:600;font-size:11px;color:#fff;background:var(--orange);width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center}
+    ol.steps li b{color:var(--text);font-weight:600}
+
+    .subhead{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-3);font-family:'DM Mono',monospace;margin:18px 0 10px}
+
+    /* WHO chips */
+    .legend-who{font-size:12.5px;color:var(--text-2);line-height:1.9;margin-bottom:12px}
+    .who{display:inline-block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;color:#9a3412;background:var(--orange-l);border:1px solid var(--orange-b);border-radius:5px;padding:1px 7px;margin-right:7px;vertical-align:1px;white-space:nowrap}
+    .who.adm{color:var(--text-2);background:var(--bg);border-color:var(--border)}
+
+    /* FOOTER */
+    .footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--border);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+    .footer-text{font-size:11px;color:var(--text-3);font-family:'DM Mono',monospace}
+
+    @media(max-width:580px){table.piezas td.k{width:auto}}
+  </style>
+
+<style>
+.iai-nav{position:sticky;top:0;z-index:999;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.iai-nav-inner{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:24px;height:44px;overflow-x:auto}
+.iai-nav-logo{display:flex;align-items:center;gap:7px;text-decoration:none;font-size:12px;font-weight:600;color:#0f172a;white-space:nowrap;flex-shrink:0;font-family:'DM Mono',monospace}
+.iai-nav-dot{width:8px;height:8px;border-radius:99px;background:#f97316;flex-shrink:0}
+.iai-nav-links{display:flex;gap:2px;align-items:center}
+.iai-nav-links a{text-decoration:none;font-size:12px;color:#64748b;padding:4px 10px;border-radius:6px;white-space:nowrap;transition:background .15s,color .15s}
+.iai-nav-links a:hover{background:#f1f5f9;color:#0f172a}
+.iai-nav-links a.active{background:#fff7ed;color:#f97316;font-weight:500}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  var cur=window.location.pathname.split('/').pop()||'index.html';
+  document.querySelectorAll('.iai-nav-links a').forEach(function(a){
+    if(a.getAttribute('href')===cur)a.classList.add('active');
+  });
+});
+</script>
+
+</head>
+<body>
+<nav class="iai-nav">
+  <div class="iai-nav-inner">
+    <a class="iai-nav-logo" href="index.html">
+      <span class="iai-nav-dot"></span>
+      <span>IAI · Documentación</span>
+    </a>
+    <div class="iai-nav-links">
+      <a href="index.html">Inicio</a>
+      <a href="inventario.html">Procesos</a>
+      <a href="issues.html">Incidentes</a>
+      <a href="arquitectura.html">Arquitectura</a>
+    </div>
+  </div>
+</nav>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <a href="index.html" class="back-link">← Volver al estado del proyecto</a>
+    <div class="header-top">
+      <div>
+        <div class="logo"><div class="logo-dot"></div><span class="logo-text">IAI · auditoresinternos.es</span></div>
+        <h1>Automatizaciones del Ecosistema</h1>
+        <p class="subtitle">Inventario de las funcionalidades automatizadas del ecosistema digital: gestión de socios, inscripciones, facturación, formación, comunicaciones y acceso.</p>
+      </div>
+      <span class="date-pill">Junio 2026</span>
+    </div>
+  </div>
+
+  <div class="callout">
+    <p>Todas las funcionalidades descritas son procesos que <b>antes no existían</b> o se hacían de forma manual, y que hoy operan de forma <b>automática</b> dentro del ecosistema, sin intervención del equipo en el día a día.</p>
+  </div>
+
+  <!-- 1 · VISIÓN GENERAL -->
+  <div class="sec">
+    <div class="sec-head"><span class="sec-num">1</span><span class="sec-label">Visión general</span><div class="sec-line"></div></div>
+    <div class="card">
+      <h3>Cuatro piezas, conectadas por automatización</h3>
+      <div class="diagram">        <span class="y">CRM (HubSpot)</span>  ◄──────►  <span class="y">Portal de socios</span>
+              │                          │
+              └──────────►  <span class="y">ERP / Facturación (Business Central)</span>
+                                         │
+                            <span class="y">Campus de formación</span> + <span class="y">Streaming de eventos</span></div>
+      <table class="piezas">
+        <tr><td class="k">CRM (HubSpot)</td><td>Fuente de verdad de socios, empresas y catálogo de productos/precios.</td></tr>
+        <tr><td class="k">Portal de socios</td><td>Área privada del socio: cursos, eventos, facturas y horas formativas. <code>portal.auditoresinternos.es</code></td></tr>
+        <tr><td class="k">Facturación (Business Central)</td><td>Generación de facturas y contabilidad.</td></tr>
+        <tr><td class="k">Campus (Moodle)</td><td>Formaciones online. <code>campus.auditoresinternos.es</code></td></tr>
+        <tr><td class="k">Web pública</td><td>Catálogo e información pública. <code>auditoresinternos.es</code></td></tr>
+        <tr><td class="k">Streaming de eventos</td><td>Emisión en directo de sesiones ("Los Lunes").</td></tr>
+      </table>
+      <div class="note"><b>Principio de funcionamiento:</b> cuando un socio actúa en el portal, el sistema actualiza al instante su área privada <b>y</b> sincroniza el cambio con el CRM; del mismo modo, los cambios hechos en el CRM se reflejan automáticamente en el portal.</div>
+    </div>
+  </div>
+
+  <!-- 2 · SINCRONIZACIÓN -->
+  <div class="sec">
+    <div class="sec-head"><span class="sec-num">2</span><span class="sec-label">Sincronización CRM ↔ portal</span><div class="sec-line"></div></div>
+    <div class="card">
+      <ul class="feat">
+        <li><b>Altas y cambios bidireccionales:</b> un alta o una modificación de un socio o empresa —se haga en el portal o en el CRM— se propaga automáticamente a la otra parte, manteniendo ambos sistemas alineados.</li>
+        <li><b>Alta de socio desde el portal:</b> al registrarse un usuario nuevo en el portal, se crea automáticamente su ficha de contacto en el CRM.</li>
+        <li><b>Baja corporativa en cascada:</b> cuando una empresa deja de ser socia corporativa, todos sus representantes y contactos vinculados pierden automáticamente el estatus de socio y pasan a usuario, en ambos sistemas, sin tener que tocarlos uno a uno.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 3 · ALTA Y GESTIÓN -->
+  <div class="sec">
+    <div class="sec-head"><span class="sec-num">3</span><span class="sec-label">Alta y gestión de socios</span><div class="sec-line"></div></div>
+    <div class="card">
+      <ul class="feat">
+        <li>Solicitud de alta de socio desde el portal.</li>
+        <li>Aceptación o rechazo de la solicitud por parte del IAI.</li>
+        <li><b>Al aceptarse:</b> se crea la empresa en el CRM, se genera el alta correspondiente, se actualiza el rol del usuario y se vincula a su empresa, todo de forma encadenada.</li>
+        <li>Alta de socios afiliados de una empresa por lista de correos o por fichero CSV.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 4 · INSCRIPCIONES -->
+  <div class="sec">
+    <div class="sec-head"><span class="sec-num">4</span><span class="sec-label">Inscripciones y compras</span><div class="sec-line"></div></div>
+    <div class="card">
+      <ul class="feat">
+        <li><b>Inscripción desde el portal:</b> cada compra/inscripción genera automáticamente su registro comercial en el CRM.</li>
+        <li><b>Pago por transferencia y por tarjeta</b> (pasarela Redsys), cada uno con su flujo automatizado hasta el CRM.</li>
+        <li><b>Cancelación de inscripción</b> sincronizada con el CRM.</li>
+        <li><b>Inscripción masiva desde administración:</b> el equipo del IAI puede inscribir a varias personas de una vez (por lista o CSV); el sistema reconoce automáticamente el tipo de cada usuario (socio corporativo, individual o no socio) y genera la inscripción y facturación adecuada para cada uno.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 5 · FACTURACIÓN -->
+  <div class="sec">
+    <div class="sec-head"><span class="sec-num">5</span><span class="sec-label">Facturación CRM → Business Central · núcleo del proceso</span><div class="sec-line"></div></div>
+    <div class="card">
+      <h3>Ciclo automático</h3>
+      <ol class="steps">
+        <li>Una persona compra en el portal → se registra como operación en el CRM.</li>
+        <li>Al cerrarse la venta, se dispara automáticamente el proceso de facturación.</li>
+        <li>El sistema lee la operación y los datos del socio y/o empresa asociados.</li>
+        <li><b>Calcula el tipo de cliente</b> según país y código postal: Nacional · Canarias · Unión Europea · Internacional.</li>
+        <li><b>Aplica automáticamente el IVA y la imputación contable</b> correctos según el tipo de producto y de cliente.</li>
+        <li>Genera la <b>prefactura (pedido pendiente) en Business Central</b> y su PDF, que queda disponible para el socio en el portal.</li>
+        <li><b>Registro por Finanzas:</b> la factura no se emite automáticamente. El equipo de Finanzas revisa la prefactura y, al <b>registrar</b> la transacción en Business Central, se genera la factura definitiva.</li>
+        <li><b>Revisión diaria automática:</b> cada día el sistema comprueba qué prefacturas ha registrado Finanzas en Business Central, genera el PDF definitivo de la factura y lo publica en el portal.</li>
+      </ol>
+      <div class="subhead">Reglas de negocio cubiertas</div>
+      <ul class="feat">
+        <li><b>Empresa vs particular:</b> si la operación tiene empresa asociada, se factura a la empresa (razón social + CIF); si no, al particular (nombre + DNI).</li>
+        <li><b>Motor de IVA y contabilidad:</b> el porcentaje de IVA, la cuenta contable, la analítica y el código de evento se resuelven automáticamente a partir de unas tablas de equivalencia mantenidas por el equipo (incluye casos como acreditaciones COSO).</li>
+        <li><b>Condiciones de pago:</b> el método de pago procede de la operación y el plazo (contado, 30/60/90 días) de la configuración del cliente.</li>
+        <li><b>Abonos:</b> cuando una venta se anula, el sistema genera automáticamente el documento de abono correspondiente en Business Central (no una factura en negativo).</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 6 · ENVÍO MASIVO -->
+  <div class="sec">
+    <div class="sec-head"><span class="sec-num">6</span><span class="sec-label">Envío masivo de prefacturas de cuotas</span><div class="sec-line"></div></div>
+    <div class="card">
+      <p style="font-size:13px;color:var(--text-2);line-height:1.6;margin-bottom:12px">Sistema para la campaña anual de cuotas de socios, programado por <b style="color:var(--text)">tramos</b> (grupos de empresas con fecha de envío propia):</p>
+      <ul class="feat">
+        <li><b>Generación:</b> crea los borradores de factura y sus PDF en Business Central.</li>
+        <li><b>Envío programado:</b> envía a cada empresa su prefactura con el PDF adjunto en la fecha y hora previstas de su tramo.</li>
+        <li><b>Captura de respuestas:</b> las respuestas de los clientes se recogen y se guardan automáticamente como nota en la factura correspondiente.</li>
+        <li><b>Cola con reintentos</b> para garantizar que ningún envío se pierde.</li>
+        <li><b>Exclusión de casos especiales:</b> las empresas con un proceso de facturación particular quedan fuera del envío automático y se gestionan manualmente.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 7 · HORAS FORMATIVAS -->
+  <div class="sec">
+    <div class="sec-head"><span class="sec-num">7</span><span class="sec-label">Horas formativas y créditos</span><div class="sec-line"></div></div>
+    <div class="card">
+      <ul class="feat">
+        <li>Adquisición de horas formativas a través de la pasarela de pago.</li>
+        <li>Confirmación de asistencia y de horas consumidas.</li>
+        <li>Solicitud de uso de crédito formativo para una inscripción, con <b>aprobación automática</b> si no se revisa manualmente en plazo.</li>
+        <li>Saldo de horas de empresa y de usuario calculado y actualizado en tiempo real.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 8 · COMUNICACIONES -->
+  <div class="sec">
+    <div class="sec-head"><span class="sec-num">8</span><span class="sec-label">Comunicaciones y notificaciones</span><div class="sec-line"></div></div>
+    <div class="card">
+      <ul class="feat">
+        <li>Notificaciones automáticas al socio (en la plataforma y por correo) en los momentos clave del proceso: confirmaciones, invitaciones, solicitudes de horas, etc.</li>
+        <li><b>Control para administración:</b> el equipo del IAI puede invitar a un socio sin enviarle correo (la notificación dentro de la plataforma se conserva siempre).</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 9 · ACCESO -->
+  <div class="sec">
+    <div class="sec-head"><span class="sec-num">9</span><span class="sec-label">Acceso y autenticación</span><div class="sec-line"></div></div>
+    <div class="card">
+      <ul class="feat">
+        <li><b>Recuperación de contraseña</b> mediante código de 6 dígitos enviado por correo (más seguro frente a los filtros de correo corporativos que invalidaban los enlaces).</li>
+        <li><b>Inicio de sesión federado (SSO)</b> para el acceso unificado entre plataformas.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 10 · EXCEPCIONES -->
+  <div class="sec">
+    <div class="sec-head"><span class="sec-num">10</span><span class="sec-label">Ajustes y excepciones gestionadas</span><div class="sec-line"></div></div>
+    <div class="card">
+      <p style="font-size:13px;color:var(--text-2);line-height:1.6;margin-bottom:12px">El proceso estándar está parametrizado (precios, IVA, créditos y destinatarios según el producto y el tipo de socio). Sobre esa base se construyeron mecanismos <b style="color:var(--text)">controlados</b> para resolver casos reales que se salen de lo parametrizado, sin necesidad de intervenir manualmente en los sistemas.</p>
+      <div class="legend-who"><b>Quién lo hace:</b> &nbsp;<span class="who">Socio</span> el usuario en el portal &nbsp;·&nbsp; <span class="who adm">Admin</span> equipo del IAI &nbsp;·&nbsp; <span class="who adm">Automático</span> lo resuelve el sistema.</div>
+      <ul class="feat">
+        <li><span class="who">Socio · Admin</span><b>Inscribir en nombre de otra persona:</b> cualquier miembro activo de una empresa puede inscribir a un compañero de la misma empresa. El equipo del IAI (administración) puede inscribir a cualquier persona sin esa restricción.</li>
+        <li><span class="who">Socio · Admin</span><b>Elegir a quién se factura:</b> al inscribir se puede dirigir la factura a la empresa o al particular, con independencia del tipo de socio, o dejar que el sistema lo decida automáticamente.</li>
+        <li><span class="who adm">Admin</span><b>Facturar a otra empresa:</b> indicar la denominación social de una empresa distinta como destinataria de la factura (con validación de que el CIF corresponde a una empresa). De momento es una acción reservada a administración.</li>
+        <li><span class="who">Admin · Socio</span><b>Editar los datos de facturación al inscribir:</b> correo, nombre y tipo de facturación son editables en el panel de administración, que además permite elegir el solicitante/inscriptor. El socio solo puede editarlos al inscribirse cuando elige facturar a nombre propio en lugar de a su empresa.</li>
+        <li><span class="who adm">Automático</span><b>Precio individual por participante:</b> en una inscripción de empresa con varias personas, cada una paga el precio que le corresponde según su condición (socio corporativo, individual o no socio), repartiendo proporcionalmente los descuentos, todo en una única factura.</li>
+        <li><span class="who">Socio</span><b>Pagar con créditos en lugar del precio del producto:</b> una inscripción puede saldarse con horas/créditos formativos en vez del importe parametrizado; el número de horas aplicadas se gestiona por solicitud, independiente del precio por defecto del producto.</li>
+        <li><span class="who adm">Admin</span><b>Confirmación directa:</b> el equipo puede dar una inscripción por confirmada sin pasar por el ciclo de pago/correo.</li>
+        <li><span class="who adm">Admin</span><b>Excluir empresas del envío masivo</b> de prefacturas cuando tienen un proceso de facturación especial.</li>
+        <li><span class="who">Socio</span><b>Re-inscripción tras cancelación:</b> una inscripción cancelada no impide volver a inscribirse.</li>
+        <li><span class="who">Socio</span><b>Cambio de modalidad de socio</b> (individual → corporativo): solicitud que recalcula la cuota, crea/vincula la empresa y lanza las notificaciones.</li>
+        <li><span class="who adm">Admin</span><b>Altas manuales de saldo de horas</b> para empresas cuyas horas no se trasladaron en la migración del sistema anterior.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span class="footer-text">IAI · auditoresinternos.es · Junio 2026</span>
+    <span class="footer-text">Yellow Glasses · Documentación funcional interna</span>
+  </div>
+
+</div>
+</body>
+</html>
