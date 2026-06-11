@@ -556,12 +556,12 @@ document.addEventListener('DOMContentLoaded',function(){
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">15</div>
+      <div class="counter-num" style="color: var(--pending);">14</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">239</div>
+      <div class="counter-num" style="color: var(--resolved);">246</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -752,7 +752,8 @@ const data = {
       { title: 'Bug alta socios individuales: deal/HS sync', type: 'Bug', completed_at: '05/06', detail: 'Flujo de alta individual no actualizaba perfil en HubSpot ni creaba deal/line items. Corregido. Validado con caso testigo' },
       { title: 'Catálogo sector afín separado en tabla propia', type: 'Ajuste', completed_at: '05/06', detail: 'sector_afín extraído a catalog_company_affine_sectors (29 valores). FK actualizadas en companies y membership_applications' },
       { title: 'Concepción Ramos Fernández (MAPFRE) reactivada como socia', type: 'Ajuste', completed_at: '08/06', detail: 'Caso pendiente desde mayo. Dada de alta con datos históricos (DNI, fecha incorporación, dirección) y vinculada a MAPFRE' },
-      { title: 'Altas/bajas de socios para instituto global', type: 'Ajuste', completed_at: '27/05', detail: 'Flujo de altas/bajas adaptado para usuarios pertenecientes al instituto global' }
+      { title: 'Altas/bajas de socios para instituto global', type: 'Ajuste', completed_at: '27/05', detail: 'Flujo de altas/bajas adaptado para usuarios pertenecientes al instituto global' },
+      { title: 'Acceso corporativo masivo — Telefónica + BNCR', type: 'Ajuste', completed_at: '10/06', detail: 'Resets de contraseña y whitelist de dominio. Telefónica (3 usuarios) y BNCR (7 contraseñas + dominio iai.es). Resuelto.' }
     ],
     producto: [
       { title: '#2 Faltan reuniones y foros en eventos', type: 'Bug', detail: 'Sincronizado' },
@@ -784,7 +785,8 @@ const data = {
       { title: 'Bug Moodle: cursos sincronizaban a Category 37 inexistente', type: 'Bug', completed_at: '01/06', detail: 'Fix en SYNC-WP-01: categoría se resuelve por modalidad (Presencial=61, Virtual=62, Blended=60, E-learning=34). No afecta a facturación BC' },
       { title: 'Moodle: cursos COSO sin categoría sincronizados', type: 'Bug', completed_at: '03/06', detail: 'Acreditación COSO CI, COSO ERM y CERTIFICADO ASG-UE sin categoría Moodle. Sincronización completada. IAI confirmó visualización en campus' },
       { title: 'Moodle: e-learning con formato mosaico forzado', type: 'Bug', completed_at: '04/06', detail: 'Workflow sync forzaba formato Mosaicos en todos los e-learning impidiendo cambio admin. Flujo corregido para no imponer formato' },
-      { title: 'Diplomas eLearning manuales: 2 casos pendientes', type: 'Bug', completed_at: '28/05', detail: 'Emilio Arrate "Segregación de funciones" + Ana Cristina Soto "Normas Globales" — diplomas emitidos manualmente' }
+      { title: 'Diplomas eLearning manuales: 2 casos pendientes', type: 'Bug', completed_at: '28/05', detail: 'Emilio Arrate "Segregación de funciones" + Ana Cristina Soto "Normas Globales" — diplomas emitidos manualmente' },
+      { title: 'Cabecera de curso — consistencia + flexibilidad', type: 'Bug', completed_at: '10/06', detail: 'Consistencia de imagen de cabecera (A.3.2) y flexibilidad para añadir cabecera. Resuelto.' }
     ],
     inscripciones: [
       { title: '#3 Buscador Campus filtra solo por una fecha', type: 'Bug', detail: 'Ajustado' },
@@ -837,7 +839,8 @@ const data = {
       { title: 'Email notif: tipos COSO/ASG no marcados como virtual', type: 'Bug', completed_at: '05/06', detail: 'Tipos Acreditación COSO Control Interno, COSO ERM y CERTIFICADO ASG-UE generaban emails con modalidad errónea. Ahora se fuerza virtual=true para esos tipos' },
       { title: 'Email notif: ignorar productos inhouse', type: 'Ajuste', completed_at: '05/06', detail: 'Notificaciones de email se disparaban para inscripciones inhouse. Corregido para que se ignoren' },
       { title: 'Cupón de descuento aplicable a todos los productos con precio', type: 'Bug', completed_at: '05/06', detail: 'Condición isTraining limitaba cupones a product_type_id=6 (formaciones). Corregido: todos los productos con precio admiten cupón, excluyendo tipos 1/2/3/4 (cuotas/crédito formativo/bolsa horas)' },
-      { title: 'Cursos expirados: invitados aparecían como undefined y no contabilizaban', type: 'Bug', completed_at: '09/06', detail: 'Status expired no mostraba correctamente los invitados. Corregido' }
+      { title: 'Cursos expirados: invitados aparecían como undefined y no contabilizaban', type: 'Bug', completed_at: '09/06', detail: 'Status expired no mostraba correctamente los invitados. Corregido' },
+      { title: 'Campo "Estado Inscripción" en compras de cursos', type: 'Ajuste', completed_at: '10/06', detail: 'Añadida columna de Estado de Inscripción en las compras de cursos para identificar las canceladas.' }
     ],
     facturacion: [
       { title: '#14 No se puede actualizar tramo empresa desde portal', type: 'Aclaración', detail: 'Se hace desde HubSpot' },
@@ -878,7 +881,8 @@ const data = {
       { title: 'Admin poder usar código de descuento', type: 'Ajuste', completed_at: '29/05', detail: 'Funcionalidad integrada en el flujo de inscripción admin' },
       { title: 'Factura asociada a empresa incorrecta cuando deal no tenía company', type: 'Bug', completed_at: '08/06', detail: 'Flujo de facturación hacía query de companies y asociaba la primera coincidencia. Corregido para no asignar empresa cuando el deal no tiene una vinculada' },
       { title: 'Exportar listados de horas compradas/usadas', type: 'Ajuste', completed_at: '27/05', detail: 'Botón de exportar añadido a la vista de horas compradas/usadas' },
-      { title: 'Descarga horas usadas/compradas para admin habilitada', type: 'Ajuste', completed_at: '08/06', detail: 'Funcionalidad adicional: descarga de horas también desde panel admin' }
+      { title: 'Descarga horas usadas/compradas para admin habilitada', type: 'Ajuste', completed_at: '08/06', detail: 'Funcionalidad adicional: descarga de horas también desde panel admin' },
+      { title: 'Pack Lunes (evento) no entra como Pedido en BC', type: 'Bug', completed_at: '10/06', detail: 'Tipología pack Lunes ya entra como Pedido en BC. Resuelto.' }
     ],
     ux: [
       { title: '#10 Documentos Esfera Consejeros no disponibles', type: 'Bug', detail: 'Perfiles WordPress revisados' },
@@ -918,21 +922,20 @@ const data = {
       { title: 'Texto "código promocional" aparecía cortado', type: 'Bug', completed_at: '22/05', detail: 'Ajuste visual del input de código promocional' },
       { title: 'Descarga XLSX usuarios desde Portal Admin', type: 'Ajuste', completed_at: '25/05', detail: 'Botón de descarga XLSX activo en el listado de usuarios admin' },
       { title: 'Campana de notificaciones', type: 'Ajuste', completed_at: '27/05', detail: 'Componente desplegado en el portal' },
-      { title: 'Sesión WeWeb expira correctamente y redirige a login', type: 'Bug', completed_at: '08/06', detail: 'Workflow check inactivity ajustado. Cierra el gap del 401 mid-session que dejaba al usuario flotando sin redirect' }
+      { title: 'Sesión WeWeb expira correctamente y redirige a login', type: 'Bug', completed_at: '08/06', detail: 'Workflow check inactivity ajustado. Cierra el gap del 401 mid-session que dejaba al usuario flotando sin redirect' },
+      { title: 'Número de registros en histórico ampliado', type: 'Ajuste', completed_at: '10/06', detail: 'Ampliado el número de registros mostrados en la vista de histórico.' },
+      { title: 'Columnas Créditos formativos renombradas (horas usadas vs disponibles)', type: 'Ajuste', completed_at: '10/06', detail: 'Nombres de columnas en Créditos formativos ajustados para distinguir con claridad las horas usadas de las disponibles.' },
+      { title: 'Columna "Fecha solicitud" renombrada en solicitud de horas', type: 'Ajuste', completed_at: '10/06', detail: 'Renombrada la columna "Fecha solicitud" en la pantalla de solicitud de horas.' }
     ]
   },
   pending: {
     socios: [
       { title: 'Creación empresa en HubSpot — detalle de campos por categoría', type: 'Ajuste', priority: 'Media', target: '27/05', detail: 'Detalle de campos a configurar por categoría al crear empresa en HubSpot · Más implicaciones' },
       { title: 'Segregar Admin y Super Admin', type: 'Ajuste', priority: 'Baja', target: null, detail: 'Dividir funciones; cambios sensibles solo desde Super Admin' },
-
-      { title: 'Acceso corporativo masivo — Telefónica + BNCR', type: 'Ajuste', priority: 'Media', target: null, detail: 'Agrupa N-S4 + N-S5. Resets + whitelist email por dominio corp. Telefónica: 3 usuarios. BNCR: 7 contraseñas + whitelist dominio iai.es' },
       { title: 'Form alta corp: check "¿soy representante?" + flujo invitación si no', type: 'Ajuste', priority: 'Media', target: null, detail: 'Si no es representante, email al representante real para que complete el registro' },
     ],
     producto: [
       { title: 'Añadir cuestionario retribuciones de ponentes', type: 'Ajuste', priority: 'Baja', target: '04/06', detail: 'Formulario/cuestionario de retribuciones para ponentes.' },
-
-      { title: 'Cabecera de curso — consistencia + flexibilidad', type: 'Bug', priority: 'Media', target: '29/05', detail: 'Agrupa E-P3 + N-P8. Bug consistencia A.3.2 imagen cabecera + mejora flexibilidad para añadir cabecera (meeting 21/05)' },
     ],
     inscripciones: [
       { title: 'Conexión nirestream Horas Certificado (mínimo 85% visionado)', type: 'Ajuste', priority: 'Media', target: '28/05', detail: 'Integración con nirestream para verificar mínimo 85% de visionado antes de emitir certificado. A la espera de respuesta de Nirestream' },
@@ -940,7 +943,8 @@ const data = {
       { title: 'B.1.2 Filtro fecha mes actual por defecto en listado admin', type: 'Ajuste', priority: 'Baja', target: '29/05', detail: 'Listado admin debe filtrar por mes actual por defecto.' },
     ],
     facturacion: [
-      { title: 'Pack Lunes (evento) no entran Pedidos en BC', type: 'Bug', priority: 'Media', target: '29/05', detail: 'Facturación manual hasta resolver. Tipología pack lunes sin flujo BC' }
+      { title: 'Cambiar método de pago de transferencia a tarjeta', type: 'Ajuste', priority: 'Media', target: '15/06', detail: 'La operación la realiza siempre el cliente (nunca un admin: requiere datos de tarjeta). Dos opciones en evaluación: (1) mostrar la transacción en el carrito del portal del cliente —más segura—; (2) enviar email con enlace de pago —riesgo de que caiga en spam o de que el cliente lo reenvíe a un tercero.' },
+      { title: 'Asociar compañías secundarias para facturar a otra empresa', type: 'Ajuste', priority: 'Media', target: '19/06', detail: 'Configuración desde HubSpot a nivel de contacto: se añade company secundaria (ej. socio de Indra + Hispasat) sin quitar la principal. Solo ese contacto verá el desplegable "Facturar a nombre de empresa" para elegir; el resto de socios con una única empresa vinculada no verán la opción.' }
     ],
     ux: [
       { title: 'Botón Clear filters', type: 'Ajuste', priority: 'Baja', target: '29/05', detail: 'Agregar botón para limpiar filtros activos.' },
