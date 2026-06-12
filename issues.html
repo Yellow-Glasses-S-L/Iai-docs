@@ -556,7 +556,7 @@ document.addEventListener('DOMContentLoaded',function(){
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">14</div>
+      <div class="counter-num" style="color: var(--pending);">16</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
@@ -933,6 +933,7 @@ const data = {
       { title: 'Creación empresa en HubSpot — detalle de campos por categoría', type: 'Ajuste', priority: 'Media', target: '27/05', detail: 'Detalle de campos a configurar por categoría al crear empresa en HubSpot · Más implicaciones' },
       { title: 'Segregar Admin y Super Admin', type: 'Ajuste', priority: 'Baja', target: null, detail: 'Dividir funciones; cambios sensibles solo desde Super Admin' },
       { title: 'Form alta corp: check "¿soy representante?" + flujo invitación si no', type: 'Ajuste', priority: 'Media', target: null, detail: 'Si no es representante, email al representante real para que complete el registro' },
+      { title: 'Monitoreo datos socios — flujos de bajas y altas', type: 'Ajuste', priority: 'Media', target: '19/06', detail: 'Monitoreo de la integridad de los datos de socios en los flujos automáticos de bajas y altas.' },
     ],
     producto: [
       { title: 'Añadir cuestionario retribuciones de ponentes', type: 'Ajuste', priority: 'Baja', target: '04/06', detail: 'Formulario/cuestionario de retribuciones para ponentes.' },
@@ -944,7 +945,8 @@ const data = {
     ],
     facturacion: [
       { title: 'Cambiar método de pago de transferencia a tarjeta', type: 'Ajuste', priority: 'Media', target: '15/06', detail: 'La operación la realiza siempre el cliente (nunca un admin: requiere datos de tarjeta). Dos opciones en evaluación: (1) mostrar la transacción en el carrito del portal del cliente —más segura—; (2) enviar email con enlace de pago —riesgo de que caiga en spam o de que el cliente lo reenvíe a un tercero.' },
-      { title: 'Asociar compañías secundarias para facturar a otra empresa', type: 'Ajuste', priority: 'Media', target: '19/06', detail: 'Configuración desde HubSpot a nivel de contacto: se añade company secundaria (ej. socio de Indra + Hispasat) sin quitar la principal. Solo ese contacto verá el desplegable "Facturar a nombre de empresa" para elegir; el resto de socios con una única empresa vinculada no verán la opción.' }
+      { title: 'Asociar compañías secundarias para facturar a otra empresa', type: 'Ajuste', priority: 'Media', target: '19/06', detail: 'Configuración desde HubSpot a nivel de contacto: se añade company secundaria (ej. socio de Indra + Hispasat) sin quitar la principal. Solo ese contacto verá el desplegable "Facturar a nombre de empresa" para elegir; el resto de socios con una única empresa vinculada no verán la opción.' },
+      { title: 'Monitoreo datos facturación — automatización Business Central', type: 'Ajuste', priority: 'Media', target: '19/06', detail: 'Monitoreo de la integridad de los datos de facturación en la automatización hacia Business Central.' }
     ],
     ux: [
       { title: 'Botón Clear filters', type: 'Ajuste', priority: 'Baja', target: '29/05', detail: 'Agregar botón para limpiar filtros activos.' },
