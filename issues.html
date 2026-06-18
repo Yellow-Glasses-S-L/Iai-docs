@@ -561,7 +561,7 @@ document.addEventListener('DOMContentLoaded',function(){
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">250</div>
+      <div class="counter-num" style="color: var(--resolved);">252</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -846,7 +846,8 @@ const data = {
       { title: 'Email notif: ignorar productos inhouse', type: 'Ajuste', completed_at: '05/06', detail: 'Notificaciones de email se disparaban para inscripciones inhouse. Corregido para que se ignoren' },
       { title: 'Cupón de descuento aplicable a todos los productos con precio', type: 'Bug', completed_at: '05/06', detail: 'Condición isTraining limitaba cupones a product_type_id=6 (formaciones). Corregido: todos los productos con precio admiten cupón, excluyendo tipos 1/2/3/4 (cuotas/crédito formativo/bolsa horas)' },
       { title: 'Cursos expirados: invitados aparecían como undefined y no contabilizaban', type: 'Bug', completed_at: '09/06', detail: 'Status expired no mostraba correctamente los invitados. Corregido' },
-      { title: 'Campo "Estado Inscripción" en compras de cursos', type: 'Ajuste', completed_at: '10/06', detail: 'Añadida columna de Estado de Inscripción en las compras de cursos para identificar las canceladas.' }
+      { title: 'Campo "Estado Inscripción" en compras de cursos', type: 'Ajuste', completed_at: '10/06', detail: 'Añadida columna de Estado de Inscripción en las compras de cursos para identificar las canceladas.' },
+      { title: 'Ajustes UI asistentes y códigos promocionales', type: 'Ajuste', completed_at: '16/06', detail: 'Ajustes de interfaz en la pantalla de asistentes y en el manejo de códigos promocionales.' }
     ],
     facturacion: [
       { title: '#14 No se puede actualizar tramo empresa desde portal', type: 'Aclaración', detail: 'Se hace desde HubSpot' },
@@ -889,7 +890,8 @@ const data = {
       { title: 'Exportar listados de horas compradas/usadas', type: 'Ajuste', completed_at: '27/05', detail: 'Botón de exportar añadido a la vista de horas compradas/usadas' },
       { title: 'Descarga horas usadas/compradas para admin habilitada', type: 'Ajuste', completed_at: '08/06', detail: 'Funcionalidad adicional: descarga de horas también desde panel admin' },
       { title: 'Pack Lunes (evento) no entra como Pedido en BC', type: 'Bug', completed_at: '10/06', detail: 'Tipología pack Lunes ya entra como Pedido en BC. Resuelto.' },
-      { title: 'Cambiar método de pago de transferencia a tarjeta', type: 'Ajuste', completed_at: '18/06', detail: 'La operación la realiza siempre el cliente (nunca un admin: requiere datos de tarjeta). Dos opciones en evaluación: (1) mostrar la transacción en el carrito del portal del cliente —más segura—; (2) enviar email con enlace de pago —riesgo de que caiga en spam o de que el cliente lo reenvíe a un tercero.' }
+      { title: 'Cambiar método de pago de transferencia a tarjeta', type: 'Ajuste', completed_at: '15/06', detail: 'La operación la realiza siempre el cliente (nunca un admin: requiere datos de tarjeta). Dos opciones en evaluación: (1) mostrar la transacción en el carrito del portal del cliente —más segura—; (2) enviar email con enlace de pago —riesgo de que caiga en spam o de que el cliente lo reenvíe a un tercero.' },
+      { title: 'Prefacturas a empresa incorrecta en socios individuales sin empresa', type: 'Bug', completed_at: '18/06', detail: 'Caso GRANT THORNTON: socios individuales sin empresa asociada generaban prefactura a una empresa incorrecta. Flujo n8n de facturación corregido.' }
     ],
     ux: [
       { title: '#10 Documentos Esfera Consejeros no disponibles', type: 'Bug', detail: 'Perfiles WordPress revisados' },
