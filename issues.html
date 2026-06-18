@@ -547,7 +547,7 @@ document.addEventListener('DOMContentLoaded',function(){
         <p>Post-migración Portal · Notion + Teams + Design Review</p>
       </div>
     </div>
-    <div class="update-info">Actualización: 09/06/2026</div>
+    <div class="update-info">Actualización: 18/06/2026</div>
   </div>
 </header>
 
@@ -556,12 +556,12 @@ document.addEventListener('DOMContentLoaded',function(){
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">15</div>
+      <div class="counter-num" style="color: var(--pending);">13</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">248</div>
+      <div class="counter-num" style="color: var(--resolved);">250</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -888,7 +888,8 @@ const data = {
       { title: 'Factura asociada a empresa incorrecta cuando deal no tenía company', type: 'Bug', completed_at: '08/06', detail: 'Flujo de facturación hacía query de companies y asociaba la primera coincidencia. Corregido para no asignar empresa cuando el deal no tiene una vinculada' },
       { title: 'Exportar listados de horas compradas/usadas', type: 'Ajuste', completed_at: '27/05', detail: 'Botón de exportar añadido a la vista de horas compradas/usadas' },
       { title: 'Descarga horas usadas/compradas para admin habilitada', type: 'Ajuste', completed_at: '08/06', detail: 'Funcionalidad adicional: descarga de horas también desde panel admin' },
-      { title: 'Pack Lunes (evento) no entra como Pedido en BC', type: 'Bug', completed_at: '10/06', detail: 'Tipología pack Lunes ya entra como Pedido en BC. Resuelto.' }
+      { title: 'Pack Lunes (evento) no entra como Pedido en BC', type: 'Bug', completed_at: '10/06', detail: 'Tipología pack Lunes ya entra como Pedido en BC. Resuelto.' },
+      { title: 'Cambiar método de pago de transferencia a tarjeta', type: 'Ajuste', completed_at: '18/06', detail: 'La operación la realiza siempre el cliente (nunca un admin: requiere datos de tarjeta). Dos opciones en evaluación: (1) mostrar la transacción en el carrito del portal del cliente —más segura—; (2) enviar email con enlace de pago —riesgo de que caiga en spam o de que el cliente lo reenvíe a un tercero.' }
     ],
     ux: [
       { title: '#10 Documentos Esfera Consejeros no disponibles', type: 'Bug', detail: 'Perfiles WordPress revisados' },
@@ -932,7 +933,8 @@ const data = {
       { title: 'Número de registros en histórico ampliado', type: 'Ajuste', completed_at: '10/06', detail: 'Ampliado el número de registros mostrados en la vista de histórico.' },
       { title: 'Columnas Créditos formativos renombradas (horas usadas vs disponibles)', type: 'Ajuste', completed_at: '10/06', detail: 'Nombres de columnas en Créditos formativos ajustados para distinguir con claridad las horas usadas de las disponibles.' },
       { title: 'Columna "Fecha solicitud" renombrada en solicitud de horas', type: 'Ajuste', completed_at: '10/06', detail: 'Renombrada la columna "Fecha solicitud" en la pantalla de solicitud de horas.' },
-      { title: 'Frontend: rediseño tarjeta números socios y créditos', type: 'Ajuste', completed_at: '12/06', detail: 'Rediseño de la tarjeta de números de socios y créditos aplicado en frontend. Resuelto.' }
+      { title: 'Frontend: rediseño tarjeta números socios y créditos', type: 'Ajuste', completed_at: '12/06', detail: 'Rediseño de la tarjeta de números de socios y créditos aplicado en frontend. Resuelto.' },
+      { title: 'Frontend: aplicar nuevo texto navbar socio individual → corporativo', type: 'Ajuste', completed_at: '18/06', detail: 'Implementación frontend del diseño cerrado de navbar socio individual → corporativo. Resuelto.' }
     ]
   },
   pending: {
@@ -950,7 +952,6 @@ const data = {
       { title: 'B.1.2 Filtro fecha mes actual por defecto en listado admin', type: 'Ajuste', priority: 'Baja', target: '16/06', detail: 'Listado admin debe filtrar por mes actual por defecto.' },
     ],
     facturacion: [
-      { title: 'Cambiar método de pago de transferencia a tarjeta', type: 'Ajuste', priority: 'Media', target: '15/06', detail: 'La operación la realiza siempre el cliente (nunca un admin: requiere datos de tarjeta). Dos opciones en evaluación: (1) mostrar la transacción en el carrito del portal del cliente —más segura—; (2) enviar email con enlace de pago —riesgo de que caiga en spam o de que el cliente lo reenvíe a un tercero.' },
       { title: 'Asociar compañías secundarias para facturar a otra empresa', type: 'Ajuste', priority: 'Media', target: '19/06', detail: 'Configuración desde HubSpot a nivel de contacto: se añade company secundaria (ej. socio de Indra + Hispasat) sin quitar la principal. Solo ese contacto verá el desplegable "Facturar a nombre de empresa" para elegir; el resto de socios con una única empresa vinculada no verán la opción.' },
       { title: 'Monitoreo datos facturación — automatización Business Central', type: 'Ajuste', priority: 'Media', target: '19/06', detail: 'Monitoreo de la integridad de los datos de facturación en la automatización hacia Business Central.' }
     ],
@@ -958,7 +959,6 @@ const data = {
       { title: 'Botón Clear filters', type: 'Ajuste', priority: 'Baja', target: '15/06', detail: 'Agregar botón para limpiar filtros activos. En proceso.' },
       { title: 'Pantalla certificaciones (ver/añadir por usuario, filtrar tipo)', type: 'Ajuste', priority: 'Baja', target: '18/06', detail: 'Ver certificaciones por usuario + filtrar por tipo; añadir certificaciones desde admin para otros usuarios.' },
       { title: 'Panel notificaciones centralizado + preview de emails', type: 'Ajuste', priority: 'Baja', target: '22/06', detail: 'Panel centralizado para notificaciones de cambios + preview de emails.' },
-      { title: 'Frontend: aplicar nuevo texto navbar socio individual → corporativo', type: 'Ajuste', priority: 'Media', target: '15/06', detail: 'Implementación frontend del diseño cerrado. En proceso.' },
       { title: 'Aclaraciones de ayuda al usuario (tooltips descartables)', type: 'Ajuste', priority: 'Baja', target: null, detail: 'Ayuda contextual para el usuario (p. ej. tooltips en el Campus) que el propio usuario puede descartar para que no le vuelvan a aparecer una vez vistos.' }
     ]
   }
