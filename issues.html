@@ -556,12 +556,12 @@ document.addEventListener('DOMContentLoaded',function(){
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">14</div>
+      <div class="counter-num" style="color: var(--pending);">13</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">252</div>
+      <div class="counter-num" style="color: var(--resolved);">253</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -759,7 +759,8 @@ const data = {
       { title: 'Concepción Ramos Fernández (MAPFRE) reactivada como socia', type: 'Ajuste', completed_at: '08/06', detail: 'Caso pendiente desde mayo. Dada de alta con datos históricos (DNI, fecha incorporación, dirección) y vinculada a MAPFRE' },
       { title: 'Altas/bajas de socios para instituto global', type: 'Ajuste', completed_at: '27/05', detail: 'Flujo de altas/bajas adaptado para usuarios pertenecientes al instituto global' },
       { title: 'Acceso corporativo masivo — Telefónica + BNCR', type: 'Ajuste', completed_at: '10/06', detail: 'Resets de contraseña y whitelist de dominio. Telefónica (3 usuarios) y BNCR (7 contraseñas + dominio iai.es). Resuelto.' },
-      { title: 'Form alta corp: check "¿soy representante?" + flujo de invitación', type: 'Ajuste', completed_at: '12/06', detail: 'Check "¿soy representante?" en el alta corporativa; si no lo es, email al representante real para que complete el registro. Resuelto.' }
+      { title: 'Form alta corp: check "¿soy representante?" + flujo de invitación', type: 'Ajuste', completed_at: '12/06', detail: 'Check "¿soy representante?" en el alta corporativa; si no lo es, email al representante real para que complete el registro. Resuelto.' },
+      { title: 'Frontend WeWeb: propagar parámetro de redirect en SSO con WordPress', type: 'Ajuste', completed_at: '18/06', detail: 'Ajuste requerido por el cliente. El SSO WordPress ↔ Portal perdía el parámetro redirect en el flujo; ahora se propaga correctamente desde WeWeb para que el usuario aterrice en el destino esperado tras autenticarse. Probado y resuelto.' }
     ],
     producto: [
       { title: '#2 Faltan reuniones y foros en eventos', type: 'Bug', detail: 'Sincronizado' },
@@ -944,7 +945,6 @@ const data = {
       { title: 'Creación empresa en HubSpot — detalle de campos por categoría', type: 'Ajuste', priority: 'Media', target: '19/06', detail: 'Detalle de campos a configurar por categoría al crear empresa en HubSpot · Más implicaciones' },
       { title: 'Segregar Admin y Super Admin', type: 'Ajuste', priority: 'Baja', target: null, detail: 'Dividir funciones; cambios sensibles solo desde Super Admin' },
       { title: 'Monitoreo datos socios — flujos de bajas y altas', type: 'Ajuste', priority: 'Media', target: '19/06', detail: 'Monitoreo de la integridad de los datos de socios en los flujos automáticos de bajas y altas.' },
-      { title: 'Frontend WeWeb: propagar parámetro de redirect en SSO con WordPress', type: 'Ajuste', priority: 'Media', target: '19/06', detail: 'Ajuste requerido por el cliente. El SSO WordPress ↔ Portal perdía el parámetro redirect en el flujo; se propaga correctamente desde WeWeb para que el usuario aterrice en el destino esperado tras autenticarse.' },
     ],
     producto: [
       { title: 'Añadir cuestionario retribuciones de ponentes', type: 'Ajuste', priority: 'Baja', target: '18/06', detail: 'Formulario/cuestionario de retribuciones para ponentes.' },
