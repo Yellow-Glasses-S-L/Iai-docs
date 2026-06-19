@@ -556,12 +556,12 @@ document.addEventListener('DOMContentLoaded',function(){
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">13</div>
+      <div class="counter-num" style="color: var(--pending);">11</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">253</div>
+      <div class="counter-num" style="color: var(--resolved);">255</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -760,7 +760,8 @@ const data = {
       { title: 'Altas/bajas de socios para instituto global', type: 'Ajuste', completed_at: '27/05', detail: 'Flujo de altas/bajas adaptado para usuarios pertenecientes al instituto global' },
       { title: 'Acceso corporativo masivo — Telefónica + BNCR', type: 'Ajuste', completed_at: '10/06', detail: 'Resets de contraseña y whitelist de dominio. Telefónica (3 usuarios) y BNCR (7 contraseñas + dominio iai.es). Resuelto.' },
       { title: 'Form alta corp: check "¿soy representante?" + flujo de invitación', type: 'Ajuste', completed_at: '12/06', detail: 'Check "¿soy representante?" en el alta corporativa; si no lo es, email al representante real para que complete el registro. Resuelto.' },
-      { title: 'Frontend WeWeb: propagar parámetro de redirect en SSO con WordPress', type: 'Ajuste', completed_at: '18/06', detail: 'Ajuste requerido por el cliente. El SSO WordPress ↔ Portal perdía el parámetro redirect en el flujo; ahora se propaga correctamente desde WeWeb para que el usuario aterrice en el destino esperado tras autenticarse. Probado y resuelto.' }
+      { title: 'Frontend WeWeb: propagar parámetro de redirect en SSO con WordPress', type: 'Ajuste', completed_at: '18/06', detail: 'Ajuste requerido por el cliente. El SSO WordPress ↔ Portal perdía el parámetro redirect en el flujo; ahora se propaga correctamente desde WeWeb para que el usuario aterrice en el destino esperado tras autenticarse. Probado y resuelto.' },
+      { title: 'Monitoreo datos socios — flujos de bajas y altas', type: 'Ajuste', completed_at: '18/06', detail: 'Revisión semanal de integridad de altas/bajas con las invariantes del agente de monitoreo. Sin incidencias críticas: datos cuadrados Supabase ↔ HubSpot. Puntos de calidad de dato (duplicados de CIF de migración iMIS, etc.) entregados aparte para depuración.' }
     ],
     producto: [
       { title: '#2 Faltan reuniones y foros en eventos', type: 'Bug', detail: 'Sincronizado' },
@@ -892,7 +893,8 @@ const data = {
       { title: 'Descarga horas usadas/compradas para admin habilitada', type: 'Ajuste', completed_at: '08/06', detail: 'Funcionalidad adicional: descarga de horas también desde panel admin' },
       { title: 'Pack Lunes (evento) no entra como Pedido en BC', type: 'Bug', completed_at: '10/06', detail: 'Tipología pack Lunes ya entra como Pedido en BC. Resuelto.' },
       { title: 'Cambiar método de pago de transferencia a tarjeta', type: 'Ajuste', completed_at: '15/06', detail: 'La operación la realiza siempre el cliente (nunca un admin: requiere datos de tarjeta). Dos opciones en evaluación: (1) mostrar la transacción en el carrito del portal del cliente —más segura—; (2) enviar email con enlace de pago —riesgo de que caiga en spam o de que el cliente lo reenvíe a un tercero.' },
-      { title: 'Prefacturas a empresa incorrecta en socios individuales sin empresa', type: 'Bug', completed_at: '18/06', detail: 'Caso GRANT THORNTON: socios individuales sin empresa asociada generaban prefactura a una empresa incorrecta. Flujo n8n de facturación corregido.' }
+      { title: 'Prefacturas a empresa incorrecta en socios individuales sin empresa', type: 'Bug', completed_at: '18/06', detail: 'Caso GRANT THORNTON: socios individuales sin empresa asociada generaban prefactura a una empresa incorrecta. Flujo n8n de facturación corregido.' },
+      { title: 'Monitoreo datos facturación — automatización Business Central', type: 'Ajuste', completed_at: '18/06', detail: 'Revisión semanal del pipeline a Business Central. Automatización operativa: 20 prefacturas a BC en la semana, 0 errores. Invariantes de facturación limpias (sin sobreconsumo de créditos ni deals sin destinatario).' }
     ],
     ux: [
       { title: '#10 Documentos Esfera Consejeros no disponibles', type: 'Bug', detail: 'Perfiles WordPress revisados' },
@@ -944,7 +946,6 @@ const data = {
     socios: [
       { title: 'Creación empresa en HubSpot — detalle de campos por categoría', type: 'Ajuste', priority: 'Media', target: '19/06', detail: 'Detalle de campos a configurar por categoría al crear empresa en HubSpot · Más implicaciones' },
       { title: 'Segregar Admin y Super Admin', type: 'Ajuste', priority: 'Baja', target: null, detail: 'Dividir funciones; cambios sensibles solo desde Super Admin' },
-      { title: 'Monitoreo datos socios — flujos de bajas y altas', type: 'Ajuste', priority: 'Media', target: '19/06', detail: 'Monitoreo de la integridad de los datos de socios en los flujos automáticos de bajas y altas.' },
     ],
     producto: [
       { title: 'Añadir cuestionario retribuciones de ponentes', type: 'Ajuste', priority: 'Baja', target: '18/06', detail: 'Formulario/cuestionario de retribuciones para ponentes.' },
@@ -955,8 +956,7 @@ const data = {
       { title: 'B.1.2 Filtro fecha mes actual por defecto en listado admin', type: 'Ajuste', priority: 'Baja', target: '16/06', detail: 'Listado admin debe filtrar por mes actual por defecto.' },
     ],
     facturacion: [
-      { title: 'Asociar compañías secundarias para facturar a otra empresa', type: 'Ajuste', priority: 'Media', target: '19/06', detail: 'Configuración desde HubSpot a nivel de contacto: se añade company secundaria (ej. socio de Indra + Hispasat) sin quitar la principal. Solo ese contacto verá el desplegable "Facturar a nombre de empresa" para elegir; el resto de socios con una única empresa vinculada no verán la opción.' },
-      { title: 'Monitoreo datos facturación — automatización Business Central', type: 'Ajuste', priority: 'Media', target: '19/06', detail: 'Monitoreo de la integridad de los datos de facturación en la automatización hacia Business Central.' }
+      { title: 'Asociar compañías secundarias para facturar a otra empresa', type: 'Ajuste', priority: 'Media', target: '19/06', detail: 'Configuración desde HubSpot a nivel de contacto: se añade company secundaria (ej. socio de Indra + Hispasat) sin quitar la principal. Solo ese contacto verá el desplegable "Facturar a nombre de empresa" para elegir; el resto de socios con una única empresa vinculada no verán la opción.' }
     ],
     ux: [
       { title: 'Pantalla certificaciones (ver/añadir por usuario, filtrar tipo)', type: 'Ajuste', priority: 'Baja', target: '18/06', detail: 'Ver certificaciones por usuario + filtrar por tipo; añadir certificaciones desde admin para otros usuarios.' },
