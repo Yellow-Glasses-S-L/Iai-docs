@@ -556,12 +556,12 @@ document.addEventListener('DOMContentLoaded',function(){
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">9</div>
+      <div class="counter-num" style="color: var(--pending);">10</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">257</div>
+      <div class="counter-num" style="color: var(--resolved);">258</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -850,7 +850,8 @@ const data = {
       { title: 'Cursos expirados: invitados aparecían como undefined y no contabilizaban', type: 'Bug', completed_at: '09/06', detail: 'Status expired no mostraba correctamente los invitados. Corregido' },
       { title: 'Campo "Estado Inscripción" en compras de cursos', type: 'Ajuste', completed_at: '10/06', detail: 'Añadida columna de Estado de Inscripción en las compras de cursos para identificar las canceladas.' },
       { title: 'Ajustes UI asistentes y códigos promocionales', type: 'Ajuste', completed_at: '16/06', detail: 'Ajustes de interfaz en la pantalla de asistentes y en el manejo de códigos promocionales.' },
-      { title: 'Campos personalizables por evento (DNI, alergias, etc.)', type: 'Ajuste', completed_at: '18/06', detail: 'Agrupa E-I3 + E-I5. Campos custom configurables por evento (DNI + formulario Alergias HubSpot). Columnas extra en products + sync. Desplegado en producción.' }
+      { title: 'Campos personalizables por evento (DNI, alergias, etc.)', type: 'Ajuste', completed_at: '18/06', detail: 'Agrupa E-I3 + E-I5. Campos custom configurables por evento (DNI + formulario Alergias HubSpot). Columnas extra en products + sync. Desplegado en producción.' },
+      { title: 'Preguntas personalizadas por evento (patrocinadores / terceros)', type: 'Ajuste', completed_at: '25/06', detail: 'Disclaimer de patrocinadores (campo "Pregunta Información Terceros") + pregunta de texto libre configurable por evento (enunciado, ayuda, activar/desactivar). En producción.' }
     ],
     facturacion: [
       { title: '#14 No se puede actualizar tramo empresa desde portal', type: 'Aclaración', detail: 'Se hace desde HubSpot' },
@@ -951,6 +952,7 @@ const data = {
     ],
     producto: [
       { title: 'Añadir cuestionario retribuciones de ponentes', type: 'Ajuste', priority: 'Baja', target: '18/06', detail: 'Formulario/cuestionario de retribuciones para ponentes.' },
+      { title: 'Sistema de Badges / Itinerarios formativos', type: 'Ajuste', priority: 'Media', target: null, detail: 'Open Badges: insignias digitales emitidas automáticamente al completar los cursos de un itinerario formativo, visibles en el Portal del socio. Feature nueva (handoff a UX + Dev).' },
     ],
     inscripciones: [
       { title: 'Conexión nirestream Horas Certificado (mínimo 85% visionado)', type: 'Ajuste', priority: 'Media', target: '21/06', detail: 'Integración con nirestream para verificar mínimo 85% de visionado antes de emitir certificado. A la espera de respuesta de Nirestream' },
