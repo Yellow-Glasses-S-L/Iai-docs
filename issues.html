@@ -556,12 +556,12 @@ document.addEventListener('DOMContentLoaded',function(){
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">11</div>
+      <div class="counter-num" style="color: var(--pending);">9</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">255</div>
+      <div class="counter-num" style="color: var(--resolved);">257</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -849,7 +849,8 @@ const data = {
       { title: 'Cupón de descuento aplicable a todos los productos con precio', type: 'Bug', completed_at: '05/06', detail: 'Condición isTraining limitaba cupones a product_type_id=6 (formaciones). Corregido: todos los productos con precio admiten cupón, excluyendo tipos 1/2/3/4 (cuotas/crédito formativo/bolsa horas)' },
       { title: 'Cursos expirados: invitados aparecían como undefined y no contabilizaban', type: 'Bug', completed_at: '09/06', detail: 'Status expired no mostraba correctamente los invitados. Corregido' },
       { title: 'Campo "Estado Inscripción" en compras de cursos', type: 'Ajuste', completed_at: '10/06', detail: 'Añadida columna de Estado de Inscripción en las compras de cursos para identificar las canceladas.' },
-      { title: 'Ajustes UI asistentes y códigos promocionales', type: 'Ajuste', completed_at: '16/06', detail: 'Ajustes de interfaz en la pantalla de asistentes y en el manejo de códigos promocionales.' }
+      { title: 'Ajustes UI asistentes y códigos promocionales', type: 'Ajuste', completed_at: '16/06', detail: 'Ajustes de interfaz en la pantalla de asistentes y en el manejo de códigos promocionales.' },
+      { title: 'Campos personalizables por evento (DNI, alergias, etc.)', type: 'Ajuste', completed_at: '18/06', detail: 'Agrupa E-I3 + E-I5. Campos custom configurables por evento (DNI + formulario Alergias HubSpot). Columnas extra en products + sync. Desplegado en producción.' }
     ],
     facturacion: [
       { title: '#14 No se puede actualizar tramo empresa desde portal', type: 'Aclaración', detail: 'Se hace desde HubSpot' },
@@ -939,7 +940,8 @@ const data = {
       { title: 'Columnas Créditos formativos renombradas (horas usadas vs disponibles)', type: 'Ajuste', completed_at: '10/06', detail: 'Nombres de columnas en Créditos formativos ajustados para distinguir con claridad las horas usadas de las disponibles.' },
       { title: 'Columna "Fecha solicitud" renombrada en solicitud de horas', type: 'Ajuste', completed_at: '10/06', detail: 'Renombrada la columna "Fecha solicitud" en la pantalla de solicitud de horas.' },
       { title: 'Frontend: rediseño tarjeta números socios y créditos', type: 'Ajuste', completed_at: '12/06', detail: 'Rediseño de la tarjeta de números de socios y créditos aplicado en frontend. Resuelto.' },
-      { title: 'Botón Clear filters', type: 'Ajuste', completed_at: '18/06', detail: 'Botón para limpiar filtros activos. Resuelto.' }
+      { title: 'Botón Clear filters', type: 'Ajuste', completed_at: '18/06', detail: 'Botón para limpiar filtros activos. Resuelto.' },
+      { title: 'Frontend: aplicar nuevo texto navbar socio individual → corporativo', type: 'Ajuste', completed_at: '26/06', detail: 'Implementación frontend del diseño cerrado de navbar socio individual → corporativo. Resuelto.' }
     ]
   },
   pending: {
@@ -952,7 +954,6 @@ const data = {
     ],
     inscripciones: [
       { title: 'Conexión nirestream Horas Certificado (mínimo 85% visionado)', type: 'Ajuste', priority: 'Media', target: '21/06', detail: 'Integración con nirestream para verificar mínimo 85% de visionado antes de emitir certificado. A la espera de respuesta de Nirestream' },
-      { title: 'Campos personalizables por evento (DNI, alergias, etc.)', type: 'Ajuste', priority: 'Baja', target: '18/06', detail: 'Agrupa E-I3 + E-I5. Feature campos custom configurables por evento: DNI (E-I3) + formulario Alergias HubSpot (E-I5)' },
       { title: 'B.1.2 Filtro fecha mes actual por defecto en listado admin', type: 'Ajuste', priority: 'Baja', target: '16/06', detail: 'Listado admin debe filtrar por mes actual por defecto.' },
     ],
     facturacion: [
@@ -961,7 +962,6 @@ const data = {
     ux: [
       { title: 'Pantalla certificaciones (ver/añadir por usuario, filtrar tipo)', type: 'Ajuste', priority: 'Baja', target: '18/06', detail: 'Ver certificaciones por usuario + filtrar por tipo; añadir certificaciones desde admin para otros usuarios.' },
       { title: 'Panel notificaciones centralizado + preview de emails', type: 'Ajuste', priority: 'Baja', target: '22/06', detail: 'Panel centralizado para notificaciones de cambios + preview de emails.' },
-      { title: 'Frontend: aplicar nuevo texto navbar socio individual → corporativo', type: 'Ajuste', priority: 'Media', target: '15/06', detail: 'Implementación frontend del diseño cerrado. En proceso.' },
       { title: 'Aclaraciones de ayuda al usuario (tooltips descartables)', type: 'Ajuste', priority: 'Baja', target: null, detail: 'Ayuda contextual para el usuario (p. ej. tooltips en el Campus) que el propio usuario puede descartar para que no le vuelvan a aparecer una vez vistos.' }
     ]
   }
