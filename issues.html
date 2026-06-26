@@ -561,7 +561,7 @@ document.addEventListener('DOMContentLoaded',function(){
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">258</div>
+      <div class="counter-num" style="color: var(--resolved);">260</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -896,7 +896,8 @@ const data = {
       { title: 'Pack Lunes (evento) no entra como Pedido en BC', type: 'Bug', completed_at: '10/06', detail: 'Tipología pack Lunes ya entra como Pedido en BC. Resuelto.' },
       { title: 'Cambiar método de pago de transferencia a tarjeta', type: 'Ajuste', completed_at: '15/06', detail: 'La operación la realiza siempre el cliente (nunca un admin: requiere datos de tarjeta). Dos opciones en evaluación: (1) mostrar la transacción en el carrito del portal del cliente —más segura—; (2) enviar email con enlace de pago —riesgo de que caiga en spam o de que el cliente lo reenvíe a un tercero.' },
       { title: 'Prefacturas a empresa incorrecta en socios individuales sin empresa', type: 'Bug', completed_at: '18/06', detail: 'Caso GRANT THORNTON: socios individuales sin empresa asociada generaban prefactura a una empresa incorrecta. Flujo n8n de facturación corregido.' },
-      { title: 'Monitoreo datos facturación — automatización Business Central', type: 'Ajuste', completed_at: '18/06', detail: 'Revisión semanal del pipeline a Business Central. Automatización operativa: 20 prefacturas a BC en la semana, 0 errores. Invariantes de facturación limpias (sin sobreconsumo de créditos ni deals sin destinatario).' }
+      { title: 'Monitoreo datos facturación — automatización Business Central', type: 'Ajuste', completed_at: '18/06', detail: 'Revisión semanal del pipeline a Business Central. Automatización operativa: 20 prefacturas a BC en la semana, 0 errores. Invariantes de facturación limpias (sin sobreconsumo de créditos ni deals sin destinatario).' },
+      { title: 'Corrección cuotas individuales — socios sin respaldo de empresa', type: 'Bug', completed_at: '26/06', detail: 'Socios individuales sin empresa de respaldo generaban la cuota individual de forma incorrecta. Flujo de cuotas corregido.' }
     ],
     ux: [
       { title: '#10 Documentos Esfera Consejeros no disponibles', type: 'Bug', detail: 'Perfiles WordPress revisados' },
@@ -942,7 +943,8 @@ const data = {
       { title: 'Columna "Fecha solicitud" renombrada en solicitud de horas', type: 'Ajuste', completed_at: '10/06', detail: 'Renombrada la columna "Fecha solicitud" en la pantalla de solicitud de horas.' },
       { title: 'Frontend: rediseño tarjeta números socios y créditos', type: 'Ajuste', completed_at: '12/06', detail: 'Rediseño de la tarjeta de números de socios y créditos aplicado en frontend. Resuelto.' },
       { title: 'Botón Clear filters', type: 'Ajuste', completed_at: '18/06', detail: 'Botón para limpiar filtros activos. Resuelto.' },
-      { title: 'Frontend: aplicar nuevo texto navbar socio individual → corporativo', type: 'Ajuste', completed_at: '26/06', detail: 'Implementación frontend del diseño cerrado de navbar socio individual → corporativo. Resuelto.' }
+      { title: 'Frontend: aplicar nuevo texto navbar socio individual → corporativo', type: 'Ajuste', completed_at: '26/06', detail: 'Implementación frontend del diseño cerrado de navbar socio individual → corporativo. Resuelto.' },
+      { title: 'Sincronización de templates de email WordPress → HubSpot', type: 'Ajuste', completed_at: '26/06', detail: 'Plantillas de email sincronizadas de WordPress a HubSpot para unificar las comunicaciones del portal.' }
     ]
   },
   pending: {
