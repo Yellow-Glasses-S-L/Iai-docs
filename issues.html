@@ -897,7 +897,8 @@ const data = {
       { title: 'Cambiar método de pago de transferencia a tarjeta', type: 'Ajuste', completed_at: '15/06', detail: 'La operación la realiza siempre el cliente (nunca un admin: requiere datos de tarjeta). Dos opciones en evaluación: (1) mostrar la transacción en el carrito del portal del cliente —más segura—; (2) enviar email con enlace de pago —riesgo de que caiga en spam o de que el cliente lo reenvíe a un tercero.' },
       { title: 'Prefacturas a empresa incorrecta en socios individuales sin empresa', type: 'Bug', completed_at: '18/06', detail: 'Caso GRANT THORNTON: socios individuales sin empresa asociada generaban prefactura a una empresa incorrecta. Flujo n8n de facturación corregido.' },
       { title: 'Monitoreo datos facturación — automatización Business Central', type: 'Ajuste', completed_at: '18/06', detail: 'Revisión semanal del pipeline a Business Central. Automatización operativa: 20 prefacturas a BC en la semana, 0 errores. Invariantes de facturación limpias (sin sobreconsumo de créditos ni deals sin destinatario).' },
-      { title: 'Corrección cuotas individuales — socios sin respaldo de empresa', type: 'Bug', completed_at: '26/06', detail: 'Socios individuales sin empresa de respaldo generaban la cuota individual de forma incorrecta. Flujo de cuotas corregido.' }
+      { title: 'Corrección cuotas individuales — socios sin respaldo de empresa', type: 'Bug', completed_at: '26/06', detail: 'Socios individuales sin empresa de respaldo generaban la cuota individual de forma incorrecta. Flujo de cuotas corregido.' },
+      { title: 'Asociar compañías secundarias para facturar a otra empresa', type: 'Ajuste', completed_at: '02/07', detail: 'Un contacto con varias empresas vinculadas en HubSpot (primaria + secundarias) ve un desplegable "Facturar a nombre de empresa" en el checkout para elegir a cuál facturar; el resto no ve la opción. Implementado: tabla company_billing_authorizations + RPC selector, calculate_cart_tax respeta la empresa elegida, y sync automático de la asociación secundaria en HubSpot → Supabase verificado en producción.' }
     ],
     ux: [
       { title: '#10 Documentos Esfera Consejeros no disponibles', type: 'Bug', detail: 'Perfiles WordPress revisados' },
@@ -959,9 +960,7 @@ const data = {
     inscripciones: [
       { title: 'Conexión nirestream Horas Certificado (mínimo 85% visionado)', type: 'Ajuste', priority: 'Media', target: '30/06', detail: 'Integración con nirestream para verificar mínimo 85% de visionado antes de emitir certificado. A la espera de respuesta de Nirestream' },
     ],
-    facturacion: [
-      { title: 'Asociar compañías secundarias para facturar a otra empresa', type: 'Ajuste', priority: 'Media', target: '29/06', detail: 'Configuración desde HubSpot a nivel de contacto: se añade company secundaria (ej. socio de Indra + Hispasat) sin quitar la principal. Solo ese contacto verá el desplegable "Facturar a nombre de empresa" para elegir; el resto de socios con una única empresa vinculada no verán la opción.' }
-    ],
+    facturacion: [],
     ux: [
       { title: 'Ajustes frontend varios (backlog UI)', type: 'Ajuste', priority: 'Baja', target: null, detail: 'Backlog de frontend de baja prioridad: (1) filtro de fecha del mes actual por defecto en listado admin (B.1.2); (2) pantalla de certificaciones (ver/añadir por usuario, filtrar por tipo, alta desde admin); (3) panel de notificaciones centralizado + preview de emails; (4) tooltips de ayuda al usuario descartables.' }
     ]
