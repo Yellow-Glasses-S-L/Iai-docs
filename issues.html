@@ -547,7 +547,7 @@ document.addEventListener('DOMContentLoaded',function(){
         <p>Post-migración Portal · Notion + Teams + Design Review</p>
       </div>
     </div>
-    <div class="update-info">Actualización: 18/06/2026</div>
+    <div class="update-info">Actualización: 10/07/2026</div>
   </div>
 </header>
 
@@ -556,12 +556,12 @@ document.addEventListener('DOMContentLoaded',function(){
   <div class="hero">
     <div class="counter-card active" data-tab="pending" onclick="switchTab('pending')">
       <div class="counter-icon">⏳</div>
-      <div class="counter-num" style="color: var(--pending);">7</div>
+      <div class="counter-num" style="color: var(--pending);">11</div>
       <div class="counter-label">Pendientes</div>
     </div>
     <div class="counter-card" data-tab="resolved" onclick="switchTab('resolved')">
       <div class="counter-icon">✅</div>
-      <div class="counter-num" style="color: var(--resolved);">260</div>
+      <div class="counter-num" style="color: var(--resolved);">278</div>
       <div class="counter-label">Resueltos</div>
     </div>
     <div class="counter-card" data-tab="roadmap" onclick="switchTab('roadmap')">
@@ -571,7 +571,7 @@ document.addEventListener('DOMContentLoaded',function(){
     </div>
     <div class="counter-card" data-tab="iai" onclick="switchTab('iai')">
       <div class="counter-icon">📋</div>
-      <div class="counter-num" style="color: var(--iai);">6</div>
+      <div class="counter-num" style="color: var(--iai);">10</div>
       <div class="counter-label">Para IAI</div>
     </div>
   </div>
@@ -669,6 +669,26 @@ document.addEventListener('DOMContentLoaded',function(){
       <p>Revisar con Rebeca cómo tenemos planteado el flujo de incidentes y comunicarlo a IAI.</p>
       <div class="meta">Revisión interna + mensaje a IAI</div>
     </div>
+    <div class="iai-card">
+      <h3>📋 Revisar CSV de perfiles duplicados (164 grupos)</h3>
+      <p>Entregado <code>Duplicados_perfiles_revision.csv</code> con 164 grupos (332 perfiles) detectados por nombre. IAI debe indicar cuáles fusionar (el merge se hace desde HubSpot y sincroniza solo). Incluye decidir el email definitivo de Nicolás Delarroca (gmail vs corporativo).</p>
+      <div class="meta">Revisión + decisión de fusiones</div>
+    </div>
+    <div class="iai-card">
+      <h3>📋 OK de Contabilidad para reprocesar proformas de Canarias</h3>
+      <p>El fix del grupo de negocio ya está desplegado y verificado con un caso real. Falta el visto bueno de Contabilidad IAI para reprocesar el resto de clientes de Canarias afectados.</p>
+      <div class="meta">Confirmación de Contabilidad</div>
+    </div>
+    <div class="iai-card">
+      <h3>📋 HubSpot: aplicar toggles de privacidad + lista FR/IT</h3>
+      <p>Desactivar AI Model Training y Data Enrichment en la configuración de HubSpot (instrucciones paso a paso enviadas) y confirmar la exclusión de la lista FR/IT del tracking.</p>
+      <div class="meta">⚠️ Antes del 14/07</div>
+    </div>
+    <div class="iai-card">
+      <h3>📋 Validar Hispasat bajo Redeia + vínculo Indra</h3>
+      <p>Los 3 socios "de Hispasat" figuran correctamente bajo Redeia (así consta en iMIS). Existe además un vínculo fantasma con Indra que proponemos eliminar. Pendiente validación del cliente.</p>
+      <div class="meta">Validación de datos</div>
+    </div>
   </div>
 
 </div>
@@ -761,7 +781,15 @@ const data = {
       { title: 'Acceso corporativo masivo — Telefónica + BNCR', type: 'Ajuste', completed_at: '10/06', detail: 'Resets de contraseña y whitelist de dominio. Telefónica (3 usuarios) y BNCR (7 contraseñas + dominio iai.es). Resuelto.' },
       { title: 'Form alta corp: check "¿soy representante?" + flujo de invitación', type: 'Ajuste', completed_at: '12/06', detail: 'Check "¿soy representante?" en el alta corporativa; si no lo es, email al representante real para que complete el registro. Resuelto.' },
       { title: 'Frontend WeWeb: propagar parámetro de redirect en SSO con WordPress', type: 'Ajuste', completed_at: '18/06', detail: 'Ajuste requerido por el cliente. El SSO WordPress ↔ Portal perdía el parámetro redirect en el flujo; ahora se propaga correctamente desde WeWeb para que el usuario aterrice en el destino esperado tras autenticarse. Probado y resuelto.' },
-      { title: 'Monitoreo datos socios — flujos de bajas y altas', type: 'Ajuste', completed_at: '18/06', detail: 'Revisión semanal de integridad de altas/bajas con las invariantes del agente de monitoreo. Sin incidencias críticas: datos cuadrados Supabase ↔ HubSpot. Puntos de calidad de dato (duplicados de CIF de migración iMIS, etc.) entregados aparte para depuración.' }
+      { title: 'Monitoreo datos socios — flujos de bajas y altas', type: 'Ajuste', completed_at: '18/06', detail: 'Revisión semanal de integridad de altas/bajas con las invariantes del agente de monitoreo. Sin incidencias críticas: datos cuadrados Supabase ↔ HubSpot. Puntos de calidad de dato (duplicados de CIF de migración iMIS, etc.) entregados aparte para depuración.' },
+      { title: 'Alta de socio: flujo "socio corporativo de tramo" al aprobar', type: 'Ajuste', completed_at: '03/07', detail: 'Al aprobar un alta se soporta el caso de socio corporativo de tramo (HubSpot + portal).' },
+      { title: 'Admin alta de socios: estado "En proceso" + última modificación', type: 'Ajuste', completed_at: '06/07', detail: 'Nuevo estado "En proceso" en las solicitudes, columna de última modificación (persona) con registro automático de quién editó, y prioridad visual de los botones aceptar/rechazar revisada.' },
+      { title: 'Alta de socio: pregunta ¿fue socio antes? / ID Global', type: 'Ajuste', completed_at: '06/07', detail: 'El formulario de alta pregunta si fue socio anteriormente y su ID Global, para facilitar la reconciliación con el histórico.' },
+      { title: 'Aviso en registro: cuenta ya existe', type: 'Ajuste', completed_at: '06/07', detail: 'El registro avisa de que la cuenta ya existe y pide contactar con el instituto, en vez de fallar sin mensaje.' },
+      { title: 'Fusión de perfiles duplicados — motor corregido de raíz', type: 'Bug', completed_at: '07/07', detail: 'Validado end-to-end: fusionar en HubSpot sincroniza solo al portal. Corregidos 3 bugs del motor (id externo obsoleto, email no sincronizado, usuario auth huérfano) y desplegada versión atómica. CSV con 164 grupos de duplicados (332 perfiles) entregado a IAI para revisión.' },
+      { title: 'Proceso de baja: empresa corp, socio corp y socio individual', type: 'Ajuste', completed_at: '07/07', detail: 'Proceso de baja revisado y cerrado para los tres tipos (n8n + HubSpot + portal).' },
+      { title: 'Campo "Otros" en Naturaleza', type: 'Ajuste', completed_at: '08/07', detail: 'Añadida la opción "Otros" al campo Naturaleza.' },
+      { title: 'Pérdida de empresa asociada sacaba a socia del flujo de créditos', type: 'Bug', completed_at: '09/07', detail: 'Caso Sonia Lagares: la empresa asociada quedaba a NULL y la excluía del flujo de créditos formativos. Restaurada y causa corregida.' }
     ],
     producto: [
       { title: '#2 Faltan reuniones y foros en eventos', type: 'Bug', detail: 'Sincronizado' },
@@ -794,7 +822,8 @@ const data = {
       { title: 'Moodle: cursos COSO sin categoría sincronizados', type: 'Bug', completed_at: '03/06', detail: 'Acreditación COSO CI, COSO ERM y CERTIFICADO ASG-UE sin categoría Moodle. Sincronización completada. IAI confirmó visualización en campus' },
       { title: 'Moodle: e-learning con formato mosaico forzado', type: 'Bug', completed_at: '04/06', detail: 'Workflow sync forzaba formato Mosaicos en todos los e-learning impidiendo cambio admin. Flujo corregido para no imponer formato' },
       { title: 'Diplomas eLearning manuales: 2 casos pendientes', type: 'Bug', completed_at: '28/05', detail: 'Emilio Arrate "Segregación de funciones" + Ana Cristina Soto "Normas Globales" — diplomas emitidos manualmente' },
-      { title: 'Cabecera de curso — consistencia + flexibilidad', type: 'Bug', completed_at: '10/06', detail: 'Consistencia de imagen de cabecera (A.3.2) y flexibilidad para añadir cabecera. Resuelto.' }
+      { title: 'Cabecera de curso — consistencia + flexibilidad', type: 'Bug', completed_at: '10/06', detail: 'Consistencia de imagen de cabecera (A.3.2) y flexibilidad para añadir cabecera. Resuelto.' },
+      { title: 'Marcar curso como cancelado', type: 'Ajuste', completed_at: '09/07', detail: 'Soporte para marcar un curso como cancelado.' }
     ],
     inscripciones: [
       { title: '#3 Buscador Campus filtra solo por una fecha', type: 'Bug', detail: 'Ajustado' },
@@ -851,7 +880,10 @@ const data = {
       { title: 'Campo "Estado Inscripción" en compras de cursos', type: 'Ajuste', completed_at: '10/06', detail: 'Añadida columna de Estado de Inscripción en las compras de cursos para identificar las canceladas.' },
       { title: 'Ajustes UI asistentes y códigos promocionales', type: 'Ajuste', completed_at: '16/06', detail: 'Ajustes de interfaz en la pantalla de asistentes y en el manejo de códigos promocionales.' },
       { title: 'Campos personalizables por evento (DNI, alergias, etc.)', type: 'Ajuste', completed_at: '18/06', detail: 'Agrupa E-I3 + E-I5. Campos custom configurables por evento (DNI + formulario Alergias HubSpot). Columnas extra en products + sync. Desplegado en producción.' },
-      { title: 'Preguntas personalizadas por evento (patrocinadores / terceros)', type: 'Ajuste', completed_at: '25/06', detail: 'Disclaimer de patrocinadores (campo "Pregunta Información Terceros") + pregunta de texto libre configurable por evento (enunciado, ayuda, activar/desactivar). En producción.' }
+      { title: 'Preguntas personalizadas por evento (patrocinadores / terceros)', type: 'Ajuste', completed_at: '25/06', detail: 'Disclaimer de patrocinadores (campo "Pregunta Información Terceros") + pregunta de texto libre configurable por evento (enunciado, ayuda, activar/desactivar). En producción.' },
+      { title: 'Asistentes no aparecían en el listado de Jornadas (Hispasat)', type: 'Bug', completed_at: '02/07', detail: 'Inscripciones en estado pendiente con deal confirmado por un fallo del pago por transferencia. 3 casos corregidos (listado 48→51) y causa raíz identificada. Añadida además la fecha de inscripción al listado exportable (hora Madrid).' },
+      { title: 'Cesión de datos a terceros — backend completo', type: 'Ajuste', completed_at: '08/07', detail: 'Modelo de datos, lógica de negocio y estados, notificaciones in-app + email, y migración de inscritos con envío masivo. Pendiente la integración final en el checkout WeWeb.' },
+      { title: 'Checkout corporativo: error al abrir popup de información requerida', type: 'Bug', completed_at: '09/07', detail: 'Error de fórmula en el flujo corporativo del checkout que impedía abrir el popup. Corregido.' }
     ],
     facturacion: [
       { title: '#14 No se puede actualizar tramo empresa desde portal', type: 'Aclaración', detail: 'Se hace desde HubSpot' },
@@ -898,7 +930,12 @@ const data = {
       { title: 'Prefacturas a empresa incorrecta en socios individuales sin empresa', type: 'Bug', completed_at: '18/06', detail: 'Caso GRANT THORNTON: socios individuales sin empresa asociada generaban prefactura a una empresa incorrecta. Flujo n8n de facturación corregido.' },
       { title: 'Monitoreo datos facturación — automatización Business Central', type: 'Ajuste', completed_at: '18/06', detail: 'Revisión semanal del pipeline a Business Central. Automatización operativa: 20 prefacturas a BC en la semana, 0 errores. Invariantes de facturación limpias (sin sobreconsumo de créditos ni deals sin destinatario).' },
       { title: 'Corrección cuotas individuales — socios sin respaldo de empresa', type: 'Bug', completed_at: '26/06', detail: 'Socios individuales sin empresa de respaldo generaban la cuota individual de forma incorrecta. Flujo de cuotas corregido.' },
-      { title: 'Asociar compañías secundarias para facturar a otra empresa', type: 'Ajuste', completed_at: '02/07', detail: 'Un contacto con varias empresas vinculadas en HubSpot (primaria + secundarias) ve un desplegable "Facturar a nombre de empresa" en el checkout para elegir a cuál facturar; el resto no ve la opción. Implementado: tabla company_billing_authorizations + RPC selector, calculate_cart_tax respeta la empresa elegida, y sync automático de la asociación secundaria en HubSpot → Supabase verificado en producción.' }
+      { title: 'Asociar compañías secundarias para facturar a otra empresa', type: 'Ajuste', completed_at: '02/07', detail: 'Un contacto con varias empresas vinculadas en HubSpot (primaria + secundarias) ve un desplegable "Facturar a nombre de empresa" en el checkout para elegir a cuál facturar; el resto no ve la opción. Implementado: tabla company_billing_authorizations + RPC selector, calculate_cart_tax respeta la empresa elegida, y sync automático de la asociación secundaria en HubSpot → Supabase verificado en producción.' },
+      { title: 'Proformas de Canarias no entraban en Business Central', type: 'Bug', completed_at: '02/07', detail: 'Los clientes de Canarias enviaban un grupo de negocio inexistente en BC. Mapeo corregido en los workflows de facturación y verificado reprocesando un caso real (proforma OK). Reproceso del resto en espera del OK de Contabilidad IAI.' },
+      { title: 'Pedido corporativo de curso generaba un deal por asistente', type: 'Bug', completed_at: '02/07', detail: 'Ahora se agrupa en 1 deal con N líneas al facturar a empresa, incluso resolviendo la empresa por CIF sin exigir membresía. Desplegado y verificado.' },
+      { title: 'Deals duplicados por doble clic en el checkout', type: 'Bug', completed_at: '02/07', detail: 'Condición de carrera sin idempotencia al iniciar el pago. 64 deals huérfanos cancelados (ninguno facturado) e índice único creado en BD que impide duplicados por carrito. Detectado por el monitoreo diario.' },
+      { title: 'Consulta diaria de facturas generadas en Business Central', type: 'Ajuste', completed_at: '07/07', detail: 'Automatización diaria que consulta las facturas generadas en BC para conciliación con el portal.' },
+      { title: 'Bug al cambiar método de pago de suscripción', type: 'Bug', completed_at: '09/07', detail: 'Flujo de cambio de método de pago de la suscripción corregido.' }
     ],
     ux: [
       { title: '#10 Documentos Esfera Consejeros no disponibles', type: 'Bug', detail: 'Perfiles WordPress revisados' },
@@ -952,15 +989,21 @@ const data = {
     socios: [
       { title: 'Creación empresa en HubSpot — detalle de campos por categoría', type: 'Ajuste', priority: 'Media', target: null, detail: 'Detalle de campos a configurar por categoría al crear empresa en HubSpot · Más implicaciones' },
       { title: 'Segregar Admin y Super Admin', type: 'Ajuste', priority: 'Baja', target: null, detail: 'Dividir funciones; cambios sensibles solo desde Super Admin' },
+      { title: 'HubSpot: desactivar AI Training/Enrichment + excluir lista FR/IT del tracking', type: 'Ajuste', priority: 'Alta', target: '14/07', detail: 'Avisos de plataforma de HubSpot. Instrucciones enviadas a IAI para desactivar AI Model Training y Data Enrichment; la lista FR/IT debe quedar excluida del tracking antes del 14/07.' },
+      { title: 'Membresías activas con caducidad vencida — revisión de cohorte', type: 'Bug', priority: 'Media', target: null, detail: '83 membresías aparecen como activas con fecha de caducidad vencida. Revisar la cohorte y añadir validación de elegibilidad en la compra.' },
     ],
     producto: [
       { title: 'Añadir cuestionario retribuciones de ponentes', type: 'Ajuste', priority: 'Baja', target: null, detail: 'Formulario/cuestionario de retribuciones para ponentes.' },
       { title: 'Sistema de Badges / Itinerarios formativos', type: 'Ajuste', priority: 'Media', target: null, detail: 'Open Badges: insignias digitales emitidas automáticamente al completar los cursos de un itinerario formativo, visibles en el Portal del socio. Feature nueva (handoff a UX + Dev).' },
+      { title: 'Diplomas e-learning emitidos sin completar el curso', type: 'Bug', priority: 'Alta', target: null, detail: 'Detectado con Kutxabank: el diploma se emite por asistencia/estado sin verificar el progreso real del e-learning. En análisis para distinguir datos de migración vs bug antes de corregir.' },
     ],
     inscripciones: [
       { title: 'Conexión nirestream Horas Certificado (mínimo 85% visionado)', type: 'Ajuste', priority: 'Media', target: '30/06', detail: 'Integración con nirestream para verificar mínimo 85% de visionado antes de emitir certificado. A la espera de respuesta de Nirestream' },
+      { title: 'Cesión de datos a terceros — integración final en checkout', type: 'Ajuste', priority: 'Media', target: null, detail: 'Backend desplegado (modelo, estados, notificaciones, migración de inscritos). Falta conectar el popup del checkout WeWeb con los campos definitivos.' },
     ],
-    facturacion: [],
+    facturacion: [
+      { title: 'Facturación con créditos formativos — importe erróneo en deals', type: 'Bug', priority: 'Alta', target: null, detail: 'El deal tomaba las horas CPE como precio unitario, provocando importes erróneos y error de datos de facturación. Causa raíz identificada; fix y saneamiento de los deal_items afectados en curso.' }
+    ],
     ux: [
       { title: 'Ajustes frontend varios (backlog UI)', type: 'Ajuste', priority: 'Baja', target: null, detail: 'Backlog de frontend de baja prioridad: (1) filtro de fecha del mes actual por defecto en listado admin (B.1.2); (2) pantalla de certificaciones (ver/añadir por usuario, filtrar por tipo, alta desde admin); (3) panel de notificaciones centralizado + preview de emails; (4) tooltips de ayuda al usuario descartables.' }
     ]
